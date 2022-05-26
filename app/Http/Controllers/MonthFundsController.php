@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+Use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 use Illuminate\Http\Request;
 use App\User;
@@ -11,6 +12,8 @@ use App\Nuc;
 use App\Status;
 use App\Exports\ExportFund;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\MovesImport;
+use DateTime;
 use DB;
 
 class MonthFundsController extends Controller
@@ -126,5 +129,19 @@ class MonthFundsController extends Controller
         $nuc = DB::table('Nuc')->select('nuc',DB::raw('CONCAT(Client.name," ",firstname," ",lastname) AS name'))->join('Client',"Nuc.fk_client","=","Client.id")->where('Nuc.id',$id)->first();
         $nombre = "NUC_".(string)$nuc->nuc."_".$nuc->name.".xlsx";
         return Excel::download(new ExportFund($id),$nombre);
+    }
+    public function import(Request $request)
+    {
+        $file = $request->file('file');
+        // $file = $request->file;
+        $imp = new MovesImport();
+        // dd($request);
+        // Excel::import($imp, $file);
+        $array = ($imp)->toArray($file);
+        // Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($array[0][1][3]));
+        $dt = new DateTime();
+        $dt->setTimestamp($array[0][1][3]);
+        dd($dt->format('Y-m-d'));
+
     }
 }

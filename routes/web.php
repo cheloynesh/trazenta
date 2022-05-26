@@ -29,6 +29,7 @@ Route::resource('admin/profile/profiles', 'ProfilesController');
 // prueba
 Route::get('admin/pruebas/prueba/GetInfo/{id}','PruebasController@GetInfo')->name('prueba.GetInfo');
 Route::resource('admin/pruebas/prueba', 'PruebasController');
+Route::post('admin/pruebas/prueba/import','PruebasController@import');
 
 // usuarios
 Route::resource('admin/users/user', 'UsersController');
@@ -53,6 +54,7 @@ Route::post('funds/monthfund/monthfunds/updateStatus', 'MonthFundsController@upd
 Route::post('funds/monthfund/monthfunds/updateAuth', 'MonthFundsController@updateAuth')->name('monthfunds.updateAuth');
 Route::get('funds/monthfund/monthfunds/GetNuc/{id}','MonthFundsController@GetNuc')->name('monthfunds.GetNuc');
 Route::get('funds/monthfund/monthfunds/ExportFunds/{id}','MonthFundsController@ExportFunds');
+Route::post('funds/monthfund/monthfunds/import','MonthFundsController@import');
 // Route::get('funds/monthfund/monthfunds/GetNuc/{id}','MonthFundsController@GetNuc')->name('monthfunds.GetNuc');
 
 // -------------------------------------------------- Asignación de clientes--------------------------------------------

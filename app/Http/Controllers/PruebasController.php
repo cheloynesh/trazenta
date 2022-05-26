@@ -4,16 +4,30 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Prueba;
-use App\Insurance;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\MovesImport;
 
 class PruebasController extends Controller
 {
     public function index(){
         $profiles = Prueba::get();
         $prof = Prueba::pluck('name','id');
-        $insurances = Insurance::get();
-        return view('admin.pruebas.prueba', compact('profiles','insurances','prof'));
+        return view('admin.pruebas.prueba', compact('profiles','prof'));
     }
+
+    //--------------------------------------------- excel -----------------------------------------------------
+    public function import(Request $request)
+    {
+        $file = $request->file('file');
+        // $file = $request->file;
+        $imp = new MovesImport();
+        // dd($request);
+        // Excel::import($imp, $file);
+        $array = ($imp)->toArray($file);
+        dd($array);
+
+    }
+    //---------------------------------------------------------------------------------------------------------
 
     public function GetInfo($id)
     {

@@ -153,7 +153,23 @@
         {{-- fin modal| --}}
         {{-- Inicia pantalla de inicio --}}
         <div class="bd-example bd-example-padded-bottom">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Nuevo</button>
+            <form action="prueba/import" method="post" enctype="multipart/form-data">
+                @csrf
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class = "form-group">
+                                <input type="file" name="file" accept=".xlsx, .xls, .csv" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class = "form-group">
+                                <button type="submit" class="btn btn-primary">Importar Excel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
         <br><br>
 
@@ -204,7 +220,7 @@
                             </thead>
 
                             <tbody>
-                                @foreach ($insurances as $insurance)
+                                {{-- @foreach ($insurances as $insurance)
                                     <tr id="{{$insurance->id}}">
                                         <td>{{$insurance->name}}</td>
                                         <td>
@@ -212,7 +228,7 @@
                                             <a href="#|" class="btn btn-danger" onclick="eliminarAseguradora({{$insurance->id}})">Eliminar</a>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @endforeach --}}
                             </tbody>
                         </table>
                     </div>
