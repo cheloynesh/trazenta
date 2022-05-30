@@ -13,7 +13,7 @@ use App\Status;
 use App\Exports\ExportFund;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\MovesImport;
-use DateTime;
+use Carbon\Carbon;
 use DB;
 
 class MonthFundsController extends Controller
@@ -138,10 +138,25 @@ class MonthFundsController extends Controller
         // dd($request);
         // Excel::import($imp, $file);
         $array = ($imp)->toArray($file);
-        // Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($array[0][1][3]));
-        $dt = new DateTime();
-        $dt->setTimestamp($array[0][1][3]);
-        dd($dt->format('Y-m-d'));
+        // dd($array[0][1]);
+        $array2 = array();
+        foreach ($array[0] as $moves)
+        {
+            $moves[3] = $this->transformDate($moves[3]);
+            $moves[4] = $this->transformDate($moves[4]);
+            if($moves[5] != null)
+                $moves[5] = $this->transformDate($moves[5]);
+            else
+                $moves[5] = null;
+            array_push($array2,$moves);
+            $movimientos = DB::table('Month_fund')->select("new_balance")->join('Nuc',"Nuc.id","=","fk_nuc")->where('nuc',$moves[0])->orderby("apply_date","DESC")->orderby("Month_fund.id","DESC")->whereNull('Month_fund.deleted_at')->first();
+            dd($movimientos->new_balance);
+        }
+        dd($array2);
 
+    }
+    public function transformDate($value)
+    {
+        return Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value))->format('Y-m-d');
     }
 }
