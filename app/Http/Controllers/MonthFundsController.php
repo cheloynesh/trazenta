@@ -135,11 +135,15 @@ class MonthFundsController extends Controller
         $file = $request->file('file');
         // $file = $request->file;
         $imp = new MovesImport();
+        $new_balance = 0;
+        $prev_balance = 0;
         // dd($request);
         // Excel::import($imp, $file);
         $array = ($imp)->toArray($file);
         // dd($array[0][1]);
         $array2 = array();
+        $arrayNotFound = array();
+        $cont = 0;
         foreach ($array[0] as $moves)
         {
             $moves[3] = $this->transformDate($moves[3]);
@@ -148,11 +152,93 @@ class MonthFundsController extends Controller
                 $moves[5] = $this->transformDate($moves[5]);
             else
                 $moves[5] = null;
-            array_push($array2,$moves);
-            $movimientos = DB::table('Month_fund')->select("new_balance")->join('Nuc',"Nuc.id","=","fk_nuc")->where('nuc',$moves[0])->orderby("apply_date","DESC")->orderby("Month_fund.id","DESC")->whereNull('Month_fund.deleted_at')->first();
-            dd($movimientos->new_balance);
+            // dd($moves);
+            $movimientos = DB::table('Month_fund')->select("new_balance", "amount", "apply_date", "fk_nuc")->join('Nuc',"Nuc.id","=","fk_nuc")->where('nuc',$moves[0])->orderby("apply_date","DESC")->orderby("Month_fund.id","DESC")->whereNull('Month_fund.deleted_at')->first();
+            // dd($movimientos);
+            if ($movimientos != null)
+            {
+                if($movimientos->amount == $moves[2] && $movimientos->apply_date == $moves[4])
+                {
+                    // dd("repetido");
+                    $cont++;
+                }
+                else
+                {
+                    // dd("nuevo");
+                    $prev_balance = floatval($movimientos->new_balance);
+                    if($moves[1] == "Abono" || $moves[1] == "Reinversion")
+                    {
+                        $new_balance = $moves[2] + $prev_balance;
+                    }
+                    else if($moves[1] == "Retiro parcial")
+                    {
+                        $new_balance = $prev_balance - $moves[2];
+                    }
+                    else if ($moves[1] == "Retiro total")
+                    {
+                        $new_balance = 0;
+                    }
+                    else
+                    {
+                        $new_balance = $moves[2];
+                    }
+                    $fund = new MonthFund;
+                    $fund->fk_nuc = $movimientos->fk_nuc;
+                    $fund->type = $moves[1];
+                    $fund->amount = $moves[2];
+                    $fund->prev_balance = $prev_balance;
+                    $fund->new_balance = $new_balance;
+                    $fund->apply_date = $moves[4];
+                    $fund->auth_date = $moves[3];
+                    $fund->pay_date = $moves[5];
+                    $fund->save();
+                }
+            }
+            else
+            {
+                $nuc = DB::table('Nuc')->select("id")->where('nuc',$moves[0])->first();
+                // dd($nuc);
+                if($nuc == null)
+                {
+                    array_push($arrayNotFound, $moves[0]);
+                }
+                else
+                {
+                    $prev_balance = 0;
+                    $new_balance = $moves[2];
+                    $fund = new MonthFund;
+                    $fund->fk_nuc = $movimientos->fk_nuc;
+                    $fund->type = $moves[1];
+                    $fund->amount = $moves[2];
+                    $fund->prev_balance = $prev_balance;
+                    $fund->new_balance = $new_balance;
+                    $fund->apply_date = $moves[4];
+                    $fund->auth_date = $moves[3];
+                    $fund->pay_date = $moves[5];
+                    $fund->save();
+                    $day = explode("-", $moves[4]);
+                    $day = intval($day[2]);
+                    // dd($day);
+                    $fund->save();
+
+                    if($request->type == "Apertura")
+                    {
+                        $nuc = Nuc::where('id', $request->fk_nuc)->first();
+                        if($day <= 15)
+                        {
+                            $nuc->cut_date = 15;
+                        }
+                        else
+                        {
+                            $nuc->cut_date = 30;
+                        }
+                        $nuc->save();
+                    }
+
+                }
+            }
         }
-        dd($array2);
+        dd($cont,$arrayNotFound);
 
     }
     public function transformDate($value)
