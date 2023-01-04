@@ -21,11 +21,11 @@ class MonthFundsController extends Controller
     public function index(){
         $profile = User::findProfile();
         $nucs = DB::table('Nuc')
-        ->select('Nuc.id as id',DB::raw('CONCAT(Client.name," ",firstname," ",lastname) AS name'),"nuc",'Status.id as statId','Status.name as estatus','color')
+        ->select('Nuc.id as id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),"nuc",'Status.id as statId','Status.name as estatus','color')
         ->join('Client',"Client.id","=","Nuc.fk_client")
         ->join('Status',"Nuc.estatus","=","Status.id")
         ->get();
-        $clients = DB::table('Nuc')->select('Client.id',DB::raw('CONCAT(Client.name," ",firstname," ",lastname) AS name'))
+        $clients = DB::table('Nuc')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
         ->join('Client',"Client.id","=","Nuc.fk_client")
         ->pluck('name','id');
         $perm = Permission::permView($profile,19);
@@ -126,7 +126,7 @@ class MonthFundsController extends Controller
     }
     public function ExportFunds($id)
     {
-        $nuc = DB::table('Nuc')->select('nuc',DB::raw('CONCAT(Client.name," ",firstname," ",lastname) AS name'))->join('Client',"Nuc.fk_client","=","Client.id")->where('Nuc.id',$id)->first();
+        $nuc = DB::table('Nuc')->select('nuc',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))->join('Client',"Nuc.fk_client","=","Client.id")->where('Nuc.id',$id)->first();
         $nombre = "NUC_".(string)$nuc->nuc."_".$nuc->name.".xlsx";
         return Excel::download(new ExportFund($id),$nombre);
     }

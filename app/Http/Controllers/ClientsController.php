@@ -7,6 +7,7 @@ use App\Client;
 use App\Permission;
 use App\User;
 use App\Nuc;
+use App\SixMonth_fund;
 
 class ClientsController extends Controller
 {
@@ -88,6 +89,18 @@ class ClientsController extends Controller
         $nuc->currency = $request->selectCurrency;
         $nuc->fk_client = $request->fk_client;
         $nuc->estatus = $request->estatus;
+        $nuc->save();
+        return response()->json(["status"=>true, "message"=>"Nuc creado"]);
+    }
+    public function SaveNucSixMonth(Request $request)
+    {
+        $nuc = new SixMonth_fund;
+        $nuc->nuc = $request->nuc;
+        $nuc->currency = $request->selectCurrency;
+        $nuc->amount = $request->amount;
+        $nuc->fk_client = $request->fk_client;
+        $nuc->initial_date = $request->initial_date;
+        $nuc->end_date = $request->end_date;
         $nuc->save();
         return response()->json(["status"=>true, "message"=>"Nuc creado"]);
     }

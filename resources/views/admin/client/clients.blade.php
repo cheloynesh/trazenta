@@ -56,6 +56,66 @@
             </div>
         </div>
         {{-- fin modal| --}}
+        {{-- modal| --}}
+        <div id="sixMonthNucModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Nuevo nuc fondo largo plazo</h4>
+                        <button type="button" class="close" onclick="cerrarNucSixMonth()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Nuc</label>
+                                            <input type="text" id="nucSixMonth" name="nucSixMonth" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Monto</label>
+                                            <input type="text" id="amountSixMonth" name="amountSixMonth" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Moneda:</label>
+                                            <select name="selectCurrencySixMonth" id="selectCurrencySixMonth" class="form-select">
+                                                <option hidden selected>Selecciona una opción</option>
+                                                <option>MXN</option>
+                                                <option>USD</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Fecha del primer pago</label>
+                                            <input type="date" id="initial_date" name="initial_date" class="form-control" placeholder="Fecha de aplicación">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick="cerrarNucSixMonth()">Cancelar</button>
+                        <button type="button" onclick="guardarNucSixMonth()" class="btn btn-primary">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- fin modal| --}}
         {{-- Inicia pantalla de inicio --}}
         <div class="bd-example bd-example-padded-bottom">
             @if ($perm_btn['addition']==1)
@@ -84,6 +144,7 @@
                                 @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                                     <td>
                                         @if ($perm_btn['modify']==1)
+                                            <a href="#|" class="btn btn-primary" onclick="nuevoNucSixMonth({{$client->id}})" >Nuevo nuc 6 M</a>
                                             <a href="#|" class="btn btn-primary" onclick="nuevoNuc({{$client->id}})" >Nuevo nuc</a>
                                             <a href="#|" class="btn btn-warning" onclick="editarCliente({{$client->id}})" >Editar</a>
                                         @endif

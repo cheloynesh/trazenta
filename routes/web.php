@@ -39,6 +39,7 @@ Route::get('admin/users/user/GetInfo/{id}','UsersController@GetInfo')->name('use
 Route::resource('admin/client/client', 'ClientsController');
 Route::get('admin/client/client/GetInfo/{id}','ClientsController@GetInfo')->name('client.GetInfo');
 Route::post('admin/client/client/SaveNuc','ClientsController@SaveNuc')->name('client.SaveNuc');
+Route::post('admin/client/client/SaveNucSixMonth','ClientsController@SaveNucSixMonth')->name('client.SaveNucSixMonth');
 
 // permisos
 Route::resource('admin/permission/permissions', 'PermissionsController');
@@ -79,5 +80,8 @@ Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDF/{id}/{month}/{ye
 Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDFAll/{id}/{month}/{year}/{TC}/{regime}','FstMonthComissionController@ExportPDFAll');
 Route::post('funds/fstmonthcomission/fstmonthcomission/GetInfoComition','FstMonthComissionController@GetInfoComition')->name('fstmonthcomission.GetInfoComition');
 
+//---------------------------------------------------Fondo de 6 meses ----------------------------------------------------------
+Route::resource('funds/sixmonthfund/sixmonthfunds', 'SixMonthFundController');
+Route::get('funds/sixmonthfund/sixmonthfunds/GetInfo/{id}','SixMonthFundController@GetInfo')->name('sixmonthfunds.GetInfo');
 
 

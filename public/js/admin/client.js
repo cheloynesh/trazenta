@@ -270,3 +270,48 @@ function guardarNuc()
     })
 }
 
+idnucSixMonth = 0;
+
+function nuevoNucSixMonth(id)
+{
+    idnucSixMonth=id;
+    $("#sixMonthNucModal").modal('show');
+}
+function cerrarNucSixMonth()
+{
+    $("#sixMonthNucModal").modal('hide');
+}
+function guardarNucSixMonth()
+{
+    var selectCurrency = $("#selectCurrencySixMonth").val();
+    var nuc = $("#nucSixMonth").val();
+    var amount = $("#amountSixMonth").val();
+    var initial_date = $("#initial_date").val();
+    var fecha = initial_date.split("-");
+    fecha[0] = parseInt(fecha[0]) + 2;
+    var end_date = fecha[0].toString() + "-" + fecha[1] + "-" + fecha[2];
+
+    var route = baseUrl + '/SaveNucSixMonth';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'nuc':nuc,
+        'selectCurrency':selectCurrency,
+        'amount':amount,
+        'initial_date':initial_date,
+        'end_date':end_date,
+        'fk_client':idnucSixMonth
+    };
+    console.log(data);
+    jQuery.ajax({
+        url:route,
+        type:"post",
+        data: data,
+        dataType: 'json',
+        success:function(result)
+        {
+            alertify.success(result.message);
+            $("#myModal").modal('hide');
+            window.location.reload(true);
+        }
+    })
+}

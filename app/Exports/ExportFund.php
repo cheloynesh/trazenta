@@ -20,7 +20,7 @@ class ExportFund implements FromCollection
     public function collection()
     {
         // dd($this->id);
-        $movimientos = DB::table('Month_fund')->select("nuc",DB::raw('CONCAT(Client.name," ",firstname," ",lastname) AS name'),
+        $movimientos = DB::table('Month_fund')->select("nuc",DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),
         'apply_date',DB::raw('IFNULL(auth_date, "No Autorizado") as auth'),'prev_balance','new_balance','currency','amount','type')
             ->join('Nuc',"Nuc.id","=","fk_nuc")
             ->join('Client',"Nuc.fk_client","=","Client.id")
