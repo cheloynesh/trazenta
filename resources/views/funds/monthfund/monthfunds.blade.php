@@ -160,11 +160,41 @@
             </div>
         </div>
         {{-- termina modal --}}
+        {{-- modal espera --}}
+        <div id="waitModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Importando Excel</h4>
+                        {{-- <button type="button" onclick="cerrarNuc()" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> --}}
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <img src="{{ URL::asset('img/SpinnerLittle.gif') }}">
+                                            <label> Se están procesando los datos, por favor espere.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- termina modal --}}
     @include('funds.status.status')
         {{-- Inicia pantalla de inicio --}}
         <br>
         <div class="bd-example bd-example-padded-bottom">
-            <form action="monthfunds/import" method="post" enctype="multipart/form-data">
+            {{-- <form action="monthfunds/import" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="col-lg-12">
                     <div class="row">
@@ -180,7 +210,21 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </form> --}}
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class = "form-group">
+                            <input type="file" name="excl" id="excl" accept=".xlsx, .xls, .csv" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class = "form-group">
+                            <button class="btn btn-primary" onclick="importexc()">Importar Excel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <br>
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">

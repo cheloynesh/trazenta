@@ -384,8 +384,22 @@ function excel_nuc(){
     field.attr("name", "_token");
     field.attr("value", $("meta[name='csrf-token']").attr("content"));
     form.append(field);
-    $(document.body).append(form);
-    form.submit();
+    // $(document.body).append(form);
+    // form.submit();
+    var data = {
+        'data':form,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+    };
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+            alertify.success(result.message);
+        }
+    })
 }
 
 function deleteMove(id)
@@ -427,4 +441,53 @@ function deleteMove(id)
         function(){
             alertify.error('Cancelado');
     });
+}
+function importexc()
+{
+    $("#waitModal").modal('show');
+    var formData = new FormData();
+    var files = $('input[type=file]');
+    for (var i = 0; i < files.length; i++) {
+        if (files[i].value == "" || files[i].value == null)
+        {
+            // console.log(files.length);
+            // return false;
+        }
+        else
+        {
+            formData.append(files[i].name, files[i].files[0]);
+        }
+    }
+    // console.log("entre");
+    var formSerializeArray = $("#Form").serializeArray();
+    for (var i = 0; i < formSerializeArray.length; i++) {
+        formData.append(formSerializeArray[i].name, formSerializeArray[i].value)
+    }
+
+    formData.append('_token', $("meta[name='csrf-token']").attr("content"));
+
+    var route = baseUrl + '/import';
+
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:formData,
+        contentType: false,
+        processData: false,
+        cache: false,
+        success:function(result)
+        {
+            alertify.success(result.message);
+            console.log(result);
+            notFnd = result.notFnd.filter((item,index)=>{return result.notFnd.indexOf(item) === index;})
+            alert("Movimientos importados: " + result.importados + "\nDatos repetidos: " + result.repetidos + "\nNucs no encontrados: " + notFnd.length + "\n" + notFnd.join("\n"));
+            $("#waitModal").modal('hide');
+
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+            $("#waitModal").modal('hide');
+        }
+    })
 }

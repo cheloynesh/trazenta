@@ -132,7 +132,8 @@ class MonthFundsController extends Controller
     }
     public function import(Request $request)
     {
-        $file = $request->file('file');
+        set_time_limit(1000);
+        $file = $request->file('excl');
         // $file = $request->file;
         $imp = new MovesImport();
         $new_balance = 0;
@@ -144,20 +145,23 @@ class MonthFundsController extends Controller
         $array2 = array();
         $arrayNotFound = array();
         $cont = 0;
+        $goodCont = 0;
+        // dd($array);
         foreach ($array[0] as $moves)
         {
-            $moves[3] = $this->transformDate($moves[3]);
             $moves[4] = $this->transformDate($moves[4]);
-            if($moves[5] != null)
-                $moves[5] = $this->transformDate($moves[5]);
+            $moves[5] = $this->transformDate($moves[5]);
+            if($moves[6] != null)
+                $moves[6] = $this->transformDate($moves[6]);
             else
-                $moves[5] = null;
+                $moves[6] = null;
             // dd($moves);
-            $movimientos = DB::table('Month_fund')->select("new_balance", "amount", "apply_date", "fk_nuc")->join('Nuc',"Nuc.id","=","fk_nuc")->where('nuc',$moves[0])->orderby("apply_date","DESC")->orderby("Month_fund.id","DESC")->whereNull('Month_fund.deleted_at')->first();
-            // dd($movimientos);
+            $movimientos = DB::table('Month_fund')->select("new_balance", "amount", "apply_date", "fk_nuc")->join('Nuc',"Nuc.id","=","fk_nuc")->where('nuc',$moves[1])->orderby("apply_date","DESC")->orderby("Month_fund.id","DESC")->whereNull('Month_fund.deleted_at')->first();
+            // dd($movimientos,$moves);
             if ($movimientos != null)
             {
-                if($movimientos->amount == $moves[2] && $movimientos->apply_date == $moves[4])
+                $mov = DB::table('Month_fund')->select("movementid")->where('movementid',$moves[0])->whereNull('Month_fund.deleted_at')->first();
+                if($mov != null)
                 {
                     // dd("repetido");
                     $cont++;
@@ -166,57 +170,61 @@ class MonthFundsController extends Controller
                 {
                     // dd("nuevo");
                     $prev_balance = floatval($movimientos->new_balance);
-                    if($moves[1] == "Abono" || $moves[1] == "Reinversion")
+                    if($moves[2] == "Abono" || $moves[2] == "Reinversion")
                     {
-                        $new_balance = $moves[2] + $prev_balance;
+                        $new_balance = $moves[3] + $prev_balance;
                     }
-                    else if($moves[1] == "Retiro parcial")
+                    else if($moves[2] == "Retiro parcial")
                     {
-                        $new_balance = $prev_balance - $moves[2];
+                        $new_balance = $prev_balance - $moves[3];
                     }
-                    else if ($moves[1] == "Retiro total")
+                    else if ($moves[2] == "Retiro total")
                     {
                         $new_balance = 0;
                     }
                     else
                     {
-                        $new_balance = $moves[2];
+                        $new_balance = $moves[3] + $prev_balance;
                     }
                     $fund = new MonthFund;
+                    $fund->movementid = $moves[0];
                     $fund->fk_nuc = $movimientos->fk_nuc;
-                    $fund->type = $moves[1];
-                    $fund->amount = $moves[2];
+                    $fund->type = $moves[2];
+                    $fund->amount = $moves[3];
                     $fund->prev_balance = $prev_balance;
                     $fund->new_balance = $new_balance;
-                    $fund->apply_date = $moves[4];
-                    $fund->auth_date = $moves[3];
-                    $fund->pay_date = $moves[5];
+                    $fund->apply_date = $moves[5];
+                    $fund->auth_date = $moves[4];
+                    $fund->pay_date = $moves[6];
                     $fund->save();
+                    $goodCont++;
                 }
             }
             else
             {
-                $nuc = DB::table('Nuc')->select("id")->where('nuc',$moves[0])->first();
+                $nuc = DB::table('Nuc')->select("id")->where('nuc',$moves[1])->first();
                 // dd($nuc);
                 if($nuc == null)
                 {
-                    array_push($arrayNotFound, $moves[0]);
+                    array_push($arrayNotFound, $moves[1]);
                 }
                 else
                 {
                     $prev_balance = 0;
-                    $new_balance = $moves[2];
+                    $new_balance = $moves[3];
                     $fund = new MonthFund;
-                    $fund->fk_nuc = $movimientos->fk_nuc;
-                    $fund->type = $moves[1];
-                    $fund->amount = $moves[2];
+                    $fund->movementid = $moves[0];
+                    $fund->fk_nuc = $nuc->id;
+                    $fund->type = $moves[2];
+                    $fund->amount = $moves[3];
                     $fund->prev_balance = $prev_balance;
                     $fund->new_balance = $new_balance;
-                    $fund->apply_date = $moves[4];
-                    $fund->auth_date = $moves[3];
-                    $fund->pay_date = $moves[5];
+                    $fund->apply_date = $moves[5];
+                    $fund->auth_date = $moves[4];
+                    $fund->pay_date = $moves[6];
                     $fund->save();
-                    $day = explode("-", $moves[4]);
+                    $goodCont++;
+                    $day = explode("-", $moves[5]);
                     $day = intval($day[2]);
                     // dd($day);
                     $fund->save();
@@ -238,8 +246,8 @@ class MonthFundsController extends Controller
                 }
             }
         }
-        dd($cont,$arrayNotFound);
-
+        // dd($cont,$arrayNotFound);
+        return response()->json(['status'=>true, 'message'=>"Datos Subidos", 'repetidos' => $cont, 'notFnd' => $arrayNotFound, 'importados' => $goodCont]);
     }
     public function transformDate($value)
     {
