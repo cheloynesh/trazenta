@@ -15,6 +15,8 @@ class AssigmentController extends Controller
         // $clients = Client::whereNull("fk_agent")->pluck('name','id');
         $clients = DB::table('Client')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'), 'id')
         ->whereNull("fk_agent")->whereNull('deleted_at')->pluck('name','id');
+        $agents = DB::table('users')->select('id',DB::raw('CONCAT(IFNULL(name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
+        ->orderBy('name')->whereNull('deleted_at')->pluck('name','id');
         // dd($clients);
         // if($clients->isEmpty())
         //     dd("vacio");
@@ -32,7 +34,7 @@ class AssigmentController extends Controller
         }
         else
         {
-            return view('admin.assigment.assigment', compact('clients','perm_btn','users'));
+            return view('admin.assigment.assigment', compact('clients','perm_btn','users','agents'));
         }
     }
 

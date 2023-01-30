@@ -7,7 +7,9 @@ use App\Client;
 use App\Permission;
 use App\User;
 use App\Nuc;
+use App\Coupon;
 use App\SixMonth_fund;
+use DateTime;
 
 class ClientsController extends Controller
 {
@@ -94,14 +96,54 @@ class ClientsController extends Controller
     }
     public function SaveNucSixMonth(Request $request)
     {
+        $deposit_date = new DateTime($request->deposit_date);
+        $initial_date = new DateTime($deposit_date->format('Y')."-".$deposit_date->format('m')."-01");
+        if(intval($deposit_date->format('d')) <= 10)
+        {
+            $initial_date->modify('+2 month');
+        }
+        else
+        {
+            $initial_date->modify('+3 month');
+        }
+
+        $end_date = clone $initial_date;
+        $end_date->modify('+2 year');
+
         $nuc = new SixMonth_fund;
         $nuc->nuc = $request->nuc;
         $nuc->currency = $request->selectCurrency;
         $nuc->amount = $request->amount;
         $nuc->fk_client = $request->fk_client;
-        $nuc->initial_date = $request->initial_date;
-        $nuc->end_date = $request->end_date;
+        $nuc->deposit_date = $deposit_date;
+        $nuc->initial_date = $initial_date;
+        $nuc->end_date = $end_date;
         $nuc->save();
-        return response()->json(["status"=>true, "message"=>"Nuc creado"]);
+
+        $idnuc = SixMonth_fund::where('nuc',$request->nuc)->first();
+        $date1 = clone $initial_date;
+        $date2= clone $deposit_date;
+        $number = 1;
+        if($idnuc->currency == "MXN")
+        {
+            for($cont = 0; $cont < 24; $cont += 2)
+            {
+                $coupon = new Coupon;
+                $coupon->number = $number;
+                if($cont != 0) $date1->modify('+2 month');
+                $diff = $date1->diff($date2)->days;
+                $coupon->amount = intval($diff) * 256.94443 * ($idnuc->amount/500000);
+                // dd($coupon->amount);
+                $coupon->pay_date = $date1;
+                $coupon->fk_nuc = $idnuc->id;
+                $coupon->save();
+                $number++;
+                $date2= clone $date1;
+            }
+        }
+        return response()->json(["status"=>true, "message"=>"Fondo creado"]);
+        // $date1 = new DateTime("2023-11-01");
+        // $date2 = new DateTime("2024-01-01");
+        // $diff = $date1->diff($date2);
     }
 }

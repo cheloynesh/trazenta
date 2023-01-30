@@ -135,3 +135,41 @@ function delete_code_edit(id)
             alertify.error('Cancelado');
     });
 }
+function assignmodal()
+{
+    $("#assigmentAgentModal").modal('show');
+}
+function cerrarmodalag()
+{
+    $("#assigmentAgentModal").modal('hide');
+}
+function changeagent()
+{
+    if($("#selectAgentmodal").val() != 0)
+    {
+        document.getElementById('btnAssign').disabled = false;
+    }
+}
+function assignagent()
+{
+    var client = $("#selectClientmodal").val();
+    var agent = $("#selectAgentmodal").val();
+    // alert(client,agent);
+    var route = baseUrlAsignacion+'/updateClient';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        "id":agent,
+        "client":client
+    }
+    jQuery.ajax({
+        url:route,
+        data: data,
+        type:'post',
+        dataType:'json',
+        success:function(result){
+            alertify.success(result.message);
+            $("#assigmentModal").modal('hide');
+            window.location.reload(true);
+        }
+    })
+}

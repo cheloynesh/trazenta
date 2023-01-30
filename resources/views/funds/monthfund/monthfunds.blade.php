@@ -221,6 +221,7 @@
                     <div class="col-lg-6">
                         <div class = "form-group">
                             <button class="btn btn-primary" onclick="importexc()">Importar Excel</button>
+                            <button class="btn btn-primary" onclick="actualizarFondo()">Actualizar</button>
                         </div>
                     </div>
                 </div>

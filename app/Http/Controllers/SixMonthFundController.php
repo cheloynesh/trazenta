@@ -29,7 +29,7 @@ class SixMonthFundController extends Controller
         $perm = Permission::permView($profile,24);
         $perm_btn =Permission::permBtns($profile,24);
         $cmbStatus = Status::select('id','name')
-        ->where("fk_section","19")
+        ->where("fk_section","23")
         ->pluck('name','id');
         // dd($clients);
         if($perm==0)

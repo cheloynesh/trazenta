@@ -286,10 +286,7 @@ function guardarNucSixMonth()
     var selectCurrency = $("#selectCurrencySixMonth").val();
     var nuc = $("#nucSixMonth").val();
     var amount = $("#amountSixMonth").val();
-    var initial_date = $("#initial_date").val();
-    var fecha = initial_date.split("-");
-    fecha[0] = parseInt(fecha[0]) + 2;
-    var end_date = fecha[0].toString() + "-" + fecha[1] + "-" + fecha[2];
+    var deposit_date = $("#initial_date").val();
 
     var route = baseUrl + '/SaveNucSixMonth';
     var data = {
@@ -297,8 +294,7 @@ function guardarNucSixMonth()
         'nuc':nuc,
         'selectCurrency':selectCurrency,
         'amount':amount,
-        'initial_date':initial_date,
-        'end_date':end_date,
+        'deposit_date':deposit_date,
         'fk_client':idnucSixMonth
     };
     console.log(data);

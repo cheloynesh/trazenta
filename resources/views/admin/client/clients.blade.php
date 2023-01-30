@@ -144,8 +144,8 @@
                                 @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                                     <td>
                                         @if ($perm_btn['modify']==1)
-                                            <a href="#|" class="btn btn-primary" onclick="nuevoNucSixMonth({{$client->id}})" >Nuevo nuc 6 M</a>
-                                            <a href="#|" class="btn btn-primary" onclick="nuevoNuc({{$client->id}})" >Nuevo nuc</a>
+                                            <a href="#|" class="btn btn-primary" onclick="nuevoNucSixMonth({{$client->id}})" >Nuevo Fondo LP</a>
+                                            <a href="#|" class="btn btn-primary" onclick="nuevoNuc({{$client->id}})" >Nuevo Fondo CP</a>
                                             <a href="#|" class="btn btn-warning" onclick="editarCliente({{$client->id}})" >Editar</a>
                                         @endif
                                         @if ($perm_btn['erase']==1)

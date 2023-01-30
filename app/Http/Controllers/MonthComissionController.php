@@ -15,7 +15,7 @@ class MonthComissionController extends Controller
 {
     public function index(){
         $profile = User::findProfile();
-        $users = DB::table('users')->select('users.id',DB::raw('CONCAT(users.name," ",users.firstname," ",users.lastname) AS name'))
+        $users = DB::table('users')->select('users.id',DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(users.firstname, "")," ",IFNULL(users.lastname, "")) AS name'))
             ->join('Client',"fk_agent","=","users.id")
             ->join('Nuc',"fk_client","=","Client.id")
             ->where("month_flag","=","7")
@@ -39,6 +39,7 @@ class MonthComissionController extends Controller
         ->join('Client',"Client.id","=","fk_client")
         ->where('fk_agent',$id)
         ->where("month_flag","=","7")
+        ->whereNull('Client.deleted_at')
         ->get();
         $regime = DB::table('users')->select('regime')->where('id',$id)->first();
         return response()->json(['status'=>true, "regime"=>$regime->regime, "data"=>$clients]);
@@ -72,17 +73,17 @@ class MonthComissionController extends Controller
         // setlocale(LC_TIME, 'es_ES.UTF-8');
         // $monthName = date('F', mktime(0, 0, 0, $month, 10));
         $months = array (1=>'Enero',2=>'Febrer',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
-        $userName = DB::table('users')->select(DB::raw('CONCAT(users.name," ",users.firstname," ",users.lastname) AS name'))
+        $userName = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
             ->where('users.id',$id)->whereNull('users.deleted_at')->first();
         $nucs = DB::table('Nuc')->select("Nuc.id as id")
             ->join('Client',"Client.id","=","fk_client")
             ->where("month_flag","=","7")
             ->where('fk_agent',$id)
             ->get();
-        $clients = DB::table('Client')->select(DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS name'))
+        $clients = DB::table('Client')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS clName'))
             ->join('Nuc',"fk_client","=","Client.id")
             ->where("month_flag","=","7")
-            ->groupBy("name")
+            ->groupBy("clName")
             ->where('fk_agent',$id)->get();
         $clientNames = "";
         foreach ($nucs as $nuc)
@@ -99,14 +100,15 @@ class MonthComissionController extends Controller
         // dd($b_amount,$IVA,$ret_isr,$ret_iva,$n_amount);
         foreach ($clients as $client)
         {
-            $clientNames = $clientNames.$client->name."<br>";
+            $clientNames = $clientNames.$client->clName."<br>";
             // dd($clientNames);
         }
         // dd($clientNames);
-        if(intval($month) == 0)
+        if(intval($month) == 1)
             $monthless = 12;
         else
             $monthless = intval($month) - 1;
+        // dd($monthless);
         $pdf = app('dompdf.wrapper');
         $pdf->loadHTML('
         <div class="container">

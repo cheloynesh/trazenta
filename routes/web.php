@@ -56,6 +56,7 @@ Route::post('funds/monthfund/monthfunds/updateAuth', 'MonthFundsController@updat
 Route::get('funds/monthfund/monthfunds/GetNuc/{id}','MonthFundsController@GetNuc')->name('monthfunds.GetNuc');
 Route::get('funds/monthfund/monthfunds/ExportFunds/{id}','MonthFundsController@ExportFunds');
 Route::post('funds/monthfund/monthfunds/import','MonthFundsController@import');
+Route::post('funds/monthfund/monthfunds/updateFund','MonthFundsController@updateFund');
 // Route::get('funds/monthfund/monthfunds/GetNuc/{id}','MonthFundsController@GetNuc')->name('monthfunds.GetNuc');
 
 // -------------------------------------------------- Asignación de clientes--------------------------------------------

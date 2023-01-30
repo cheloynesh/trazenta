@@ -384,22 +384,8 @@ function excel_nuc(){
     field.attr("name", "_token");
     field.attr("value", $("meta[name='csrf-token']").attr("content"));
     form.append(field);
-    // $(document.body).append(form);
-    // form.submit();
-    var data = {
-        'data':form,
-        "_token": $("meta[name='csrf-token']").attr("content"),
-    };
-    jQuery.ajax({
-        url:route,
-        type:'get',
-        data:data,
-        dataType:'json',
-        success:function(result)
-        {
-            alertify.success(result.message);
-        }
-    })
+    $(document.body).append(form);
+    form.submit();
 }
 
 function deleteMove(id)
@@ -481,6 +467,31 @@ function importexc()
             console.log(result);
             notFnd = result.notFnd.filter((item,index)=>{return result.notFnd.indexOf(item) === index;})
             alert("Movimientos importados: " + result.importados + "\nDatos repetidos: " + result.repetidos + "\nNucs no encontrados: " + notFnd.length + "\n" + notFnd.join("\n"));
+            $("#waitModal").modal('hide');
+
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+            $("#waitModal").modal('hide');
+        }
+    })
+}
+
+function actualizarFondo()
+{
+    var route = baseUrl + '/updateFund';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+            alertify.success(result.message);
             $("#waitModal").modal('hide');
 
         },

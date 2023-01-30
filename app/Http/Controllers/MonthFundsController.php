@@ -15,6 +15,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\MovesImport;
 use Carbon\Carbon;
 use DB;
+use DateTime;
 
 class MonthFundsController extends Controller
 {
@@ -24,9 +25,11 @@ class MonthFundsController extends Controller
         ->select('Nuc.id as id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),"nuc",'Status.id as statId','Status.name as estatus','color')
         ->join('Client',"Client.id","=","Nuc.fk_client")
         ->join('Status',"Nuc.estatus","=","Status.id")
+        ->whereNull('Client.deleted_at')
         ->get();
         $clients = DB::table('Nuc')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
         ->join('Client',"Client.id","=","Nuc.fk_client")
+        ->whereNull('Client.deleted_at')
         ->pluck('name','id');
         $perm = Permission::permView($profile,19);
         $perm_btn =Permission::permBtns($profile,19);
@@ -126,6 +129,7 @@ class MonthFundsController extends Controller
     }
     public function ExportFunds($id)
     {
+        // dd($id);
         $nuc = DB::table('Nuc')->select('nuc',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))->join('Client',"Nuc.fk_client","=","Client.id")->where('Nuc.id',$id)->first();
         $nombre = "NUC_".(string)$nuc->nuc."_".$nuc->name.".xlsx";
         return Excel::download(new ExportFund($id),$nombre);
@@ -168,7 +172,7 @@ class MonthFundsController extends Controller
                 }
                 else
                 {
-                    // dd("nuevo");
+                    // dd($moves[2]);
                     $prev_balance = floatval($movimientos->new_balance);
                     if($moves[2] == "Abono" || $moves[2] == "Reinversion")
                     {
@@ -177,10 +181,12 @@ class MonthFundsController extends Controller
                     else if($moves[2] == "Retiro parcial")
                     {
                         $new_balance = $prev_balance - $moves[3];
+                        // dd($moves[2]);
                     }
-                    else if ($moves[2] == "Retiro total")
+                    else if ($moves[2] == "Retiro Total")
                     {
                         $new_balance = 0;
+                        // dd($moves[2]);
                     }
                     else
                     {
@@ -252,5 +258,29 @@ class MonthFundsController extends Controller
     public function transformDate($value)
     {
         return Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value))->format('Y-m-d');
+    }
+    public function updateFund()
+    {
+        $nucs = DB::table('Month_fund')->select('Nuc.id', 'month_flag', 'apply_date','nuc')
+            ->join('Nuc',"fk_nuc","=","Nuc.id")
+            ->groupBy('fk_nuc')
+            ->orderBy('apply_date', 'asc')
+            ->where('type','=',"Apertura")
+            ->where('month_flag','<',7)
+            ->whereNull('Nuc.deleted_at')->get();
+
+        date_default_timezone_set('America/Mexico_City');
+        $date2 = new DateTime();
+        // dd($nucs);
+        foreach ($nucs as $nuc)
+        {
+            $date1 = new DateTime($nuc->apply_date);
+            $diff = $date1->diff($date2);
+            if($diff->m >= 7 || $diff->y >= 1)
+                $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>7]);
+            else
+                $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>$diff->m]);
+        }
+        return response()->json(['status'=>true, 'message'=>"Datos Actualizados"]);
     }
 }

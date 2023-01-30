@@ -15,7 +15,7 @@ class FstMonthComissionController extends Controller
 {
     public function index(){
         $profile = User::findProfile();
-        $users = DB::table('users')->select('users.id',DB::raw('CONCAT(users.name," ",users.firstname," ",users.lastname) AS name'))
+        $users = DB::table('users')->select('users.id',DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(users.firstname, "")," ",IFNULL(users.lastname, "")) AS name'))
             ->join('Client',"fk_agent","=","users.id")
             ->join('Nuc',"fk_client","=","Client.id")
             ->where("month_flag","<","7")
@@ -59,7 +59,7 @@ class FstMonthComissionController extends Controller
         ->groupBy("name")
         ->where('Nuc.id',$id)->get();
         $clientNames = "";
-        $userName = DB::table('users')->select(DB::raw('CONCAT(users.name," ",users.firstname," ",users.lastname) AS name'))
+        $userName = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
             ->where('users.id',$clients[0]->fk_agent)->whereNull('users.deleted_at')->first();
 
         $value5 = $this->calculo($id,$month,$year,$TC,10,$regime);
@@ -79,7 +79,7 @@ class FstMonthComissionController extends Controller
             // dd($clientNames);
         }
         // dd($clientNames);
-        if(intval($month) == 0)
+        if(intval($month) == 1)
             $monthless = 12;
         else
             $monthless = intval($month) - 1;
@@ -232,14 +232,14 @@ class FstMonthComissionController extends Controller
         // setlocale(LC_TIME, 'es_ES.UTF-8');
         // $monthName = date('F', mktime(0, 0, 0, $month, 10));
         $months = array (1=>'Enero',2=>'Febrer',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
-        $userName = DB::table('users')->select(DB::raw('CONCAT(users.name," ",users.firstname," ",users.lastname) AS name'))
+        $userName = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
             ->where('users.id',$id)->whereNull('users.deleted_at')->first();
         $nucs = DB::table('Nuc')->select("Nuc.id as id")
             ->join('Client',"Client.id","=","fk_client")
             ->where("month_flag","<","7")
             ->where('fk_agent',$id)
             ->get();
-        $clients = DB::table('Client')->select(DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS name'))
+        $clients = DB::table('Client')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS name'))
             ->join('Nuc',"fk_client","=","Client.id")
             ->where("month_flag","<","7")
             ->groupBy("name")
@@ -262,7 +262,7 @@ class FstMonthComissionController extends Controller
             $clientNames = $clientNames.$client->name."<br>";
             // dd($clientNames);
         }
-        if(intval($month) == 0)
+        if(intval($month) == 1)
             $monthless = 12;
         else
             $monthless = intval($month) - 1;
