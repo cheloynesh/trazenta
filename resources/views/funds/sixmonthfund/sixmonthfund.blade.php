@@ -72,7 +72,7 @@
                                 <td>
                                     @if ($perm_btn['modify']==1)
                                         <a href="#|" class="btn btn-primary" onclick="nuevoMovimiento({{$nuc->id}})" >Movimientos</a>
-                                        {{-- <a href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" >Editar</a> --}}
+                                        <a href="#|" class="btn btn-danger" onclick="eliminarNuc({{$nuc->id}})" ><i class="fa fa-trash"></i></a>
                                         {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
                                     @endif
                                 </td>

@@ -35,6 +35,22 @@ Route::post('admin/pruebas/prueba/import','PruebasController@import');
 Route::resource('admin/users/user', 'UsersController');
 Route::get('admin/users/user/GetInfo/{id}','UsersController@GetInfo')->name('user.GetInfo');
 
+//Tipo de solicitud
+Route::resource('admin/applications/application', 'ApplicationsController');
+Route::get('admin/applications/application/GetInfo/{id}','ApplicationsController@GetInfo')->name('application.GetInfo');
+
+// Formas de pago
+Route::resource('admin/payment_forms/payment_form', 'PaymentFormsController');
+Route::get('admin/payment_forms/payment_form/GetInfo/{id}','PaymentFormsController@GetInfo')->name('payment_form.GetInfo');
+
+// aseguradoras
+Route::resource('admin/insurance/insurances', 'InsuranceController');
+Route::get('admin/insurance/insurances/GetInfo/{id}','InsuranceController@GetInfo')->name('insurance.GetInfo');
+
+// moneda
+Route::resource('admin/currency/currencies', 'CurrencyController');
+Route::get('admin/currency/currencies/GetInfo/{id}','CurrencyController@GetInfo')->name('currencies.GetInfo');
+
 // clientes
 Route::resource('admin/client/client', 'ClientsController');
 Route::get('admin/client/client/GetInfo/{id}','ClientsController@GetInfo')->name('client.GetInfo');
@@ -78,8 +94,9 @@ Route::post('funds/monthlycomission/monthcomission/GetInfoComition','MonthComiss
 Route::resource('funds/fstmonthcomission/fstmonthcomission', 'FstMonthComissionController');
 Route::get('funds/fstmonthcomission/fstmonthcomission/GetInfo/{id}','FstMonthComissionController@GetInfo')->name('fstmonthcomission.GetInfo');
 Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDF/{id}/{month}/{year}/{TC}/{regime}','FstMonthComissionController@ExportPDF');
-Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDFAll/{id}/{month}/{year}/{TC}/{regime}','FstMonthComissionController@ExportPDFAll');
+Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDFAll/{id}/{tc}','FstMonthComissionController@ExportPDFAll');
 Route::post('funds/fstmonthcomission/fstmonthcomission/GetInfoComition','FstMonthComissionController@GetInfoComition')->name('fstmonthcomission.GetInfoComition');
+Route::get('funds/fstmonthcomission/fstmonthcomission/GetInfoAugments/{id}','FstMonthComissionController@GetInfoAugments')->name('fstmonthcomission.GetInfoAugments');
 
 //---------------------------------------------------Fondo de 6 meses ----------------------------------------------------------
 Route::resource('funds/sixmonthfund/sixmonthfunds', 'SixMonthFundController');

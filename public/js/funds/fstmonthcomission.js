@@ -91,7 +91,7 @@ function abrirComision(id)
             flagComition = 1;
             table.clear();
             result.data.forEach( function(valor, indice, array) {
-                btn = '<button type="button" class="btn btn-success"'+'onclick="abrirResumen('+valor.idNuc+')"><i class="fas fa-calculator"></i></button>&nbsp;<button type="button" class="btn btn-success"'+'onclick="calcular('+valor.idNuc+')">Primer Pago</button>';
+                btn = '<button type="button" class="btn btn-success"'+'onclick="abrirIncrementos('+valor.idNuc+')">Incrementos</button>&nbsp;<button type="button" class="btn btn-success"'+'onclick="calcular('+valor.idNuc+')">Primer Pago</button>';
                 table.row.add([valor.nuc,valor.client_name,btn]).node().id = valor.idNuc;
             });
             table.draw(false);
@@ -144,24 +144,10 @@ function calcular(id)
     form.submit();
 }
 
-function calcularAll()
+function calcularAll(id)
 {
-    var TC = $("#change").val();
-    var date = $("#month").val();
-    var reg = $("#onoffRegime").prop('checked');
-    var regime = 0;
-
-    if(reg)
-        regime = 1;
-    else
-        regime = 0;
-
-    date = date.split("-");
-    var year = date[0];
-    var month = date[1];
-
-    var route = baseUrl + '/ExportPDFAll/'+ idUser + "/" + month + "/" + year + "/"+ TC + "/" + regime;
-
+    var route = baseUrl + '/ExportPDFAll/'+ id + '/' + $("#change").val();
+    alert(route);
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
     });
@@ -319,3 +305,45 @@ function updateRegime()
         })
     }
 }
+idincremento = 0;
+function abrirIncrementos(id)
+{
+    idincremento = id;
+    var table = $('#tbProfaug').DataTable();
+    var route = baseUrl + '/GetInfoAugments/'+ id;
+    var button = 'Autorizado';
+    var btnTrash;
+
+    table.clear();
+
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            table.clear();
+            result.data.forEach( function(valor, indice, array) {
+                if(valor.auth == "-")
+                {
+                    button = '<button href="#|" class="btn btn-primary" onclick="autorizarMovimiento('+valor.id+')" >Autorizar</button>';
+                }
+                else
+                {
+                    button = valor.auth;
+                }
+                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="calcularAll('+valor.id+')"><i class="fas fa-calculator"></i></button>';
+                table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
+                    valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
+            });
+            table.draw(false);
+        }
+    })
+    $("#myModalMoves").modal('show');
+}
+
+function cerrarIncrementos()
+{
+    $("#myModalMoves").modal('hide');
+}
+

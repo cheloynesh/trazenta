@@ -86,29 +86,10 @@ function nuevoMovimiento(id)
         success:function(result)
         {
             table.clear();
-            var amount = (parseInt(result.data.amount) * 0.1450)/6;
 
-            var fecha = result.data.initial_date.split("-");
-            var fechamas = fecha[0].toString() + "-" + fecha[1] + "-" + fecha[2];
-
-            table.row.add([1,fechamas,formatter.format(amount)]).node().id = 1;
-
-            for(var x = 0; x<11; x++)
-            {
-                fecha[1] = parseInt(fecha[1]) + 2;
-                if(fecha[1] > 12)
-                {
-                    fecha[1] = "0" + (fecha[1] - 12).toString();
-                    fecha[0] = parseInt(fecha[0]) + 1;
-                }
-                else if(parseInt(fecha[1]) < 10)
-                {
-                    fecha[1] = "0" + fecha[1].toString();
-                }
-                fechamas = fecha[0].toString() + "-" + fecha[1] + "-" + fecha[2];
-
-                table.row.add([x+2,fechamas,formatter.format(amount)]).node().id = x+2;
-            }
+            result.data.forEach( function(valor, indice, array) {
+                table.row.add([valor.number,valor.pay_date,formatter.format(valor.amount)]).node().id = valor.id;
+            });
 
             table.draw(false);
         }
@@ -118,4 +99,29 @@ function nuevoMovimiento(id)
 function cancelarMovimiento()
 {
     $("#myModal2").modal('hide');
+}
+function eliminarNuc(id)
+{
+    var route = "sixmonthfunds/"+id;
+    var data = {
+        'id':id,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+    };
+    alertify.confirm("Eliminar Contrato","¿Desea borrar el contrato?",
+        function(){
+            jQuery.ajax({
+                url:route,
+                data: data,
+                type:'delete',
+                dataType:'json',
+                success:function(result)
+                {
+                    window.location.reload(true);
+                }
+            })
+            alertify.success('Eliminado');
+        },
+        function(){
+            alertify.error('Cancelado');
+    });
 }

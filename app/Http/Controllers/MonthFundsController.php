@@ -266,7 +266,7 @@ class MonthFundsController extends Controller
             ->groupBy('fk_nuc')
             ->orderBy('apply_date', 'asc')
             ->where('type','=',"Apertura")
-            ->where('month_flag','<',7)
+            ->where('month_flag','<',8)
             ->whereNull('Nuc.deleted_at')->get();
 
         date_default_timezone_set('America/Mexico_City');
@@ -276,8 +276,8 @@ class MonthFundsController extends Controller
         {
             $date1 = new DateTime($nuc->apply_date);
             $diff = $date1->diff($date2);
-            if($diff->m >= 7 || $diff->y >= 1)
-                $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>7]);
+            if($diff->m >= 8 || $diff->y >= 1)
+                $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>8]);
             else
                 $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>$diff->m]);
         }

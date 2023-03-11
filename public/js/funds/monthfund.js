@@ -363,6 +363,7 @@ function actualizarNuc()
 }
 function excel_nuc(){
     var route = baseUrl + '/ExportFunds/'+idnuc;
+    // alert(route);
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
     });

@@ -129,6 +129,48 @@
             </div>
         </div>
         {{-- termina modal --}}
+        {{-- inicia modal --}}
+        <div id="myModalMoves" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Movimientos</h4>
+                        <button type="button" class="close" aria-label="Close" onclick="cerrarIncrementos()"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
+                                            <table class="table table-striped table-hover text-center" id="tbProfaug">
+                                                <thead>
+                                                    <th class="text-center">Fecha</th>
+                                                    <th class="text-center">Autorización</th>
+                                                    <th class="text-center">Saldo anterior</th>
+                                                    <th class="text-center">Saldo actual</th>
+                                                    <th class="text-center">Moneda</th>
+                                                    <th class="text-center">Monto</th>
+                                                    <th class="text-center">Tipo</th>
+                                                    <th class="text-center">Opciones</th>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick="cerrarIncrementos()">Cancelar</button>
+                        {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- fin modal --}}
         {{-- Inicia pantalla de inicio --}}
         <br><br>
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">

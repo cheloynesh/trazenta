@@ -9,6 +9,8 @@ use App\Permission;
 use App\MonthFund;
 use App\Nuc;
 use App\Status;
+use App\Coupon;
+use App\SixMonth_fund;
 use App\Exports\ExportFund;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\MovesImport;
@@ -22,6 +24,7 @@ class SixMonthFundController extends Controller
         $nucs = DB::table('SixMonth_fund')
         ->select('*',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),'nuc','SixMonth_fund.id as id')
         ->join('Client',"Client.id","=","fk_client")
+        ->whereNull('SixMonth_fund.deleted_at')
         ->get();
         $clients = DB::table('Nuc')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
         ->join('Client',"Client.id","=","Nuc.fk_client")
@@ -43,7 +46,13 @@ class SixMonthFundController extends Controller
     }
     public function GetInfo($id)
     {
-        $nuc = DB::table('SixMonth_fund')->select("*")->where('id',$id)->whereNull('deleted_at')->first();
+        $nuc = Coupon::where('fk_nuc',$id)->whereNull('deleted_at')->get();
         return response()->json(['status'=>true, "data"=>$nuc]);
+    }
+    public function destroy($id)
+    {
+        $SixMonth_fund = SixMonth_fund::find($id);
+        $SixMonth_fund->delete();
+        return response()->json(['status'=>true, "message"=>"Fondo eliminado"]);
     }
 }
