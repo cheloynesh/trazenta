@@ -1,4 +1,7 @@
 @extends('home')
+<head>
+    <title>Usuarios | Trazenta</title>
+</head>
 @section('content')
     <div class="text-center"><h1>Catálogo de Usuarios</h1></div>
     <div style="max-width: 1200px; margin: auto;">

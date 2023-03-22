@@ -1,4 +1,7 @@
 @extends('home')
+<head>
+    <title>Asignaciones | Trazenta</title>
+</head>
 @section('content')
     <div class="text-center"><h1>Asignaciones</h1></div>
     <br><br>

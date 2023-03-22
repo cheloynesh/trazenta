@@ -1,4 +1,7 @@
 @extends('home')
+<head>
+    <title>Perfiles | Trazenta</title>
+</head>
 {{-- @section('title','Perfiles') --}}
 @section('content')
     <div class="text-center"><h1>Catálogo de Perfiles</h1></div>

@@ -1,8 +1,11 @@
 @extends('home')
+<head>
+    <title>Fondo CP | Trazenta</title>
+</head>
 {{-- @section('title','Perfiles') --}}
 @section('content')
     <div class="text-center"><h1>Fondo Mensual</h1></div>
-    <div style="max-width: 1200px; margin: auto;">
+    <div style="max-width: 100%; margin: auto;">
         {{-- inicia modal --}}
         <div id="myModal2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl" role="document">
@@ -228,7 +231,7 @@
             </div>
         </div>
         <br>
-        <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
+        <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
             <table class="table table-striped table-hover text-center" id="tbProf">
                 <thead>
                     <th class="text-center">Nombre</th>

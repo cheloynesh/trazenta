@@ -1,7 +1,7 @@
 @extends('home')
 {{-- @section('title','Perfiles') --}}
 @section('content')
-    <div class="text-center"><h1>Generar Comisiones del Fondo Mensual</h1></div>
+    <div class="text-center"><h1>Generar Comisiones del Fondo de Corto Plazo</h1></div>
     <div style="max-width: 1200px; margin: auto;">
         {{-- inicia modal --}}
         <div id="myModal2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">

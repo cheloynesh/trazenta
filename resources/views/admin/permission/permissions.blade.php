@@ -1,4 +1,7 @@
 @extends('home')
+<head>
+    <title>Permisos | Trazenta</title>
+</head>
 @section('content')
 
 <div class="panel panel-primary">
