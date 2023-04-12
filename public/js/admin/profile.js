@@ -53,11 +53,11 @@ function guardarperfil(permisos)
             $("[data-dismiss=modal]").trigger({ type: "click" });
             // for(var x = 0; x < result.data.lenght; x++)
             // {
-            //     table.row.add([result.data.name,'<a href="#|" class="btn btn-warning" onclick="editarperfil('+result.data.id+')" >Editar</a>']).node().id = result.data.id;
+            //     table.row.add([result.data.name,'<button href="#|" class="btn btn-warning" onclick="editarperfil('+result.data.id+')" ><i class="fa-solid fa-pen-to-square"></i></button>']).node().id = result.data.id;
             // }
             // table.draw(false);
             result.data.forEach( function(valor, indice, array) {
-                table.row.add([valor.name,'<button href="#|" class="btn btn-warning" onclick="editarperfil('+valor.id+')" >Editar</button>&nbsp<button href="#|" class="btn btn-danger" onclick="eliminarperfil('+valor.id+')">Eliminar</button>']).node().id = valor.id;
+                table.row.add([valor.name,'<button href="#|" class="btn btn-warning" onclick="editarperfil('+valor.id+')" ><i class="fa-solid fa-pen-to-square"></i></button>&nbsp<button href="#|" class="btn btn-danger" onclick="eliminarperfil('+valor.id+')"><i class="fa-solid fa-trash"></i></button>']).node().id = valor.id;
             });
             table.draw(false);
             // window.location.reload(true);

@@ -75,7 +75,7 @@ function assignment(id)
             table.clear();
             result.data.forEach(function(valor, indice, array){
                 button = '<button type="button" class="btn btn-danger"'+
-                'onclick="delete_code_edit('+ valor.id +')"><i class="fa fa-trash mr-2"></i></button>';
+                'onclick="delete_code_edit('+ valor.id +')"><i class="fa-solid fa-trash"></i></button>';
                 table.row.add([valor.id, valor.name + " " + valor.firstname + " " + valor.lastname, button]).node().id=valor.id;
             })
             table.draw(false);

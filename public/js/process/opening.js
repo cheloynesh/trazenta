@@ -1,7 +1,6 @@
 var ruta = window.location;
 var getUrl = window.location;
 var baseUrl = getUrl .protocol + "//" + getUrl.host + getUrl.pathname;
-
 $(document).ready(function () {
     var table = $('#example').DataTable({
         language : {
@@ -29,7 +28,7 @@ $(document).ready(function () {
             }
         },
         "columnDefs": [{
-            "targets": [4,5,6,7],
+            "targets": [6,7,8],
             "visible": false
             // "searchable": false
         }]
@@ -47,54 +46,3 @@ $(document).ready(function () {
         column.visible(!column.visible());
     });
 });
-
-function changeRe(id)
-{
-    // $("#1re").css("background","#129c00");
-    // $("#1re").css("border","#129c00");
-    $("#myModal").modal('show');
-}
-function changeRe2(id)
-{
-    // $("#1re").css("background","#129c00");
-    // $("#1re").css("border","#129c00");
-    $("#myModal2").modal('show');
-}
-
-function showDate()
-{
-    var divDate = document.getElementById("divDate");
-
-    if ($("#selectStatus").val() == 3)
-    {
-        divDate.style.display = "";
-    }
-    else
-    {
-        divDate.style.display = "none";
-    }
-}
-
-function save()
-{
-    btn = document.getElementById("1re");
-    if($("#selectStatus").val() == 1)
-    {
-        btn.innerText = "SI";
-        $("#1re").css("background","#c9bd0e");
-        $("#1re").css("border","#c9bd0e");
-    }
-    else if($("#selectStatus").val() == 2)
-    {
-        btn.innerText = "PENDIENTE";
-        $("#1re").css("background","#fc1303");
-        $("#1re").css("border","#fc1303");
-    }
-    else
-    {
-        btn.innerText = $("#auth").val();
-        $("#1re").css("background","#129c00");
-        $("#1re").css("border","#129c00");
-    }
-    $("#myModal").modal('hide');
-}

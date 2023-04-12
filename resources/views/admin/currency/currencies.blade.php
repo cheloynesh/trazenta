@@ -39,7 +39,7 @@
         {{-- Inicia pantalla de inicio --}}
         <div class="bd-example bd-example-padded-bottom">
             @if ($perm_btn['addition']==1)
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Nuevo</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"><i class="fas fa-plus"></i></button>
             @endif
         </div>
         <br><br>
@@ -59,10 +59,10 @@
                             @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                                 <td>
                                     @if ($perm_btn['modify']==1)
-                                        <button href="#|" class="btn btn-warning" onclick="editarMoneda({{$application->id}})" ><i class="fa fa-edit"></i></button>
+                                        <button href="#|" class="btn btn-warning" onclick="editarMoneda({{$application->id}})" ><i class="fa-solid fa-pen-to-square"></i></button>
                                     @endif
                                     @if ($perm_btn['erase']==1)
-                                        <button href="#|" class="btn btn-danger" onclick="eliminarMoneda({{$application->id}})"><i class="fa fa-trash"></i></button>
+                                        <button href="#|" class="btn btn-danger" onclick="eliminarMoneda({{$application->id}})"><i class="fa-solid fa-trash"></i></button>
                                     @endif
                                 </td>
                             @endif

@@ -62,6 +62,34 @@ $(document).ready( function () {
         iDisplayLength: -1
     });
 } );
+$(document).ready( function () {
+    $('#tbnotFnd').DataTable({
+        language : {
+            "sProcessing":     "Procesando...",
+            "sLengthMenu":     "Mostrar _MENU_ registros",
+            "sZeroRecords":    "No se encontraron resultados",
+            "sEmptyTable":     "Ningún dato disponible en esta tabla",
+            "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+            "sInfoPostFix":    "",
+            "sSearch":         "Buscar:",
+            "sUrl":            "",
+            "sInfoThousands":  ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
+            },
+            "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        }
+    });
+} );
 
 var formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -103,7 +131,7 @@ function nuevoMovimiento(id)
                 {
                     button = valor.auth;
                 }
-                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa fa-trash"></i></button>';
+                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa-solid fa-trash"></i></button>';
                 table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
                     valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
             });
@@ -203,7 +231,7 @@ function guardarMovimiento()
                         {
                             button = valor.auth;
                         }
-                        btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa fa-trash"></i></button>';
+                        btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa-solid fa-trash"></i></button>';
                         table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
                             valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
                     });
@@ -304,7 +332,7 @@ function guardarAuth()
                 {
                     button = valor.auth;
                 }
-                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa fa-trash"></i></button>';
+                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa-solid fa-trash"></i></button>';
                 table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
                     valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
             });
@@ -417,7 +445,7 @@ function deleteMove(id)
                         {
                             button = valor.auth;
                         }
-                        btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa fa-trash"></i></button>';
+                        btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa-solid fa-trash"></i></button>';
                         table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
                             valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
                     });
@@ -431,6 +459,12 @@ function deleteMove(id)
 }
 function importexc()
 {
+    var table = $('#tbnotFnd').DataTable();
+    var resultrow = document.getElementById("resultrow");
+    var waitrow = document.getElementById("waitrow");
+    document.getElementById("closeBtn").hidden = true;
+    waitrow.style.display = "";
+    resultrow.style.display = "none";
     $("#waitModal").modal('show');
     var formData = new FormData();
     var files = $('input[type=file]');
@@ -467,8 +501,19 @@ function importexc()
             alertify.success(result.message);
             console.log(result);
             notFnd = result.notFnd.filter((item,index)=>{return result.notFnd.indexOf(item) === index;})
-            alert("Movimientos importados: " + result.importados + "\nDatos repetidos: " + result.repetidos + "\nNucs no encontrados: " + notFnd.length + "\n" + notFnd.join("\n"));
-            $("#waitModal").modal('hide');
+            $("#importados").val(result.importados);
+            $("#repetidos").val(result.repetidos);
+            $("#notFnd").val(notFnd.length);
+            table.clear();
+            notFnd.forEach( function(valor, indice, array) {
+                table.row.add([valor]).node().id = valor;
+            });
+            table.draw(false);
+            document.getElementById("closeBtn").hidden = false;
+            waitrow.style.display = "none";
+            resultrow.style.display = "";
+            // alert("Movimientos importados: " + result.importados + "\nDatos repetidos: " + result.repetidos + "\nNucs no encontrados: " + notFnd.length + "\n" + notFnd.join("\n"));
+            // $("#waitModal").modal('hide');
 
         },
         error:function(result,error,errorTrown)
@@ -502,4 +547,9 @@ function actualizarFondo()
             $("#waitModal").modal('hide');
         }
     })
+}
+
+function cerrarWait()
+{
+    $("#waitModal").modal('hide');
 }

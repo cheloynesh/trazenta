@@ -146,10 +146,10 @@
                                     <td>
                                         @if ($perm_btn['modify']==1)
                                             <a href="#|" class="btn btn-primary" onclick="assignment({{$user->id}})" >Asignar Cliente</a>
-                                            {{-- <a href="#|" class="btn btn-warning" onclick="editarCliente({{$client->id}})" >Editar</a> --}}
+                                            {{-- <button href="#|" class="btn btn-warning" onclick="editarCliente({{$client->id}})" ><i class="fa-solid fa-pen-to-square"></i></button> --}}
                                         @endif
                                         @if ($perm_btn['erase']==1)
-                                            {{-- <a href="#|" class="btn btn-danger" onclick="eliminarCliente({{$client->id}})">Eliminar</a> --}}
+                                            {{-- <button href="#|" class="btn btn-danger" onclick="eliminarCliente({{$client->id}})"><i class="fa-solid fa-trash"></i></button> --}}
                                         @endif
                                     </td>
                                 @endif

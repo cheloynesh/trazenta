@@ -95,7 +95,7 @@ function actualizarTablaBranch(result)
     table.clear();
 
     result.assigned.forEach( function(valor, indice, array) {
-        btnTrash = '<button type="button" class="btn btn-primary"'+'onclick="assignPlan('+valor.id+')">Asignar Planes</button> <button type="button" class="btn btn-danger"'+'onclick="deleteBranchAssign('+valor.id+')"><i class="fa fa-trash"></i></button>';
+        btnTrash = '<button type="button" class="btn btn-primary"'+'onclick="assignPlan('+valor.id+')">Asignar Planes</button> <button type="button" class="btn btn-danger"'+'onclick="deleteBranchAssign('+valor.id+')"><i class="fa-solid fa-trash"></i></button>';
         table.row.add([valor.name,btnTrash]).node().id = valor.id;
     });
 
@@ -116,7 +116,7 @@ function actualizarTablaPlans(result)
     table.clear();
 
     result.assigned.forEach( function(valor, indice, array) {
-        btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deletePlansAssign('+valor.id+')"><i class="fa fa-trash"></i></button>';
+        btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deletePlansAssign('+valor.id+')"><i class="fa-solid fa-trash"></i></button>';
         table.row.add([valor.name,btnTrash]).node().id = valor.id;
     });
 

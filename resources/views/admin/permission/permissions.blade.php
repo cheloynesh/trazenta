@@ -45,8 +45,8 @@
                             <th class="text-center">Modulo</th>
                             <th class="text-center">Ver</th>
                             <th class="text-center">Agregar</th>
-                            <th class="text-center">Editar</th>
-                            <th class="text-center">Eliminar</th>
+                            <th class="text-center"><i class="fa-solid fa-pen-to-square"></i></th>
+                            <th class="text-center"><i class="fa-solid fa-trash"></i></th>
                             </thead>
                             <tbody>
                             @foreach($hijos as $hijo )

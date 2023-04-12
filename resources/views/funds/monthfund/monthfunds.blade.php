@@ -176,7 +176,7 @@
                     <div class="modal-body">
                         <div class="container-fluid bd-example-row">
                             <div class="col-md-12">
-                                <div class="row">
+                                <div class="row" id="waitrow">
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <img src="{{ URL::asset('img/SpinnerLittle.gif') }}">
@@ -184,10 +184,46 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div id="resultrow" style="display: none">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Movimientos Importados</label>
+                                                <input disabled type="text" id="importados" name="importados" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Movimientos Repetidos</label>
+                                                <input disabled type="text" id="repetidos" name="repetidos" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Nucs no Encontrados</label>
+                                                <input disabled type="text" id="notFnd" name="notFnd" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <table class="table table-striped table-hover text-center" id="tbnotFnd">
+                                                    <thead>
+                                                        <th class="text-center">NUC</th>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <button type="button" id="closeBtn" hidden onclick="cerrarWait()" class="btn btn-secundary" data-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
             </div>
@@ -254,7 +290,7 @@
                                 <td>
                                     @if ($perm_btn['modify']==1)
                                         <a href="#|" class="btn btn-primary" onclick="nuevoMovimiento({{$nuc->id}})" >Movimientos</a>
-                                        <a href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" >Editar</a>
+                                        <button href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" ><i class="fa-solid fa-pen-to-square"></i></button>
                                         {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
                                     @endif
                                 </td>

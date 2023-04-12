@@ -123,7 +123,7 @@
                                 <td>
                                     @if ($perm_btn['modify']==1)
                                         <a href="#|" class="btn btn-primary" onclick="nuevoMovimiento({{$nuc->id}})" >Cuponera</a>
-                                        <a href="#|" class="btn btn-danger" onclick="eliminarNuc({{$nuc->id}})" ><i class="fa fa-trash"></i></a>
+                                        <button href="#|" class="btn btn-danger" onclick="eliminarNuc({{$nuc->id}})" ><i class="fa-solid fa-trash"></i></button>
                                         {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
                                     @endif
                                 </td>

@@ -1,6 +1,6 @@
 @extends('home')
 <head>
-    <title>Comisiones CP | Trazenta</title>
+    <title>Primera Comision CP | Trazenta</title>
 </head>
 {{-- @section('title','Perfiles') --}}
 @section('content')

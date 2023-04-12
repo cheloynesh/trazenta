@@ -3,7 +3,7 @@
     <title>Compañías | Trazenta</title>
 </head>
 @section('content')
-    <div class="text-center"><h1>Catálogo de Aseguradoras</h1></div>
+    <div class="text-center"><h1>Catálogo de Compañías</h1></div>
     <div style="max-width: 1200px; margin: auto;">
         {{-- modal nueva aseguradora --}}
         <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
@@ -11,7 +11,7 @@
                 <div class="modal-content">
 
                     <div class="modal-header">
-                        <h4 class="modal-title" id="gridModalLabek">Registro de Aseguradoras</h4>
+                        <h4 class="modal-title" id="gridModalLabek">Registro de Compañías</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
 
@@ -216,7 +216,7 @@
         {{-- Inicia pantalla de inicio --}}
         <div class="bd-example bd-example-padded-bottom">
             @if ($perm_btn['addition']==1)
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Nuevo</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"><i class="fas fa-plus"></i></button>
             @endif
         </div>
         <br><br>
@@ -237,10 +237,10 @@
                                 <td>
                                     @if ($perm_btn['modify']==1)
                                         <a href="#|" class="btn btn-primary" onclick="abrirBranches({{$insurance->id}})" >Asignar Ramo</a>
-                                        <button href="#|" class="btn btn-warning" onclick="editarAseguradora({{$insurance->id}})" ><i class="fa fa-edit"></i></button>
+                                        <button href="#|" class="btn btn-warning" onclick="editarAseguradora({{$insurance->id}})" ><i class="fa-solid fa-pen-to-square"></i></button>
                                     @endif
                                     @if ($perm_btn['erase']==1)
-                                        <button href="#|" class="btn btn-danger" onclick="eliminarAseguradora({{$insurance->id}})"><i class="fa fa-trash"></i></button>
+                                        <button href="#|" class="btn btn-danger" onclick="eliminarAseguradora({{$insurance->id}})"><i class="fa-solid fa-trash"></i></button>
                                     @endif
                                 </td>
                             @endif

@@ -90,7 +90,7 @@ Route::get('funds/monthlycomission/monthcomission/GetInfo/{id}','MonthComissionC
 Route::get('funds/monthlycomission/monthcomission/ExportPDF/{id}/{month}/{year}/{TC}/{regime}','MonthComissionController@ExportPDF');
 Route::post('funds/monthlycomission/monthcomission/GetInfoComition','MonthComissionController@GetInfoComition')->name('monthcomission.GetInfoComition');
 
-//---------------------------------------------------Comisiones 6 meses fondo mensual--------------------------------------------
+//---------------------------------------------------Primera comision fondo mensual--------------------------------------------
 Route::resource('funds/fstmonthcomission/fstmonthcomission', 'FstMonthComissionController');
 Route::get('funds/fstmonthcomission/fstmonthcomission/GetInfo/{id}','FstMonthComissionController@GetInfo')->name('fstmonthcomission.GetInfo');
 Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDF/{id}/{month}/{year}/{TC}/{regime}','FstMonthComissionController@ExportPDF');
@@ -103,4 +103,12 @@ Route::resource('funds/sixmonthfund/sixmonthfunds', 'SixMonthFundController');
 Route::get('funds/sixmonthfund/sixmonthfunds/GetInfo/{id}','SixMonthFundController@GetInfo')->name('sixmonthfunds.GetInfo');
 Route::post('funds/sixmonthfund/sixmonthfunds/import','SixMonthFundController@import');
 
+//---------------------------------------------------Comisiones fondo 6 meses--------------------------------------------
+Route::resource('funds/sixmonthlycomission/sixmonthcomission', 'SixMonthComissionController');
+Route::get('funds/sixmonthlycomission/sixmonthcomission/GetInfo/{id}','SixMonthComissionController@GetInfo')->name('sixmonthcomission.GetInfo');
+Route::get('funds/sixmonthlycomission/sixmonthcomission/ExportPDF/{id}/{month}/{year}/{TC}/{regime}','SixMonthComissionController@ExportPDF');
+Route::post('funds/sixmonthlycomission/sixmonthcomission/GetInfoComition','SixMonthComissionController@GetInfoComition')->name('sixmonthcomission.GetInfoComition');
+Route::post('funds/sixmonthlycomission/sixmonthcomission/SetPayment','SixMonthComissionController@SetPayment')->name('sixmonthcomission.SetPayment');
 
+// --------------------------------------------------------Aperturas----------------------------------------------------------
+Route::resource('process/opening/opening', 'OpeningController');

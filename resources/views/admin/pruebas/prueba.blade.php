@@ -20,7 +20,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="">Estatus:</label>
+                                            <label for="">Recogido:</label>
                                             <select name="selectStatus" id="selectStatus" class="form-select" onchange="showDate()">
                                                 <option hidden selected value="0">Selecciona una opción</option>
                                                 <option value="1">SI</option>
@@ -34,6 +34,117 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="">Fecha</label>
+                                            <input type="date" id="auth" name="auth" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Entregado a Agente:</label>
+                                            <select name="selectStatus2" id="selectStatus2" class="form-select" onchange="showDate()">
+                                                <option hidden selected value="0">Selecciona una opción</option>
+                                                <option value="1">SI</option>
+                                                <option value="2">PENDIENTE</option>
+                                                <option value="3">FECHA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="divDate">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Fecha</label>
+                                            <input type="date" id="auth" name="auth" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Oficina:</label>
+                                            <select name="selectStatus3" id="selectStatus3" class="form-select" onchange="showDate()">
+                                                <option hidden selected value="0">Selecciona una opción</option>
+                                                <option value="1">SI</option>
+                                                <option value="2">PENDIENTE</option>
+                                                <option value="3">FECHA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="divDate">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Fecha</label>
+                                            <input type="date" id="auth" name="auth" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Entregado a Finestra:</label>
+                                            <select name="selectStatus4" id="selectStatus4" class="form-select" onchange="showDate()">
+                                                <option hidden selected value="0">Selecciona una opción</option>
+                                                <option value="1">SI</option>
+                                                <option value="2">PENDIENTE</option>
+                                                <option value="3">FECHA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="divDate">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Fecha</label>
+                                            <input type="date" id="auth" name="auth" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
+                        <button type="button" onclick="save()" class="btn btn-primary">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- fin modal| --}}
+        {{-- modal| --}}
+        <div id="myModal2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Estatus</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-md-12">
+                                <div class="row" id="divDate">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Pendiente de entrega</label>
+                                            <input type="date" id="auth" name="auth" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="divDate">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Entregado</label>
+                                            <input type="date" id="auth" name="auth" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="divDate">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Recibido</label>
                                             <input type="date" id="auth" name="auth" class="form-control">
                                         </div>
                                     </div>
@@ -67,7 +178,7 @@
                         <th>Cliente</th>
                         <th>Fondo</th>
                         <th>Estatus</th>
-                        <th>Recogido</th>
+                        <th>Interno</th>
                         <th>Entregado a agente</th>
                         <th>Oficina</th>
                         <th>Entregado a finestra</th>
@@ -79,7 +190,7 @@
                         <td>Aida Elena Guerrero Tapia</td>
                         <td>Corto Plazo</td>
                         <td>
-                            <button id="1es" class="btn btn-info" style="background-color: #129c00; border-color: #129c00" onclick="">ENTREGADO</button>
+                            <button id="1es" class="btn btn-info" style="background-color: #129c00; border-color: #129c00" onclick="changeRe2('1re')">ENTREGADO</button>
                         </td>
                         <td>
                             <button id="1re" class="btn btn-info" style="background-color: #c9bd0e; border-color: #c9bd0e" onclick="changeRe('1re')">SI</button>
@@ -122,8 +233,8 @@
                 <tr id="{{$profile->id}}">
                     <td>{{$profile->name}}</td>
                     <td>
-                        <a href="#|" class="btn btn-warning" onclick="editarperfil({{$profile->id}})" >Editar</a>
-                        <a href="#|" class="btn btn-danger" onclick="eliminarperfil({{$profile->id}})">Eliminar</a>
+                        <button href="#|" class="btn btn-warning" onclick="editarperfil({{$profile->id}})" ><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button href="#|" class="btn btn-danger" onclick="eliminarperfil({{$profile->id}})"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 </tr>
             @endforeach

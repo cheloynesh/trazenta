@@ -1,4 +1,7 @@
 @extends('home')
+<head>
+    <title>Comisiones CP | Trazenta</title>
+</head>
 {{-- @section('title','Perfiles') --}}
 @section('content')
     <div class="text-center"><h1>Generar Comisiones del Fondo de Corto Plazo</h1></div>
