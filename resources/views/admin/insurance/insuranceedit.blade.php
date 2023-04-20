@@ -11,10 +11,22 @@
                 <div class="container-fluid bd-example-row">
                     <div class="col-md-12">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="">Nombre</label>
                                     <input type="text" id="name1" name="name1" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="">Tipo de fondo:</label>
+                                    <select name="selectType" id="selectType1" class="form-select">
+                                        <option selected hidden value="">Selecciona una opción</option>
+                                        <option value="LP">Largo plazo</option>
+                                        <option value="CP">Corto plazo</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>

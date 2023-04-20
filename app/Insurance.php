@@ -10,6 +10,6 @@ class Insurance extends Model
     use SoftDeletes;
 
     protected $table = "Insurance";
-    protected $fillable =["name"];
+    protected $fillable =["name","fund_type"];
     protected $dates = ["deleted_at"];
 }

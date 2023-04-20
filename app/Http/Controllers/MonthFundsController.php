@@ -21,12 +21,6 @@ class MonthFundsController extends Controller
 {
     public function index(){
         $profile = User::findProfile();
-        $nucs = DB::table('Nuc')
-        ->select('Nuc.id as id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),"nuc",'Status.id as statId','Status.name as estatus','color')
-        ->join('Client',"Client.id","=","Nuc.fk_client")
-        ->join('Status',"Nuc.estatus","=","Status.id")
-        ->whereNull('Client.deleted_at')
-        ->get();
         $clients = DB::table('Nuc')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
         ->join('Client',"Client.id","=","Nuc.fk_client")
         ->whereNull('Client.deleted_at')
@@ -36,6 +30,28 @@ class MonthFundsController extends Controller
         $cmbStatus = Status::select('id','name')
         ->where("fk_section","19")
         ->pluck('name','id');
+        $user = User::user_id();
+
+        if($profile == 12)
+        {
+            $nucs = DB::table('Nuc')
+                ->select('Nuc.id as id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),"nuc",'Status.id as statId','Status.name as estatus','color')
+                ->join('Client',"Client.id","=","Nuc.fk_client")
+                ->join('Status',"Nuc.estatus","=","Status.id")
+                ->where('fk_agent',$user)
+                ->whereNull('Client.deleted_at')
+                ->get();
+        }
+        else
+        {
+            $nucs = DB::table('Nuc')
+                ->select('Nuc.id as id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),"nuc",'Status.id as statId','Status.name as estatus','color')
+                ->join('Client',"Client.id","=","Nuc.fk_client")
+                ->join('Status',"Nuc.estatus","=","Status.id")
+                ->whereNull('Client.deleted_at')
+                ->get();
+        }
+
         // dd($clients);
         if($perm==0)
         {

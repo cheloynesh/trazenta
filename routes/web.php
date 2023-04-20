@@ -112,3 +112,6 @@ Route::post('funds/sixmonthlycomission/sixmonthcomission/SetPayment','SixMonthCo
 
 // --------------------------------------------------------Aperturas----------------------------------------------------------
 Route::resource('process/opening/opening', 'OpeningController');
+Route::get('process/opening/opening/GetInfo/{id}','OpeningController@GetInfo')->name('opening.GetInfo');
+Route::get('process/opening/opening/GetinfoStatus/{id}','OpeningController@GetinfoStatus')->name('opening.GetinfoStatus');
+Route::post('process/opening/opening/updateStatus', 'OpeningController@updateStatus')->name('opening.updateStatus');

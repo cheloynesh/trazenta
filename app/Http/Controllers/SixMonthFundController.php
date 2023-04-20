@@ -22,17 +22,7 @@ class SixMonthFundController extends Controller
 {
     public function index(){
         $profile = User::findProfile();
-        $nucs = DB::table('SixMonth_fund')
-        ->select('*',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),'nuc','SixMonth_fund.id as id')
-        ->join('Client',"Client.id","=","fk_client")
-        ->whereNull('SixMonth_fund.deleted_at')
-        ->get();
         $cont = 0;
-        foreach($nucs as $nuc)
-        {
-            $nucs[$cont]->amount = '$' . number_format($nuc->amount, 2);
-            $cont++;
-        }
         $clients = DB::table('Nuc')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
         ->join('Client',"Client.id","=","Nuc.fk_client")
         ->pluck('name','id');
@@ -41,6 +31,25 @@ class SixMonthFundController extends Controller
         $cmbStatus = Status::select('id','name')
         ->where("fk_section","23")
         ->pluck('name','id');
+        $user = User::user_id();
+
+        if($profile == 12)
+        {
+            $nucs = DB::table('SixMonth_fund')
+                ->select('*',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),'nuc','SixMonth_fund.id as id',DB::raw('CONCAT("$", FORMAT(amount, 2)) AS amount'))
+                ->join('Client',"Client.id","=","fk_client")
+                ->where('fk_agent',$user)
+                ->whereNull('SixMonth_fund.deleted_at')
+                ->get();
+        }
+        else
+        {
+            $nucs = DB::table('SixMonth_fund')
+                ->select('*',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),'nuc','SixMonth_fund.id as id',DB::raw('CONCAT("$", FORMAT(amount, 2)) AS amount'))
+                ->join('Client',"Client.id","=","fk_client")
+                ->whereNull('SixMonth_fund.deleted_at')
+                ->get();
+        }
         // dd($clients);
         if($perm==0)
         {

@@ -77,20 +77,22 @@
     @include('funds.status.status')
         {{-- Inicia pantalla de inicio --}}
         <br>
-        <div class="col-lg-12">
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class = "form-group">
-                        <input type="file" name="excl" id="excl" accept=".xlsx, .xls, .csv" class="form-control"/>
+        @if ($perm_btn['addition']==1)
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class = "form-group">
+                            <input type="file" name="excl" id="excl" accept=".xlsx, .xls, .csv" class="form-control"/>
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class = "form-group">
-                        <button class="btn btn-primary" onclick="importexc()">Importar Excel</button>
+                    <div class="col-lg-6">
+                        <div class = "form-group">
+                            <button class="btn btn-primary" onclick="importexc()">Importar Excel</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
         <br>
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
             <table class="table table-striped table-hover text-center" id="tbProf">
@@ -102,9 +104,7 @@
                     <th class="text-center">Fecha de Inicio</th>
                     <th class="text-center">Fecha de Fin</th>
                     {{-- <th class="text-center">Estatus</th> --}}
-                    @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
-                        <th class="text-center">Opciones</th>
-                    @endif
+                    <th class="text-center">Opciones</th>
                 </thead>
 
                 <tbody>
@@ -119,15 +119,13 @@
                             {{-- <td>
                                 <button class="btn btn-info" style="background-color: #{{$nuc->color}}; border-color: #{{$nuc->color}}" onclick="opcionesEstatus({{$nuc->id}},{{$nuc->statId}})">{{$nuc->estatus}}</button>
                             </td> --}}
-                            @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
-                                <td>
-                                    @if ($perm_btn['modify']==1)
-                                        <a href="#|" class="btn btn-primary" onclick="nuevoMovimiento({{$nuc->id}})" >Cuponera</a>
-                                        <button href="#|" class="btn btn-danger" onclick="eliminarNuc({{$nuc->id}})" ><i class="fa-solid fa-trash"></i></button>
-                                        {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
-                                    @endif
-                                </td>
-                            @endif
+                            <td>
+                                <a href="#|" class="btn btn-primary" onclick="nuevoMovimiento({{$nuc->id}})" >Cuponera</a>
+                                @if ($perm_btn['modify']==1)
+                                    <button href="#|" class="btn btn-danger" onclick="eliminarNuc({{$nuc->id}})" ><i class="fa-solid fa-trash"></i></button>
+                                    {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

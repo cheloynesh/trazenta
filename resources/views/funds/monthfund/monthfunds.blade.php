@@ -20,43 +20,45 @@
                         <div class="container-fluid bd-example-row">
                             <div class="col-lg-12">
                                 {{-- <div class="row align-items-center"> --}}
-                                <div class="row align-items-end">
-                                    <div class="col-lg-3">
-                                        <div class="form-group">
-                                            <label for="">Monto</label>
-                                            <input type="text" id="amount" name="amount" placeholder="Ingresa el monto" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <div class="form-group">
+                                @if ($perm_btn['modify']==1)
+                                    <div class="row align-items-end">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
-                                                <label for="">Fecha de aplicación</label>
-                                                <input type="date" id="apply_date" name="apply_date" class="form-control" placeholder="Fecha de aplicación">
+                                                <label for="">Monto</label>
+                                                <input type="text" id="amount" name="amount" placeholder="Ingresa el monto" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label for="">Fecha de aplicación</label>
+                                                    <input type="date" id="apply_date" name="apply_date" class="form-control" placeholder="Fecha de aplicación">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label for="">Movimiento:</label>
+                                                <select name="selectType" id="selectType" class="form-select">
+                                                    <option hidden selected>Selecciona una opción</option>
+                                                    {{-- <option>Apertura</option>
+                                                    <option>Reinversion</option>
+                                                    <option>Abono</option>
+                                                    <option>Retiro parcial</option>
+                                                    <option>Retiro total</option>
+                                                    <option>Ajuste</option> --}}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <div class="d-grid gap-2 col-12 mx-auto">
+                                                    <button type="button" class="btn btn-primary" onclick="guardarMovimiento()">Aplicar</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3">
-                                        <div class="form-group">
-                                            <label for="">Movimiento:</label>
-                                            <select name="selectType" id="selectType" class="form-select">
-                                                <option hidden selected>Selecciona una opción</option>
-                                                {{-- <option>Apertura</option>
-                                                <option>Reinversion</option>
-                                                <option>Abono</option>
-                                                <option>Retiro parcial</option>
-                                                <option>Retiro total</option>
-                                                <option>Ajuste</option> --}}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <div class="form-group">
-                                            <div class="d-grid gap-2 col-12 mx-auto">
-                                                <button type="button" class="btn btn-primary" onclick="guardarMovimiento()">Aplicar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                @endif
                                 <br>
                                 <div class="row">
                                     <div class="col-lg-12">
@@ -70,7 +72,9 @@
                                                     <th class="text-center">Moneda</th>
                                                     <th class="text-center">Monto</th>
                                                     <th class="text-center">Tipo</th>
-                                                    <th class="text-center">Opciones</th>
+                                                    @if ($perm_btn['modify']==1)
+                                                        <th class="text-center">Opciones</th>
+                                                    @endif
                                                 </thead>
                                             </table>
                                         </div>
@@ -250,21 +254,23 @@
                     </div>
                 </div>
             </form> --}}
-            <div class="col-lg-12">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class = "form-group">
-                            <input type="file" name="excl" id="excl" accept=".xlsx, .xls, .csv" class="form-control"/>
+            @if ($perm_btn['addition']==1)
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class = "form-group">
+                                <input type="file" name="excl" id="excl" accept=".xlsx, .xls, .csv" class="form-control"/>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class = "form-group">
-                            <button class="btn btn-primary" onclick="importexc()">Importar Excel</button>
-                            <button class="btn btn-primary" onclick="actualizarFondo()">Actualizar</button>
+                        <div class="col-lg-6">
+                            <div class = "form-group">
+                                <button class="btn btn-primary" onclick="importexc()">Importar Excel</button>
+                                <button class="btn btn-primary" onclick="actualizarFondo()">Actualizar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            @endif
         </div>
         <br>
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
@@ -273,9 +279,7 @@
                     <th class="text-center">Nombre</th>
                     <th class="text-center">NUC</th>
                     <th class="text-center">Estatus</th>
-                    @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
-                        <th class="text-center">Opciones</th>
-                    @endif
+                    <th class="text-center">Opciones</th>
                 </thead>
 
                 <tbody>
@@ -286,15 +290,13 @@
                             <td>
                                 <button class="btn btn-info" style="background-color: #{{$nuc->color}}; border-color: #{{$nuc->color}}" onclick="opcionesEstatus({{$nuc->id}},{{$nuc->statId}})">{{$nuc->estatus}}</button>
                             </td>
-                            @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
-                                <td>
-                                    @if ($perm_btn['modify']==1)
-                                        <a href="#|" class="btn btn-primary" onclick="nuevoMovimiento({{$nuc->id}})" >Movimientos</a>
-                                        <button href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" ><i class="fa-solid fa-pen-to-square"></i></button>
-                                        {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
-                                    @endif
-                                </td>
-                            @endif
+                            <td>
+                                <a href="#|" class="btn btn-primary" onclick="nuevoMovimiento({{$nuc->id}})" >Movimientos</a>
+                                @if ($perm_btn['modify']==1)
+                                    <button href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" ><i class="fa-solid fa-pen-to-square"></i></button>
+                                    {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

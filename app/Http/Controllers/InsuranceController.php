@@ -37,20 +37,21 @@ class InsuranceController extends Controller
     {
         $insurance = new Insurance;
         $insurance->name = $request->name;
+        $insurance->fund_type = $request->fund_type;
         $insurance->save();
-        return response()->json(["status"=>true, "message"=>"Aseguradora creada"]);
+        return response()->json(["status"=>true, "message"=>"Fondo creado"]);
     }
 
     public function update(Request $request, $id)
     {
-        $insurance = Insurance::where('id',$request->id)->update(['name'=>$request->name]);
-        return response()->json(['status'=>true, 'message'=>"Aseguradora actualizada"]);
+        $insurance = Insurance::where('id',$request->id)->update(['name'=>$request->name,'fund_type'=>$request->fund_type]);
+        return response()->json(['status'=>true, 'message'=>"Fondo actualizado"]);
     }
 
     public function destroy($id)
     {
         $insurance = Insurance::find($id);
         $insurance->delete();
-        return response()->json(['status'=>true, "message"=>"Aseguradora eliminada"]);
+        return response()->json(['status'=>true, "message"=>"Fondo eliminado"]);
     }
 }
