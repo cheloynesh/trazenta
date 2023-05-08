@@ -147,7 +147,7 @@ function calcular(id)
 function calcularAll(id)
 {
     var route = baseUrl + '/ExportPDFAll/'+ id + '/' + $("#change").val();
-    alert(route);
+    // alert(route);
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
     });

@@ -9,7 +9,10 @@ use App\Client;
 use App\Permission;
 use App\MonthFund;
 use App\Nuc;
+use App\Insurance;
 use App\Status;
+use App\Paymentform;
+use App\Application;
 use App\Exports\ExportFund;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\MovesImport;
@@ -21,12 +24,14 @@ class MonthFundsController extends Controller
 {
     public function index(){
         $profile = User::findProfile();
-        $clients = DB::table('Nuc')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
-        ->join('Client',"Client.id","=","Nuc.fk_client")
+        $clients = DB::table('Client')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
         ->whereNull('Client.deleted_at')
-        ->pluck('name','id');
+        ->orderBy('name')->pluck('name','id');
         $perm = Permission::permView($profile,19);
         $perm_btn =Permission::permBtns($profile,19);
+        $paymentForms = Paymentform::pluck('name','id');
+        $applications = Application::pluck('name','id');
+        $insurances = Insurance::orderBy('name')->where('fund_type','CP')->get();
         $cmbStatus = Status::select('id','name')
         ->where("fk_section","19")
         ->pluck('name','id');
@@ -40,6 +45,7 @@ class MonthFundsController extends Controller
                 ->join('Status',"Nuc.estatus","=","Status.id")
                 ->where('fk_agent',$user)
                 ->whereNull('Client.deleted_at')
+                ->whereNull('Nuc.deleted_at')
                 ->get();
         }
         else
@@ -49,6 +55,7 @@ class MonthFundsController extends Controller
                 ->join('Client',"Client.id","=","Nuc.fk_client")
                 ->join('Status',"Nuc.estatus","=","Status.id")
                 ->whereNull('Client.deleted_at')
+                ->whereNull('Nuc.deleted_at')
                 ->get();
         }
 
@@ -59,7 +66,7 @@ class MonthFundsController extends Controller
         }
         else
         {
-            return view('funds.monthfund.monthfunds', compact('nucs','perm_btn','cmbStatus','clients'));
+            return view('funds.monthfund.monthfunds', compact('nucs','perm_btn','cmbStatus','clients','paymentForms','applications','insurances'));
         }
     }
     public function GetInfo($id)
@@ -140,7 +147,7 @@ class MonthFundsController extends Controller
     }
     public function update(Request $request, $id)
     {
-        $nuc = Nuc::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client]);
+        $nuc = Nuc::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_insurance'=>$request->fk_insurance]);
         return response()->json(['status'=>true, 'message'=>"Nuc Actualizado"]);
     }
     public function ExportFunds($id)
@@ -298,5 +305,11 @@ class MonthFundsController extends Controller
                 $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>$diff->m]);
         }
         return response()->json(['status'=>true, 'message'=>"Datos Actualizados"]);
+    }
+    public function deleteFund(Request $request)
+    {
+        $fund = Nuc::find($request->id);
+        $fund->delete();
+        return response()->json(['status'=>true, "message"=>"Fondo eliminado"]);
     }
 }

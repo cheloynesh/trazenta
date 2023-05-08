@@ -100,6 +100,7 @@
                 <thead>
                     <th class="text-center">Nombre</th>
                     <th class="text-center">Apellido</th>
+                    <th class="text-center">Correo</th>
                     @if ($perm_btn['erase']==1 || $perm_btn['modify']==1)
                         <th class="text-center">Opciones</th>
                     @endif
@@ -110,6 +111,7 @@
                         <tr id="{{$user->id}}">
                             <td>{{$user->name}}</td>
                             <td>{{$user->firstname}}</td>
+                            <td>{{$user->email}}</td>
                             @if ($perm_btn['erase']==1 || $perm_btn['modify']==1)
                                 <td>
                                     @if ($perm_btn['modify']==1)

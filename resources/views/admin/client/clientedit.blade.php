@@ -134,16 +134,22 @@
                         </div> --}}
 
                         <div class="row">
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <div class="form-group">
                                     <label for="">Celular</label>
                                     <input type="text" id="cellphone1" name="cellphone1" class="form-control" placeholder="Celular">
                                 </div>
                             </div>
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <div class="form-group">
                                     <label for="">Correo</label>
                                     <input type="text" id="email1" name="email1" class="form-control" placeholder="Correo">
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <label for="">Domicilio Fiscal</label>
+                                    <input type="text" id="address1" name="address1" class="form-control">
                                 </div>
                             </div>
                         </div>

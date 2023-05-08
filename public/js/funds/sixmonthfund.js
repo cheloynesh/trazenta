@@ -178,3 +178,72 @@ function importexc()
         }
     })
 }
+
+var editNuc = 0;
+
+function editarNuc(id)
+{
+    editNuc = id;
+    var route = baseUrl + '/GetNuc/'+id;
+    // alert(route);
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            $("#nucSixMonth").val(result.data.nuc);
+            $("#selectClient").val(result.data.fk_client);
+            $("#amountSixMonth").val(parseFloat(result.data.amount).toLocaleString('en-US'));
+            $("#selectCurrencySixMonth").val(result.data.currency);
+            $("#initial_date").val(result.data.deposit_date);
+            $("#selectAppliSixMonth").val(result.data.fk_application);
+            $("#selectPaymentformSixMonth").val(result.data.fk_payment_form);
+            $("#selectInsurance").val(result.data.fk_insurance);
+            $("#sixMonthNucModal").modal('show');
+        }
+    })
+}
+
+function cerrarNuc()
+{
+    $("#sixMonthNucModal").modal('hide');
+}
+
+function actualizarNuc()
+{
+    var selectCurrency = $("#selectCurrencySixMonth").val();
+    var nuc = $("#nucSixMonth").val();
+    var amount = $("#amountSixMonth").val().replace(/[^0-9.]/g, '');
+    var deposit_date = $("#initial_date").val();
+    var fk_application = $("#selectAppliSixMonth").val();
+    var fk_payment_form = $("#selectPaymentformSixMonth").val();
+    var fk_client = $("#selectClient").val();
+    var fk_insurance = $("#selectInsurance").val();
+
+    var route = "sixmonthfunds/"+editNuc;
+    var data = {
+        'id':editNuc,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'nuc':nuc,
+        'selectCurrency':selectCurrency,
+        'amount':amount,
+        'deposit_date':deposit_date,
+        'fk_client':fk_client,
+        'fk_application':fk_application,
+        'fk_payment_form':fk_payment_form,
+        'fk_insurance':fk_insurance,
+    };
+    jQuery.ajax({
+        url:route,
+        type:'put',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+            alertify.success(result.message);
+            $("#sixMonthNucModal").modal('hide');
+            window.location.reload(true);
+        }
+    })
+}

@@ -25,66 +25,88 @@
                             </div>
                         </div>
 
-                        <div class = "row" id = "fisicaInitial">
-                            <div class="col-md-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
                                 <div class="form-group">
-                                    <label for="">Nombre</label>
-                                    <input type="text" id="name1" name="name1" class="form-control" placeholder="Nombre">
+                                    <label for="">Cliente</label>
+                                    <input type="text" id="client_edit1" class="form-control" disabled placeholder="Cliente">
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="">Apellido paterno</label>
-                                    <input type="text" id="firstname1" name="firstname1" class="form-control" placeholder="Apellido">
+                            <div class="col-md-4">
+                                @if ($perm_btn['modify']==1)
+                                    <label for="">Cambiar Cliente</label>
+                                    <button type="button" class="btn btn-primary" onclick="buscarclientes(1)">Buscar</button>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div id = "fisica1" style = "display: none;">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Nombre</label>
+                                        <input type="text" id="name1" name="name1" class="form-control" placeholder="Nombre">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Apellido paterno</label>
+                                        <input type="text" id="firstname1" name="firstname1" class="form-control" placeholder="Apellido">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Apellido materno</label>
+                                        <input type="text" id="lastname1" name="lastname1" class="form-control" placeholder="Apellido">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="">Apellido materno</label>
-                                    <input type="text" id="lastname1" name="lastname1" class="form-control" placeholder="Apellido">
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Fecha de nacimiento</label>
+                                        <input type="date" id="birth_date1" name="birth_date1" class="form-control" placeholder="Fecha de nacimiento">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">RFC</label>
+                                        <input type="text" id="rfc1" name="rfc1" class="form-control" placeholder="RFC">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">CURP</label>
+                                        <input type="text" id="curp1" name="curp1" class="form-control" placeholder="CURP">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="">RFC</label>
-                                    <input type="text" id="rfc1" name="rfc1" class="form-control" placeholder="RFC">
+
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label for="">Celular</label>
+                                        <input type="text" id="cellphone1" name="cellphone1" class="form-control" placeholder="Celular">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label for="">Correo</label>
+                                        <input type="text" id="email1" name="email1" class="form-control" placeholder="Correo">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Domicilio Fiscal</label>
+                                        <input type="text" id="address1" name="address1" class="form-control">
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="">Compañía:</label>
-                                    <select name="selectInsurance1" id="selectInsurance1" class="form-select">
-                                        <option hidden selected value="">Selecciona una opción</option>
-                                        @foreach ($insurances as $id => $insurance)
-                                            <option value='{{ $id }}'>{{ $insurance }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="">Monto:</label>
-                                    <input type="text" id="amount1" name="amount1" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="">Moneda</label>
-                                    <select name="selectCurrency1" id="selectCurrency1" class="form-select">
-                                        <option hidden selected value="">Selecciona una opción</option>
-                                        @foreach ($currencies as $id => $currency)
-                                            <option value='{{ $id }}'>{{ $currency }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Tipo Solicitud:</label>
                                     <select name="selectAppli1" id="selectAppli1" class="form-select">
@@ -95,7 +117,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Forma de Pago:</label>
                                     <select name="selectPaymentform1" id="selectPaymentform1" class="form-select">
@@ -106,20 +128,66 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="">Domicilio Fiscal</label>
-                                    <input type="text" id="address1" name="address1" class="form-control">
+                                    <label for="">Compañía:</label>
+                                    <select name="selectInsurance1" id="selectInsurance1" class="form-select" onchange="fundchange(1)">
+                                        <option hidden selected value="">Selecciona una opción</option>
+                                        @foreach ($insurances as $insurance)
+                                            <option value='{{ $insurance->id }}'>{{ $insurance->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="">NUC/Contrato</label>
-                                    <input type="text" id="nuc1" name="nuc1"  class="form-control">
+                                    <label for="">NUC/Obligacion</label>
+                                    <input type="text" id="nuc1" name="nuc1" value="PENDIENTE" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Moneda</label>
+                                    <select name="selectCurrency1" id="selectCurrency1" class="form-select">
+                                        <option hidden selected>Selecciona una opción</option>
+                                        <option>MXN</option>
+                                        <option>USD</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
 
+                        <div class="row" id="divLP1" style = "display: none;">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Monto:</label>
+                                    <input type="text" id="amount1" name="amount1" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Fecha del primer pago</label>
+                                    <input type="date" id="initial_date1" name="initial_date1" class="form-control" placeholder="Fecha de aplicación">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" id="divCP1" style = "display: none;">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Tipo:</label>
+                                    <select name="selectStatusMF" id="selectStatusMF" class="form-select">
+                                        <option hidden selected value="">Selecciona una opción</option>
+                                        @foreach ($cmbStatusMF as $id => $status)
+                                            <option value='{{ $id }}'>{{ $status }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

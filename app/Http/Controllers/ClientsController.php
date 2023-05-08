@@ -9,6 +9,9 @@ use App\User;
 use App\Nuc;
 use App\Coupon;
 use App\SixMonth_fund;
+use App\Paymentform;
+use App\Application;
+use App\Insurance;
 use DateTime;
 
 class ClientsController extends Controller
@@ -18,6 +21,9 @@ class ClientsController extends Controller
         $profile = User::findProfile();
         $perm = Permission::permView($profile,5);
         $perm_btn =Permission::permBtns($profile,5);
+        $insurances = Insurance::orderBy('name')->get();
+        $paymentForms = Paymentform::pluck('name','id');
+        $applications = Application::pluck('name','id');
         // dd($perm_btn);
         if($perm==0)
         {
@@ -25,7 +31,7 @@ class ClientsController extends Controller
         }
         else
         {
-            return view('admin.client.clients', compact('clients','perm_btn'));
+            return view('admin.client.clients', compact('clients','perm_btn','paymentForms','applications','insurances'));
         }
     }
 
@@ -59,6 +65,7 @@ class ClientsController extends Controller
         // $client->city = $request->city;
         $client->cellphone = $request->cellphone;
         $client->email = $request->email;
+        $client->domicile = $request->domicile;
         $client->save();
         return response()->json(["status"=>true, "message"=>"Cliente Creada"]);
     }
@@ -68,7 +75,7 @@ class ClientsController extends Controller
         $client = Client::where('id',$request->id)
         ->update(['name'=>$request->name, 'firstname'=>$request->firstname,'lastname'=>$request->lastname,
             'birth_date'=>$request->birth_date, 'rfc'=>$request->rfc,'curp'=>$request->curp,
-            'cellphone'=>$request->cellphone,'email'=>$request->email]);
+            'cellphone'=>$request->cellphone,'email'=>$request->email,'domicile'=>$request->domicile]);
             // 'gender'=>$request->gender, 'marital_status'=>$request->marital_status,'street'=>$request->street,
             // 'e_num'=>$request->e_num, 'i_num'=>$request->i_num,'pc'=>$request->pc,
             // 'suburb'=>$request->suburb, 'country'=>$request->country,'state'=>$request->state,
@@ -91,11 +98,15 @@ class ClientsController extends Controller
         $nuc->currency = $request->selectCurrency;
         $nuc->fk_client = $request->fk_client;
         $nuc->estatus = $request->estatus;
+        $nuc->fk_application = $request->fk_application;
+        $nuc->fk_payment_form = $request->fk_payment_form;
+        $nuc->fk_insurance = $request->fk_insurance;
         $nuc->save();
         return response()->json(["status"=>true, "message"=>"Nuc creado"]);
     }
     public function SaveNucSixMonth(Request $request)
     {
+        // dd($request->all());
         $deposit_date = new DateTime($request->deposit_date);
         $initial_date = new DateTime($deposit_date->format('Y')."-".$deposit_date->format('m')."-01");
         if(intval($deposit_date->format('d')) <= 10)
@@ -118,6 +129,9 @@ class ClientsController extends Controller
         $nuc->deposit_date = $deposit_date;
         $nuc->initial_date = $initial_date;
         $nuc->end_date = $end_date;
+        $nuc->fk_application = $request->fk_application;
+        $nuc->fk_payment_form = $request->fk_payment_form;
+        $nuc->fk_insurance = $request->fk_insurance;
         $nuc->save();
 
         $date1 = clone $initial_date;

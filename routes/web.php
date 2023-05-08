@@ -51,6 +51,10 @@ Route::get('admin/insurance/insurances/GetInfo/{id}','InsuranceController@GetInf
 Route::resource('admin/currency/currencies', 'CurrencyController');
 Route::get('admin/currency/currencies/GetInfo/{id}','CurrencyController@GetInfo')->name('currencies.GetInfo');
 
+// Cálculo de Cobro
+Route::resource('admin/charge/charges', 'ChargeController');
+Route::get('admin/charge/charges/GetInfo/{id}','ChargeController@GetInfo')->name('charges.GetInfo');
+
 // clientes
 Route::resource('admin/client/client', 'ClientsController');
 Route::get('admin/client/client/GetInfo/{id}','ClientsController@GetInfo')->name('client.GetInfo');
@@ -73,6 +77,7 @@ Route::get('funds/monthfund/monthfunds/GetNuc/{id}','MonthFundsController@GetNuc
 Route::get('funds/monthfund/monthfunds/ExportFunds/{id}','MonthFundsController@ExportFunds');
 Route::post('funds/monthfund/monthfunds/import','MonthFundsController@import');
 Route::post('funds/monthfund/monthfunds/updateFund','MonthFundsController@updateFund');
+Route::post('funds/monthfund/monthfunds/deleteFund','MonthFundsController@deleteFund');
 // Route::get('funds/monthfund/monthfunds/GetNuc/{id}','MonthFundsController@GetNuc')->name('monthfunds.GetNuc');
 
 // -------------------------------------------------- Asignación de clientes--------------------------------------------
@@ -102,6 +107,7 @@ Route::get('funds/fstmonthcomission/fstmonthcomission/GetInfoAugments/{id}','Fst
 Route::resource('funds/sixmonthfund/sixmonthfunds', 'SixMonthFundController');
 Route::get('funds/sixmonthfund/sixmonthfunds/GetInfo/{id}','SixMonthFundController@GetInfo')->name('sixmonthfunds.GetInfo');
 Route::post('funds/sixmonthfund/sixmonthfunds/import','SixMonthFundController@import');
+Route::get('funds/sixmonthfund/sixmonthfunds/GetNuc/{id}','SixMonthFundController@GetNuc')->name('sixmonthfunds.GetNuc');
 
 //---------------------------------------------------Comisiones fondo 6 meses--------------------------------------------
 Route::resource('funds/sixmonthlycomission/sixmonthcomission', 'SixMonthComissionController');
@@ -114,4 +120,5 @@ Route::post('funds/sixmonthlycomission/sixmonthcomission/SetPayment','SixMonthCo
 Route::resource('process/opening/opening', 'OpeningController');
 Route::get('process/opening/opening/GetInfo/{id}','OpeningController@GetInfo')->name('opening.GetInfo');
 Route::get('process/opening/opening/GetinfoStatus/{id}','OpeningController@GetinfoStatus')->name('opening.GetinfoStatus');
+Route::get('process/opening/opening/GetinfoFund/{id}','OpeningController@GetinfoFund')->name('opening.GetinfoFund');
 Route::post('process/opening/opening/updateStatus', 'OpeningController@updateStatus')->name('opening.updateStatus');

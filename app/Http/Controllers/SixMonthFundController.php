@@ -10,7 +10,10 @@ use App\MonthFund;
 use App\Nuc;
 use App\Status;
 use App\Coupon;
+use App\Paymentform;
+use App\Application;
 use App\SixMonth_fund;
+use App\Insurance;
 use App\Exports\ExportFund;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\MovesImport;
@@ -25,9 +28,12 @@ class SixMonthFundController extends Controller
         $cont = 0;
         $clients = DB::table('Nuc')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
         ->join('Client',"Client.id","=","Nuc.fk_client")
-        ->pluck('name','id');
+        ->orderBy('name')->pluck('name','id');
         $perm = Permission::permView($profile,24);
         $perm_btn =Permission::permBtns($profile,24);
+        $paymentForms = Paymentform::pluck('name','id');
+        $applications = Application::pluck('name','id');
+        $insurances = Insurance::orderBy('name')->where('fund_type','LP')->get();
         $cmbStatus = Status::select('id','name')
         ->where("fk_section","23")
         ->pluck('name','id');
@@ -57,7 +63,7 @@ class SixMonthFundController extends Controller
         }
         else
         {
-            return view('funds.sixmonthfund.sixmonthfund', compact('nucs','perm_btn','cmbStatus','clients'));
+            return view('funds.sixmonthfund.sixmonthfund', compact('nucs','perm_btn','cmbStatus','clients','paymentForms','applications','insurances'));
         }
     }
     public function GetInfo($id)
@@ -169,5 +175,81 @@ class SixMonthFundController extends Controller
     public function transformDate($value)
     {
         return Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value))->format('Y-m-d');
+    }
+    public function GetNuc($id)
+    {
+        $nuc = SixMonth_fund::where('id',$id)->first();
+        return response()->json(["status"=>true, "data"=>$nuc]);
+    }
+    public function update(Request $request, $id)
+    {
+
+        $deposit_date = new DateTime($request->deposit_date);
+        $initial_date = new DateTime($deposit_date->format('Y')."-".$deposit_date->format('m')."-01");
+        if(intval($deposit_date->format('d')) <= 10)
+        {
+            $initial_date->modify('+2 month');
+        }
+        else
+        {
+            $initial_date->modify('+3 month');
+        }
+
+        $end_date = clone $initial_date;
+        $end_date->modify('+2 year');
+
+        $nuc = SixMonth_fund::where('id',$request->id)->first();
+
+        $nucEdit = SixMonth_fund::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client, 'amount'=>$request->amount,'currency'=>$request->selectCurrency,
+            'deposit_date'=>$deposit_date,'initial_date'=>$initial_date,'end_date'=>$end_date, 'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_insurance'=>$request->fk_insurance]);
+
+        if(floatval($request->amount) != floatval($nuc->amount) || $request->selectCurrency != $nuc->currency || $request->deposit_date != $nuc->deposit_date)
+        {
+            $coupons = Coupon::where("fk_nuc",$request->id)->get();
+            foreach($coupons as $coup)
+            {
+                $coup->delete();
+            }
+
+            $date1 = clone $initial_date;
+            $date2= clone $deposit_date;
+            $number = 1;
+            if($request->currency == "MXN")
+            {
+                for($cont = 0; $cont < 24; $cont += 2)
+                {
+                    $coupon = new Coupon;
+                    $coupon->number = $number;
+                    if($cont != 0) $date1->modify('+2 month');
+                    $diff = $date1->diff($date2)->days;
+                    $coupon->amount = intval($diff) * 256.94443 * ($request->amount/500000);
+                    // dd($coupon->amount);
+                    $coupon->pay_date = $date1;
+                    $coupon->fk_nuc = $request->id;
+                    $coupon->save();
+                    $number++;
+                    $date2= clone $date1;
+                }
+            }
+            else
+            {
+                for($cont = 0; $cont < 24; $cont += 2)
+                {
+                    $coupon = new Coupon;
+                    $coupon->number = $number;
+                    if($cont != 0) $date1->modify('+2 month');
+                    $diff = $date1->diff($date2)->days;
+                    $coupon->amount = intval($diff) * 10.06943 * ($request->amount/25000);
+                    // dd($coupon->amount);
+                    $coupon->pay_date = $date1;
+                    $coupon->fk_nuc = $request->id;
+                    $coupon->save();
+                    $number++;
+                    $date2= clone $date1;
+                }
+            }
+        }
+
+        return response()->json(['status'=>true, 'message'=>"Nuc Actualizado"]);
     }
 }

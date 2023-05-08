@@ -58,6 +58,7 @@ function guardarCliente()
 
     var cellphone = $("#cellphone").val();
     var email = $("#email").val();
+    var domicile = $("#address").val();
 
     var route = "client";
 
@@ -81,6 +82,7 @@ function guardarCliente()
         // 'city':city,
         'cellphone':cellphone,
         'email':email,
+        'domicile':domicile,
     };
 
     jQuery.ajax({
@@ -127,6 +129,7 @@ function editarCliente(id)
             // $("#city1").val(result.data.city);
             $("#cellphone1").val(result.data.cellphone);
             $("#email1").val(result.data.email);
+            $("#address1").val(result.data.domicile);
 
             $("#modalEditClient").modal('show');
         }
@@ -163,6 +166,7 @@ function actualizarCliente()
 
     var cellphone = $("#cellphone1").val();
     var email = $("#email1").val();
+    var domicile = $("#address1").val();
 
     var route = "client/"+idupdate;
 
@@ -187,6 +191,7 @@ function actualizarCliente()
         // 'city':city,
         'cellphone':cellphone,
         'email':email,
+        'domicile':domicile,
     };
     jQuery.ajax({
         url:route,
@@ -242,6 +247,9 @@ function guardarNuc()
     var checked = onoff.checked;
     var selectCurrency = $("#selectCurrency").val();
     var nuc = $("#nuc").val();
+    var fk_application = $("#selectAppli").val();
+    var fk_payment_form = $("#selectPaymentform").val();
+    var fk_insurance = $("#selectInsurance").val();
     var reinvest = 2;
     if(checked)
     {
@@ -254,6 +262,9 @@ function guardarNuc()
         'selectCurrency':selectCurrency,
         'fk_client':idnuc,
         'estatus':reinvest,
+        'fk_application':fk_application,
+        'fk_payment_form':fk_payment_form,
+        'fk_insurance':fk_insurance,
     };
     console.log(data);
     jQuery.ajax({
@@ -285,8 +296,11 @@ function guardarNucSixMonth()
 {
     var selectCurrency = $("#selectCurrencySixMonth").val();
     var nuc = $("#nucSixMonth").val();
-    var amount = $("#amountSixMonth").val();
+    var amount = $("#amountSixMonth").val().replace(/[^0-9.]/g, '');
     var deposit_date = $("#initial_date").val();
+    var fk_application = $("#selectAppliSixMonth").val();
+    var fk_payment_form = $("#selectPaymentformSixMonth").val();
+    var fk_insurance = $("#selectInsuranceSixMonth").val();
 
     var route = baseUrl + '/SaveNucSixMonth';
     var data = {
@@ -295,7 +309,10 @@ function guardarNucSixMonth()
         'selectCurrency':selectCurrency,
         'amount':amount,
         'deposit_date':deposit_date,
-        'fk_client':idnucSixMonth
+        'fk_client':idnucSixMonth,
+        'fk_application':fk_application,
+        'fk_payment_form':fk_payment_form,
+        'fk_insurance':fk_insurance,
     };
     console.log(data);
     jQuery.ajax({

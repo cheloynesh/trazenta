@@ -156,6 +156,45 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Compañía:</label>
+                                            <select name="selectInsurance" id="selectInsurance" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($insurances as $insurance)
+                                                    <option value='{{ $insurance->id }}'>{{ $insurance->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Tipo Solicitud:</label>
+                                            <select name="selectAppli" id="selectAppli" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($applications as $id => $appli)
+                                                    <option value='{{ $id }}'>{{ $appli }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Forma de Pago:</label>
+                                            <select name="selectPaymentform" id="selectPaymentform" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($paymentForms as $id => $payment_form)
+                                                    <option value='{{ $id }}'>{{ $payment_form }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -294,6 +333,7 @@
                                 <a href="#|" class="btn btn-primary" onclick="nuevoMovimiento({{$nuc->id}})" >Movimientos</a>
                                 @if ($perm_btn['modify']==1)
                                     <button href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" ><i class="fa-solid fa-pen-to-square"></i></button>
+                                    <button href="#|" class="btn btn-danger" onclick="deleteFund({{$nuc->id}})" ><i class="fa-solid fa-trash"></i></button>
                                     {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
                                 @endif
                             </td>

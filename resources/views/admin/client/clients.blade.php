@@ -30,15 +30,57 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="">Moneda:</label>
-                                        <select name="selectCurrency" id="selectCurrency" class="form-select">
-                                            <option hidden selected>Selecciona una opción</option>
-                                            <option>MXN</option>
-                                            <option>USD</option>
-                                        </select>
+                                        <div class="form-group">
+                                            <label for="">Moneda:</label>
+                                            <select name="selectCurrency" id="selectCurrency" class="form-select">
+                                                <option hidden selected>Selecciona una opción</option>
+                                                <option>MXN</option>
+                                                <option>USD</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                                <br>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Compañía:</label>
+                                            <select name="selectInsurance" id="selectInsurance" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($insurances as $insurance)
+                                                    @if($insurance->fund_type == "CP")
+                                                        <option value='{{ $insurance->id }}'>{{ $insurance->name }}</option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Tipo Solicitud:</label>
+                                            <select name="selectAppli" id="selectAppli" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($applications as $id => $appli)
+                                                    <option value='{{ $id }}'>{{ $appli }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Forma de Pago:</label>
+                                            <select name="selectPaymentform" id="selectPaymentform" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($paymentForms as $id => $payment_form)
+                                                    <option value='{{ $id }}'>{{ $payment_form }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
@@ -84,7 +126,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="">Monto</label>
-                                            <input type="text" id="amountSixMonth" name="amountSixMonth" class="form-control">
+                                            <input type="text" id="amountSixMonth" name="amountSixMonth" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency">
                                         </div>
                                     </div>
                                 </div>
@@ -103,8 +145,49 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
+                                            <label for="">Compañía:</label>
+                                            <select name="selectInsuranceSixMonth" id="selectInsuranceSixMonth" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($insurances as $insurance)
+                                                    @if($insurance->fund_type == "LP")
+                                                        <option value='{{ $insurance->id }}'>{{ $insurance->name }}</option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
                                             <label for="">Fecha del primer pago</label>
                                             <input type="date" id="initial_date" name="initial_date" class="form-control" placeholder="Fecha de aplicación">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Tipo Solicitud:</label>
+                                            <select name="selectAppliSixMonth" id="selectAppliSixMonth" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($applications as $id => $appli)
+                                                    <option value='{{ $id }}'>{{ $appli }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Forma de Pago:</label>
+                                            <select name="selectPaymentformSixMonth" id="selectPaymentformSixMonth" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($paymentForms as $id => $payment_form)
+                                                    <option value='{{ $id }}'>{{ $payment_form }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -163,6 +246,7 @@
             </div>
         </div>
     </div>
+<script src="{{URL::asset('js/currencyformat.js')}}" ></script>
 @endsection
 @push('head')
     <script src="{{URL::asset('js/admin/client.js')}}"></script>

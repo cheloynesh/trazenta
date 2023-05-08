@@ -12,7 +12,7 @@
 
                 <div class="modal-header">
                     <h4 class="modal-title" id="gridModalLabek">Registro de Apertura</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" onclick="cerrarApertura()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
 
                 <div class="modal-body">
@@ -32,66 +32,88 @@
                             </div>
                         </div>
 
-                        <div class = "row" id = "fisicaInitial">
-                            <div class="col-md-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
                                 <div class="form-group">
-                                    <label for="">Nombre</label>
-                                    <input type="text" id="name" name="name" class="form-control" placeholder="Nombre">
+                                    <label for="">Cliente</label>
+                                    <input type="text" id="client_edit" class="form-control" disabled placeholder="Cliente">
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="">Apellido paterno</label>
-                                    <input type="text" id="firstname" name="firstname" class="form-control" placeholder="Apellido">
+                            <div class="col-md-4">
+                                @if ($perm_btn['modify']==1)
+                                    <label for="">Cambiar Cliente</label>
+                                    <button type="button" class="btn btn-primary" onclick="buscarclientes(0)">Buscar</button>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div id = "fisica" style = "display: none;">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Nombre</label>
+                                        <input type="text" id="name" name="name" class="form-control" placeholder="Nombre">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Apellido paterno</label>
+                                        <input type="text" id="firstname" name="firstname" class="form-control" placeholder="Apellido">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Apellido materno</label>
+                                        <input type="text" id="lastname" name="lastname" class="form-control" placeholder="Apellido">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="">Apellido materno</label>
-                                    <input type="text" id="lastname" name="lastname" class="form-control" placeholder="Apellido">
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Fecha de nacimiento</label>
+                                        <input type="date" id="birth_date" name="birth_date" class="form-control" placeholder="Fecha de nacimiento">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">RFC</label>
+                                        <input type="text" id="rfc" name="rfc" class="form-control" placeholder="RFC">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">CURP</label>
+                                        <input type="text" id="curp" name="curp" class="form-control" placeholder="CURP">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="">RFC</label>
-                                    <input type="text" id="rfc" name="rfc" class="form-control" placeholder="RFC">
+
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label for="">Celular</label>
+                                        <input type="text" id="cellphone" name="cellphone" class="form-control" placeholder="Celular">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label for="">Correo</label>
+                                        <input type="text" id="email" name="email" class="form-control" placeholder="Correo">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Domicilio Fiscal</label>
+                                        <input type="text" id="address" name="address" class="form-control">
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="">Compañía:</label>
-                                    <select name="selectInsurance" id="selectInsurance" class="form-select">
-                                        <option hidden selected value="">Selecciona una opción</option>
-                                        @foreach ($insurances as $id => $insurance)
-                                            <option value='{{ $id }}'>{{ $insurance }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="">Monto:</label>
-                                    <input type="text" id="amount" name="amount" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="">Moneda</label>
-                                    <select name="selectCurrency" id="selectCurrency" class="form-select">
-                                        <option hidden selected value="">Selecciona una opción</option>
-                                        @foreach ($currencies as $id => $currency)
-                                            <option value='{{ $id }}'>{{ $currency }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Tipo Solicitud:</label>
                                     <select name="selectAppli" id="selectAppli" class="form-select">
@@ -102,7 +124,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Forma de Pago:</label>
                                     <select name="selectPaymentform" id="selectPaymentform" class="form-select">
@@ -113,24 +135,66 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="">Domicilio Fiscal</label>
-                                    <input type="text" id="address" name="address" class="form-control">
+                                    <label for="">Compañía:</label>
+                                    <select name="selectInsurance" id="selectInsurance" class="form-select" onchange="fundchange(0)">
+                                        <option hidden selected value="">Selecciona una opción</option>
+                                        @foreach ($insurances as $insurance)
+                                            <option value='{{ $insurance->id }}'>{{ $insurance->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="">NUC/Contrato</label>
-                                    <input type="text" id="nuc" name="nuc"  class="form-control">
+                                    <label for="">NUC/Obligacion</label>
+                                    <input type="text" id="nuc" name="nuc" value="PENDIENTE" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Moneda</label>
+                                    <select name="selectCurrency" id="selectCurrency" class="form-select">
+                                        <option hidden selected>Selecciona una opción</option>
+                                        <option value="MXN">MXN</option>
+                                        <option value="USD">USD</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
 
+                        <div class="row" id="divLP" style = "display: none;">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Monto:</label>
+                                    <input type="text" id="amount" name="amount" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Fecha del primer pago</label>
+                                    <input type="date" id="initial_date" name="initial_date" class="form-control" placeholder="Fecha de aplicación">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" id="divCP" style = "display: none;">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="">Estatus:</label>
+                                    &nbsp;&nbsp;
+                                    <input id = "onoff" type="checkbox" checked data-toggle="toggle" data-on = "Reinversión" data-off="Depósito" data-width="120" data-offstyle="secondary">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secundary" onclick="cerrarApertura()">Cancelar</button>
                     <button type="button" onclick="guardarApertura()" class="btn btn-primary">Guardar</button>
                 </div>
             </div>
@@ -153,7 +217,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="">Estatus:</label>
+                                        <label for="" style="font-weight: bold;">Estatus:</label>
                                         <select name="selectStatus" id="selectStatus" class="form-select">
                                             <option hidden selected value="">Selecciona una opción</option>
                                             @foreach ($cmbStatus as $id => $status)
@@ -166,7 +230,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="">Recogido:</label>
+                                        <label for="" style="font-weight: bold;">Recogido:</label>
                                         <select name="selectStatusPick" id="selectStatusPick" class="form-select" onchange="showDate('Pick')">
                                             <option hidden selected value="0">Selecciona una opción</option>
                                             <option value="1">PENDIENTE</option>
@@ -175,18 +239,26 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" id="divDatePick" >
+                            <div class="row" id="divDatePick">
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="">Fecha</label>
-                                        <input type="date" id="authPick" name="authPick" class="form-control">
+                                        <input type="date" id="authPick" name="authPick" class="form-control" onchange="changeLimit()">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="divDateLimit">
+                                <div class="col-md-12" >
+                                    <div class="form-group">
+                                        <label for="">Fecha Límite</label>
+                                        <input type="date" id="authLimit" name="authLimit" class="form-control">
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="">Entregado a Agente:</label>
+                                        <label for="" style="font-weight: bold;">Entregado a Agente:</label>
                                         <select name="selectStatusAgent" id="selectStatusAgent" class="form-select" onchange="showDate('Agent')">
                                             <option hidden selected value="0">Selecciona una opción</option>
                                             <option value="1">PENDIENTE</option>
@@ -206,7 +278,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="">Oficina:</label>
+                                        <label for="" style="font-weight: bold;">Oficina:</label>
                                         <select name="selectStatusOffice" id="selectStatusOffice" class="form-select" onchange="showDate('Office')">
                                             <option hidden selected value="0">Selecciona una opción</option>
                                             <option value="1">PENDIENTE</option>
@@ -226,7 +298,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="">Entregado a Finestra:</label>
+                                        <label for="" style="font-weight: bold;">Entregado a Finestra:</label>
                                         <select name="selectStatusFinestra" id="selectStatusFinestra" class="form-select" onchange="showDate('Finestra')">
                                             <option hidden selected value="0">Selecciona una opción</option>
                                             <option value="1">PENDIENTE</option>
@@ -323,6 +395,7 @@
     </div>
     {{-- fin modal| --}}
     @include('process.opening.openingEdit')
+    @include('searchclient')
     {{-- Inicia pantalla de inicio --}}
     <div class="col-lg-12">
         <div class="row">
@@ -330,7 +403,7 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         @if ($perm_btn['addition']==1)
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" title="Nuevo Servicio"><i class="fas fa-plus"></i></button>
+                            <button type="button" class="btn btn-primary" onclick="nuevaApertura()" title="Nuevo Servicio"><i class="fas fa-plus"></i></button>
                         @endif
                     </div>
                 </div>
@@ -364,7 +437,8 @@
                     <tr id="{{$opening->oid}}">
                         {{-- <td>{{$initial->date}}</td> --}}
                         <td>{{$opening->agent}}</td>
-                        <td>{{$opening->cname}} {{$opening->firstname}} {{$opening->lastname}}</td>
+                        <td>{{$opening->cname}}
+                        </td>
                         <td>{{$opening->insurance}}</td>
                         <td>{{$opening->fund_type}}</td>
                         <td>{{$opening->nuc}}</td>

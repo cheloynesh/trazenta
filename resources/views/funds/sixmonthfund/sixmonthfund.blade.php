@@ -74,6 +74,118 @@
             </div>
         </div>
         {{-- termina modal --}}
+        {{-- modal| --}}
+        <div id="sixMonthNucModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Nuevo nuc fondo largo plazo</h4>
+                        <button type="button" class="close" onclick="cerrarNuc()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Obligación</label>
+                                            <input type="text" id="nucSixMonth" name="nucSixMonth" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Cliente:</label>
+                                            <select name="selectClient" id="selectClient" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($clients as $id => $client)
+                                                    <option value='{{ $id }}'>{{ $client }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Monto</label>
+                                            <input type="text" id="amountSixMonth" name="amountSixMonth" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Moneda:</label>
+                                            <select name="selectCurrencySixMonth" id="selectCurrencySixMonth" class="form-select">
+                                                <option hidden selected>Selecciona una opción</option>
+                                                <option>MXN</option>
+                                                <option>USD</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Compañía:</label>
+                                            <select name="selectInsurance" id="selectInsurance" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($insurances as $insurance)
+                                                    <option value='{{ $insurance->id }}'>{{ $insurance->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Fecha del primer pago</label>
+                                            <input type="date" id="initial_date" name="initial_date" class="form-control" placeholder="Fecha de aplicación">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Tipo Solicitud:</label>
+                                            <select name="selectAppliSixMonth" id="selectAppliSixMonth" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($applications as $id => $appli)
+                                                    <option value='{{ $id }}'>{{ $appli }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Forma de Pago:</label>
+                                            <select name="selectPaymentformSixMonth" id="selectPaymentformSixMonth" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($paymentForms as $id => $payment_form)
+                                                    <option value='{{ $id }}'>{{ $payment_form }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick="cerrarNuc()">Cancelar</button>
+                        <button type="button" onclick="actualizarNuc()" class="btn btn-primary">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- fin modal| --}}
     @include('funds.status.status')
         {{-- Inicia pantalla de inicio --}}
         <br>
@@ -98,7 +210,7 @@
             <table class="table table-striped table-hover text-center" id="tbProf">
                 <thead>
                     <th class="text-center">Nombre</th>
-                    <th class="text-center">NUC</th>
+                    <th class="text-center">Obligación</th>
                     <th class="text-center">Monto</th>
                     <th class="text-center">Moneda</th>
                     <th class="text-center">Fecha de Inicio</th>
@@ -122,6 +234,7 @@
                             <td>
                                 <a href="#|" class="btn btn-primary" onclick="nuevoMovimiento({{$nuc->id}})" >Cuponera</a>
                                 @if ($perm_btn['modify']==1)
+                                    <button href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" ><i class="fa-solid fa-pen-to-square"></i></button>
                                     <button href="#|" class="btn btn-danger" onclick="eliminarNuc({{$nuc->id}})" ><i class="fa-solid fa-trash"></i></button>
                                     {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
                                 @endif
@@ -132,6 +245,7 @@
             </table>
         </div>
     </div>
+<script src="{{URL::asset('js/currencyformat.js')}}" ></script>
 @endsection
 @push('head')
     <script src="{{URL::asset('js/funds/sixmonthfund.js')}}"></script>

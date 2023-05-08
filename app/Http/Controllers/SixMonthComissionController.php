@@ -22,6 +22,7 @@ class SixMonthComissionController extends Controller
             ->join('SixMonth_fund',"fk_client","=","Client.id")
             ->join('Coupon','fk_nuc','SixMonth_fund.id')
             ->where('number',1)
+            ->where('paid',0)
             ->whereNull('users.deleted_at')->get();
         $perm = Permission::permView($profile,29);
         $perm_btn =Permission::permBtns($profile,29);

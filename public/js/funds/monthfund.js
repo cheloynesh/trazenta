@@ -355,6 +355,9 @@ function editarNuc(id)
         {
             $("#nuc").val(result.data.nuc);
             $("#selectClient").val(result.data.fk_client);
+            $("#selectAppli").val(result.data.fk_application);
+            $("#selectPaymentform").val(result.data.fk_payment_form);
+            $("#selectInsurance").val(result.data.fk_insurance);
             $("#editModal").modal('show');
         }
     })
@@ -369,12 +372,18 @@ function actualizarNuc()
 {
     var nuc = $("#nuc").val();
     var fk_client = $("#selectClient").val();
+    var fk_application = $("#selectAppli").val();
+    var fk_payment_form = $("#selectPaymentform").val();
+    var fk_insurance = $("#selectInsurance").val();
     var route = "monthfunds/"+editNuc;
     var data = {
         'id':editNuc,
         "_token": $("meta[name='csrf-token']").attr("content"),
         'nuc':nuc,
-        'fk_client':fk_client
+        'fk_application':fk_application,
+        'fk_payment_form':fk_payment_form,
+        'fk_client':fk_client,
+        'fk_insurance':fk_insurance,
     };
     jQuery.ajax({
         url:route,
@@ -552,4 +561,37 @@ function actualizarFondo()
 function cerrarWait()
 {
     $("#waitModal").modal('hide');
+}
+
+function deleteFund(id)
+{
+    var route = baseUrl + '/deleteFund';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        "id":id
+    };
+
+    alertify.confirm("Eliminar Apertura","¿Desea borrar la Apertura?",
+        function(){
+            jQuery.ajax({
+                url:route,
+                type:'post',
+                data:data,
+                dataType:'json',
+                success:function(result)
+                {
+                    alertify.success(result.message);
+                    $("#waitModal").modal('hide');
+
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
+                    $("#waitModal").modal('hide');
+                }
+            })
+        },
+        function(){
+            alertify.error('Cancelado');
+    });
 }
