@@ -249,6 +249,7 @@ function guardarNuc()
     var nuc = $("#nuc").val();
     var fk_application = $("#selectAppli").val();
     var fk_payment_form = $("#selectPaymentform").val();
+    var fk_charge = $("#selectCharge").val();
     var fk_insurance = $("#selectInsurance").val();
     var reinvest = 2;
     if(checked)
@@ -264,6 +265,7 @@ function guardarNuc()
         'estatus':reinvest,
         'fk_application':fk_application,
         'fk_payment_form':fk_payment_form,
+        'fk_charge':fk_charge,
         'fk_insurance':fk_insurance,
     };
     console.log(data);
@@ -300,6 +302,7 @@ function guardarNucSixMonth()
     var deposit_date = $("#initial_date").val();
     var fk_application = $("#selectAppliSixMonth").val();
     var fk_payment_form = $("#selectPaymentformSixMonth").val();
+    var fk_charge = $("#selectChargeSixMonth").val();
     var fk_insurance = $("#selectInsuranceSixMonth").val();
 
     var route = baseUrl + '/SaveNucSixMonth';
@@ -312,6 +315,7 @@ function guardarNucSixMonth()
         'fk_client':idnucSixMonth,
         'fk_application':fk_application,
         'fk_payment_form':fk_payment_form,
+        'fk_charge':fk_charge,
         'fk_insurance':fk_insurance,
     };
     console.log(data);

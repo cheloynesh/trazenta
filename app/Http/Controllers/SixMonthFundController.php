@@ -12,6 +12,7 @@ use App\Status;
 use App\Coupon;
 use App\Paymentform;
 use App\Application;
+use App\Charge;
 use App\SixMonth_fund;
 use App\Insurance;
 use App\Exports\ExportFund;
@@ -26,12 +27,12 @@ class SixMonthFundController extends Controller
     public function index(){
         $profile = User::findProfile();
         $cont = 0;
-        $clients = DB::table('Nuc')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
-        ->join('Client',"Client.id","=","Nuc.fk_client")
+        $clients = DB::table('Client')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
         ->orderBy('name')->pluck('name','id');
         $perm = Permission::permView($profile,24);
         $perm_btn =Permission::permBtns($profile,24);
         $paymentForms = Paymentform::pluck('name','id');
+        $charges = Charge::pluck('name','id');
         $applications = Application::pluck('name','id');
         $insurances = Insurance::orderBy('name')->where('fund_type','LP')->get();
         $cmbStatus = Status::select('id','name')
@@ -63,7 +64,7 @@ class SixMonthFundController extends Controller
         }
         else
         {
-            return view('funds.sixmonthfund.sixmonthfund', compact('nucs','perm_btn','cmbStatus','clients','paymentForms','applications','insurances'));
+            return view('funds.sixmonthfund.sixmonthfund', compact('nucs','perm_btn','cmbStatus','clients','paymentForms','applications','insurances','charges'));
         }
     }
     public function GetInfo($id)
@@ -201,7 +202,7 @@ class SixMonthFundController extends Controller
         $nuc = SixMonth_fund::where('id',$request->id)->first();
 
         $nucEdit = SixMonth_fund::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client, 'amount'=>$request->amount,'currency'=>$request->selectCurrency,
-            'deposit_date'=>$deposit_date,'initial_date'=>$initial_date,'end_date'=>$end_date, 'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_insurance'=>$request->fk_insurance]);
+            'deposit_date'=>$deposit_date,'initial_date'=>$initial_date,'end_date'=>$end_date, 'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance]);
 
         if(floatval($request->amount) != floatval($nuc->amount) || $request->selectCurrency != $nuc->currency || $request->deposit_date != $nuc->deposit_date)
         {

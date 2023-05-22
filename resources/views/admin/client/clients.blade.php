@@ -71,11 +71,24 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="">Forma de Pago:</label>
+                                            <label for="">Forma de Pago del Premio:</label>
                                             <select name="selectPaymentform" id="selectPaymentform" class="form-select">
                                                 <option hidden selected value="">Selecciona una opción</option>
                                                 @foreach ($paymentForms as $id => $payment_form)
                                                     <option value='{{ $id }}'>{{ $payment_form }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Conducto de Apertura:</label>
+                                            <select name="selectCharge" id="selectCharge" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($charges as $id => $charge)
+                                                    <option value='{{ $id }}'>{{ $charge }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -107,7 +120,7 @@
                 <div class="modal-content">
 
                     <div class="modal-header">
-                        <h4 class="modal-title" id="gridModalLabek">Nuevo nuc fondo largo plazo</h4>
+                        <h4 class="modal-title" id="gridModalLabek">Nueva Obligación fondo largo plazo</h4>
                         <button type="button" class="close" onclick="cerrarNucSixMonth()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
 
@@ -117,7 +130,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="">Nuc</label>
+                                            <label for="">Obligación</label>
                                             <input type="text" id="nucSixMonth" name="nucSixMonth" class="form-control">
                                         </div>
                                     </div>
@@ -160,7 +173,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="">Fecha del primer pago</label>
+                                            <label for="">Fecha de aplicación</label>
                                             <input type="date" id="initial_date" name="initial_date" class="form-control" placeholder="Fecha de aplicación">
                                         </div>
                                     </div>
@@ -181,11 +194,24 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="">Forma de Pago:</label>
+                                            <label for="">Forma de Pago del Premio:</label>
                                             <select name="selectPaymentformSixMonth" id="selectPaymentformSixMonth" class="form-select">
                                                 <option hidden selected value="">Selecciona una opción</option>
                                                 @foreach ($paymentForms as $id => $payment_form)
                                                     <option value='{{ $id }}'>{{ $payment_form }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Conducto de Apertura:</label>
+                                            <select name="selectChargeSixMonth" id="selectChargeSixMonth" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($charges as $id => $charge)
+                                                    <option value='{{ $id }}'>{{ $charge }}</option>
                                                 @endforeach
                                             </select>
                                         </div>

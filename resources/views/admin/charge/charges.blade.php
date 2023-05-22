@@ -1,6 +1,6 @@
 @extends('home')
 <head>
-    <title>Conductos | Elan</title>
+    <title>Conductos | Trazenta</title>
 </head>
 @section('content')
     <div class="text-center"><h1>Catálogo de Conductos de Cobro</h1></div>

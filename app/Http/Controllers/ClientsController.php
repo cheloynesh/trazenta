@@ -12,6 +12,7 @@ use App\SixMonth_fund;
 use App\Paymentform;
 use App\Application;
 use App\Insurance;
+use App\Charge;
 use DateTime;
 
 class ClientsController extends Controller
@@ -23,6 +24,7 @@ class ClientsController extends Controller
         $perm_btn =Permission::permBtns($profile,5);
         $insurances = Insurance::orderBy('name')->get();
         $paymentForms = Paymentform::pluck('name','id');
+        $charges = Charge::pluck('name','id');
         $applications = Application::pluck('name','id');
         // dd($perm_btn);
         if($perm==0)
@@ -31,7 +33,7 @@ class ClientsController extends Controller
         }
         else
         {
-            return view('admin.client.clients', compact('clients','perm_btn','paymentForms','applications','insurances'));
+            return view('admin.client.clients', compact('clients','perm_btn','paymentForms','applications','insurances','charges'));
         }
     }
 
@@ -100,6 +102,7 @@ class ClientsController extends Controller
         $nuc->estatus = $request->estatus;
         $nuc->fk_application = $request->fk_application;
         $nuc->fk_payment_form = $request->fk_payment_form;
+        $nuc->fk_charge = $request->fk_charge;
         $nuc->fk_insurance = $request->fk_insurance;
         $nuc->save();
         return response()->json(["status"=>true, "message"=>"Nuc creado"]);
@@ -131,6 +134,7 @@ class ClientsController extends Controller
         $nuc->end_date = $end_date;
         $nuc->fk_application = $request->fk_application;
         $nuc->fk_payment_form = $request->fk_payment_form;
+        $nuc->fk_charge = $request->fk_charge;
         $nuc->fk_insurance = $request->fk_insurance;
         $nuc->save();
 

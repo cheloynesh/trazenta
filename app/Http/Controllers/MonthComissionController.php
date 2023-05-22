@@ -83,7 +83,6 @@ class MonthComissionController extends Controller
         $clients = DB::table('Client')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS clName'),'Nuc.id as nucid')
             ->join('Nuc',"fk_client","=","Client.id")
             ->where("month_flag","=","8")
-            ->groupBy("clName")
             ->where('fk_agent',$id)->get();
         $clientNames = "";
 
@@ -100,7 +99,9 @@ class MonthComissionController extends Controller
         }
 
         $validNucs = array();
+        $validNames = array();
         array_push($validNucs,0);
+        $cnnames = "";
         foreach ($nucs as $nuc)
         {
             $value = $this->calculo($nuc->id,$monthless,$year,$TC,$regime);
@@ -115,13 +116,22 @@ class MonthComissionController extends Controller
         }
         // dd($b_amount,$IVA,$ret_isr,$ret_iva,$n_amount);
         // dd(array_search(24, $validNucs));
+        // dd($validNucs);
         foreach ($clients as $client)
         {
             if(array_search($client->nucid, $validNucs) != false)
-            $clientNames = $clientNames.$client->clName."<br>";
-            // dd($clientNames);
+            {
+                // $clientNames = $clientNames.$client->clName."<br>";
+
+                if(array_search($client->clName, $validNames) == false)
+                {
+                    array_push($validNames,$client->clName);
+                    $clientNames = $clientNames.$client->clName."<br>";
+                }
+
+            }
         }
-        // dd($clientNames);
+        // dd($cnnames);
         // dd($monthless);
         $pdf = app('dompdf.wrapper');
         $pdf->loadHTML('

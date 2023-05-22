@@ -357,6 +357,7 @@ function editarNuc(id)
             $("#selectClient").val(result.data.fk_client);
             $("#selectAppli").val(result.data.fk_application);
             $("#selectPaymentform").val(result.data.fk_payment_form);
+            $("#selectCharge").val(result.data.fk_charge);
             $("#selectInsurance").val(result.data.fk_insurance);
             $("#editModal").modal('show');
         }
@@ -374,6 +375,7 @@ function actualizarNuc()
     var fk_client = $("#selectClient").val();
     var fk_application = $("#selectAppli").val();
     var fk_payment_form = $("#selectPaymentform").val();
+    var fk_charge = $("#selectCharge").val();
     var fk_insurance = $("#selectInsurance").val();
     var route = "monthfunds/"+editNuc;
     var data = {
@@ -382,6 +384,7 @@ function actualizarNuc()
         'nuc':nuc,
         'fk_application':fk_application,
         'fk_payment_form':fk_payment_form,
+        'fk_charge':fk_charge,
         'fk_client':fk_client,
         'fk_insurance':fk_insurance,
     };

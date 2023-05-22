@@ -198,6 +198,7 @@ function editarNuc(id)
             $("#selectCurrencySixMonth").val(result.data.currency);
             $("#initial_date").val(result.data.deposit_date);
             $("#selectAppliSixMonth").val(result.data.fk_application);
+            $("#selectCharge").val(result.data.fk_charge);
             $("#selectPaymentformSixMonth").val(result.data.fk_payment_form);
             $("#selectInsurance").val(result.data.fk_insurance);
             $("#sixMonthNucModal").modal('show');
@@ -218,6 +219,7 @@ function actualizarNuc()
     var deposit_date = $("#initial_date").val();
     var fk_application = $("#selectAppliSixMonth").val();
     var fk_payment_form = $("#selectPaymentformSixMonth").val();
+    var fk_charge = $("#selectCharge").val();
     var fk_client = $("#selectClient").val();
     var fk_insurance = $("#selectInsurance").val();
 
@@ -229,6 +231,7 @@ function actualizarNuc()
         'selectCurrency':selectCurrency,
         'amount':amount,
         'deposit_date':deposit_date,
+        'fk_charge':fk_charge,
         'fk_client':fk_client,
         'fk_application':fk_application,
         'fk_payment_form':fk_payment_form,

@@ -195,6 +195,19 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Conducto de Pago:</label>
+                                            <select name="selectCharge" id="selectCharge" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($charges as $id => $charge)
+                                                    <option value='{{ $id }}'>{{ $charge }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

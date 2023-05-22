@@ -12,6 +12,7 @@ use App\Currency;
 use App\Insurance;
 use App\Paymentform;
 use App\Application;
+use App\Charge;
 use App\Opening;
 use App\SixMonth_fund;
 use App\Coupon;
@@ -28,6 +29,7 @@ class OpeningController extends Controller
         $insurances = Insurance::orderBy('name')->get();
         $paymentForms = Paymentform::pluck('name','id');
         $applications = Application::pluck('name','id');
+        $charges = Charge::pluck('name','id');
         $clients = Client::get();
         $perm = Permission::permView($profile,31);
         $perm_btn =Permission::permBtns($profile,31);
@@ -54,7 +56,7 @@ class OpeningController extends Controller
         }
         else
         {
-            return view('process.opening.opening', compact('profile','agents','perm_btn','cmbStatus','cmbStatusMF','currencies','insurances','paymentForms','applications','openings','clients'));
+            return view('process.opening.opening', compact('profile','agents','perm_btn','cmbStatus','cmbStatusMF','currencies','insurances','paymentForms','applications','openings','clients','charges'));
         }
     }
 
@@ -82,7 +84,7 @@ class OpeningController extends Controller
         {
             $insurances = Insurance::where('fund_type','CP')->get();
             $opening = DB::table('Opening')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS cname'),
-                'Opening.fk_agent','fk_application','fk_payment_form','Opening.fk_insurance','nuc','currency','estatus','Client.id as clid','Opening.id as opid','fund_type')
+                'Opening.fk_agent','fk_application','fk_payment_form','Opening.fk_insurance','nuc','currency','estatus','Client.id as clid','Opening.id as opid','fund_type','fk_charge')
                 ->join('Client','Opening.fk_client','=','Client.id')
                 ->join('Insurance','Opening.fk_insurance','=','Insurance.id')
                 ->join('Nuc','Opening.fk_nuc','=','Nuc.id')
@@ -92,7 +94,7 @@ class OpeningController extends Controller
         {
             $insurances = Insurance::where('fund_type','LP')->get();
             $opening = DB::table('Opening')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS cname'),
-                'Opening.fk_agent','fk_application','fk_payment_form','Opening.fk_insurance','nuc','currency','deposit_date','amount','Client.id as clid','Opening.id as opid','fund_type')
+                'Opening.fk_agent','fk_application','fk_payment_form','Opening.fk_insurance','nuc','currency','deposit_date','amount','Client.id as clid','Opening.id as opid','fund_type','fk_charge')
                 ->join('Client','Opening.fk_client','=','Client.id')
                 ->join('Insurance','Opening.fk_insurance','=','Insurance.id')
                 ->join('SixMonth_fund','Opening.fk_nuc','=','SixMonth_fund.id')
@@ -140,6 +142,7 @@ class OpeningController extends Controller
             $nuc->estatus = $request->estatus;
             $nuc->fk_application = $request->fk_application;
             $nuc->fk_payment_form = $request->fk_payment_form;
+            $nuc->fk_charge = $request->fk_charge;
             $nuc->fk_insurance = $request->fk_insurance;
             $nuc->save();
             $fk_nuc = $nuc->id;
@@ -170,6 +173,7 @@ class OpeningController extends Controller
             $nuc->end_date = $end_date;
             $nuc->fk_application = $request->fk_application;
             $nuc->fk_payment_form = $request->fk_payment_form;
+            $nuc->fk_charge = $request->fk_charge;
             $nuc->fk_insurance = $request->fk_insurance;
             $nuc->save();
             $fk_nuc = $nuc->id;
@@ -261,7 +265,7 @@ class OpeningController extends Controller
         if($request->fund_type == "CP")
         {
             $nuc = Nuc::where('id',$opening->fk_nuc)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,
-            'fk_insurance'=>$request->fk_insurance,'currency'=>$request->selectCurrency]);
+            'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance,'currency'=>$request->selectCurrency]);
         }
         else
         {
@@ -282,7 +286,8 @@ class OpeningController extends Controller
             $nuc = SixMonth_fund::where('id',$opening->fk_nuc)->first();
 
             $nucEdit = SixMonth_fund::where('id',$opening->fk_nuc)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client, 'amount'=>$request->amount,'currency'=>$request->selectCurrency,
-                'deposit_date'=>$deposit_date,'initial_date'=>$initial_date,'end_date'=>$end_date, 'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_insurance'=>$request->fk_insurance]);
+                'deposit_date'=>$deposit_date,'initial_date'=>$initial_date,'end_date'=>$end_date, 'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,
+                'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance]);
 
             if(floatval($request->amount) != floatval($nuc->amount) || $request->selectCurrency != $nuc->currency || $request->initial_date != $nuc->deposit_date)
             {

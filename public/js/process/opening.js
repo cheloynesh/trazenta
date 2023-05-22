@@ -142,6 +142,7 @@ function guardarApertura()
     var fk_currency = $("#selectCurrency").val();
     var fk_application = $("#selectAppli").val();
     var fk_payment_form = $("#selectPaymentform").val();
+    var fk_charge = $("#selectCharge").val();
     var domicile = $("#address").val();
     var nuc = $("#nuc").val();
     var amount = $("#amount").val().replace(/[^0-9.]/g, '');
@@ -171,6 +172,7 @@ function guardarApertura()
         'selectCurrency':fk_currency,
         'fk_application':fk_application,
         'fk_payment_form':fk_payment_form,
+        'fk_charge':fk_charge,
         'domicile':domicile,
         'amount':amount,
         'nuc':nuc,
@@ -213,6 +215,7 @@ function editarApertura(id)
             $("#client_edit1").val(result.data.cname);
             $("#selectAppli1").val(result.data.fk_application);
             $("#selectPaymentform1").val(result.data.fk_payment_form);
+            $("#selectCharge1").val(result.data.fk_charge);
             $("#selectCurrency1").val(result.data.currency);
 
             var assignPlan = $("#selectInsurance1");
@@ -263,6 +266,7 @@ function actualizarApertura()
     var fk_currency = $("#selectCurrency1").val();
     var fk_application = $("#selectAppli1").val();
     var fk_payment_form = $("#selectPaymentform1").val();
+    var fk_charge = $("#selectCharge1").val();
     var domicile = $("#address1").val();
     var nuc = $("#nuc1").val();
     var amount = $("#amount1").val().replace(/[^0-9.]/g, '');
@@ -287,6 +291,7 @@ function actualizarApertura()
         'selectCurrency':fk_currency,
         'fk_application':fk_application,
         'fk_payment_form':fk_payment_form,
+        'fk_charge':fk_charge,
         'domicile':domicile,
         'amount':amount,
         'nuc':nuc,

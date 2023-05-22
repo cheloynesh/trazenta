@@ -12,6 +12,7 @@ use App\Nuc;
 use App\Insurance;
 use App\Status;
 use App\Paymentform;
+use App\Charge;
 use App\Application;
 use App\Exports\ExportFund;
 use Maatwebsite\Excel\Facades\Excel;
@@ -31,6 +32,7 @@ class MonthFundsController extends Controller
         $perm_btn =Permission::permBtns($profile,19);
         $paymentForms = Paymentform::pluck('name','id');
         $applications = Application::pluck('name','id');
+        $charges = Charge::pluck('name','id');
         $insurances = Insurance::orderBy('name')->where('fund_type','CP')->get();
         $cmbStatus = Status::select('id','name')
         ->where("fk_section","19")
@@ -66,7 +68,7 @@ class MonthFundsController extends Controller
         }
         else
         {
-            return view('funds.monthfund.monthfunds', compact('nucs','perm_btn','cmbStatus','clients','paymentForms','applications','insurances'));
+            return view('funds.monthfund.monthfunds', compact('nucs','perm_btn','cmbStatus','clients','paymentForms','applications','insurances','charges'));
         }
     }
     public function GetInfo($id)
@@ -147,7 +149,7 @@ class MonthFundsController extends Controller
     }
     public function update(Request $request, $id)
     {
-        $nuc = Nuc::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_insurance'=>$request->fk_insurance]);
+        $nuc = Nuc::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance]);
         return response()->json(['status'=>true, 'message'=>"Nuc Actualizado"]);
     }
     public function ExportFunds($id)

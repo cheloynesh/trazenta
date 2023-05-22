@@ -113,7 +113,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Tipo Solicitud:</label>
                                     <select name="selectAppli" id="selectAppli" class="form-select">
@@ -124,13 +124,24 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="">Forma de Pago:</label>
+                                    <label for="">Forma de Pago del Premio:</label>
                                     <select name="selectPaymentform" id="selectPaymentform" class="form-select">
                                         <option hidden selected value="">Selecciona una opción</option>
                                         @foreach ($paymentForms as $id => $payment_form)
                                             <option value='{{ $id }}'>{{ $payment_form }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Conducto de Apertura:</label>
+                                    <select name="selectCharge" id="selectCharge" class="form-select">
+                                        <option hidden selected value="">Selecciona una opción</option>
+                                        @foreach ($charges as $id => $charge)
+                                            <option value='{{ $id }}'>{{ $charge }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -176,7 +187,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="">Fecha del primer pago</label>
+                                    <label for="">Fecha de aplicación</label>
                                     <input type="date" id="initial_date" name="initial_date" class="form-control" placeholder="Fecha de aplicación">
                                 </div>
                             </div>
@@ -251,7 +262,7 @@
                                 <div class="col-md-12" >
                                     <div class="form-group">
                                         <label for="">Fecha Límite</label>
-                                        <input type="date" id="authLimit" name="authLimit" class="form-control">
+                                        <input type="date" id="authLimit" name="authLimit" class="form-control" style="border: 1px solid red">
                                     </div>
                                 </div>
                             </div>
@@ -364,7 +375,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="">Fecha Límite</label>
-                                        <input type="text" disabled id="authLimit1" name="authLimit1" class="form-control">
+                                        <input type="text" disabled id="authLimit1" name="authLimit1" class="form-control" style="border: 1px solid red;">
                                     </div>
                                 </div>
                             </div>
