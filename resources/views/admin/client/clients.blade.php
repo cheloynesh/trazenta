@@ -34,8 +34,8 @@
                                             <label for="">Moneda:</label>
                                             <select name="selectCurrency" id="selectCurrency" class="form-select">
                                                 <option hidden selected>Selecciona una opción</option>
-                                                <option>MXN</option>
-                                                <option>USD</option>
+                                                <option value="MXN">MXN</option>
+                                                <option value="USD">USD</option>
                                             </select>
                                         </div>
                                     </div>
@@ -149,8 +149,8 @@
                                             <label for="">Moneda:</label>
                                             <select name="selectCurrencySixMonth" id="selectCurrencySixMonth" class="form-select">
                                                 <option hidden selected>Selecciona una opción</option>
-                                                <option>MXN</option>
-                                                <option>USD</option>
+                                                <option value="MXN">MXN</option>
+                                                <option value="USD">USD</option>
                                             </select>
                                         </div>
                                     </div>

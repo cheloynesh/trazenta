@@ -249,6 +249,7 @@ class FstMonthComissionController extends Controller
         $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
         $clientNames = $client->cname;
 
+        // dd($userName);
         $apertura = MonthFund::where('fk_nuc',$movement->fk_nuc)->where('type','Apertura')->orderBy('apply_date','desc')->first();
         $date1 = new DateTime($apertura->apply_date);
         $date2 = new DateTime($movement->apply_date);
@@ -437,6 +438,7 @@ class FstMonthComissionController extends Controller
 
     public function calculo($id, $month, $year, $TC, $dllMult, $regime)
     {
+        // dd($regime);
         // dd($request->all());
         $b_amount=0;//Saldo cierre de mes
         $dll_conv=0;//conversion a usd
@@ -519,7 +521,7 @@ class FstMonthComissionController extends Controller
 
     public function calculoExtra($amount, $TC, $dllMult, $regime, $nuc)
     {
-        // dd($request->all());
+        // dd($regime);
         $b_amount=$amount;//Saldo cierre de mes
         $dll_conv=0;//conversion a usd
         $usd_invest=0;//para cada 5,00 usd sobre el monto invertido(esto multiplicar x10)
@@ -549,7 +551,7 @@ class FstMonthComissionController extends Controller
 
         $iva_amount = $gross_amount * .16; // iva del monto bruto
 
-        if($regime == 1)
+        if($regime == 0)
             $ret_isr = $gross_amount *.10; //isr del monto bruto
         else
             $ret_isr = $gross_amount *.0125;

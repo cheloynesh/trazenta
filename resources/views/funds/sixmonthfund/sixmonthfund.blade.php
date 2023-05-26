@@ -122,8 +122,8 @@
                                             <label for="">Moneda:</label>
                                             <select name="selectCurrencySixMonth" id="selectCurrencySixMonth" class="form-select">
                                                 <option hidden selected>Selecciona una opción</option>
-                                                <option>MXN</option>
-                                                <option>USD</option>
+                                                <option value="MXN">MXN</option>
+                                                <option value="USD">USD</option>
                                             </select>
                                         </div>
                                     </div>
@@ -239,7 +239,7 @@
                             <td>{{$nuc->nuc}}</td>
                             <td>{{$nuc->amount}}</td>
                             <td>{{$nuc->currency}}</td>
-                            <td>{{$nuc->initial_date}}</td>
+                            <td>{{$nuc->deposit_date}}</td>
                             <td>{{$nuc->end_date}}</td>
                             {{-- <td>
                                 <button class="btn btn-info" style="background-color: #{{$nuc->color}}; border-color: #{{$nuc->color}}" onclick="opcionesEstatus({{$nuc->id}},{{$nuc->statId}})">{{$nuc->estatus}}</button>

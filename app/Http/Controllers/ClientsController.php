@@ -112,16 +112,25 @@ class ClientsController extends Controller
         // dd($request->all());
         $deposit_date = new DateTime($request->deposit_date);
         $initial_date = new DateTime($deposit_date->format('Y')."-".$deposit_date->format('m')."-01");
+        $initial = clone $initial_date;
+        $initialflag = 0;
+        $initialdiff = 0;
+
         if(intval($deposit_date->format('d')) <= 10)
         {
             $initial_date->modify('+2 month');
+            $initialflag = 0;
+            $initialdiff = $deposit_date->diff($initial)->days;
         }
         else
         {
             $initial_date->modify('+3 month');
+            $initialflag = 1;
+            $initial->modify('+1 month');
+            $initialdiff = $deposit_date->diff($initial)->days;
         }
 
-        $end_date = clone $initial_date;
+        $end_date = clone $deposit_date;
         $end_date->modify('+2 year');
 
         $nuc = new SixMonth_fund;
@@ -141,40 +150,49 @@ class ClientsController extends Controller
         $date1 = clone $initial_date;
         $date2= clone $deposit_date;
         $number = 1;
+
+        $insurance = Insurance::where('id',$nuc->fk_insurance)->first();
+
+        for($cont = 0; $cont < 22; $cont += 2)
+        {
+            $coupon = new Coupon;
+            $coupon->number = $number;
+            if($cont != 0) $date1->modify('+2 month');
+            $diff = $date1->diff($date2)->days;
+            if($nuc->currency == "MXN")
+            {
+                $coupon->amount = intval($diff) * (($nuc->amount * ($insurance->yield/100))/360);
+            }
+            else
+            {
+                $coupon->amount = intval($diff) * (($nuc->amount * ($insurance->yield_usd/100))/360);
+            }
+            $coupon->pay_date = $date1;
+            $coupon->fk_nuc = $nuc->id;
+            $coupon->save();
+            $number++;
+            $date2= clone $date1;
+        }
+        $coupon = new Coupon;
+        $coupon->number = $number;
+        $date1->modify('+2 month');
+        $diff = $date1->diff($date2)->days;
         if($nuc->currency == "MXN")
         {
-            for($cont = 0; $cont < 24; $cont += 2)
-            {
-                $coupon = new Coupon;
-                $coupon->number = $number;
-                if($cont != 0) $date1->modify('+2 month');
-                $diff = $date1->diff($date2)->days;
-                $coupon->amount = intval($diff) * 256.94443 * ($nuc->amount/500000);
-                // dd($coupon->amount);
-                $coupon->pay_date = $date1;
-                $coupon->fk_nuc = $nuc->id;
-                $coupon->save();
-                $number++;
-                $date2= clone $date1;
-            }
+            $coupon->amount = intval($diff) * (($nuc->amount * ($insurance->yield/100))/360);
+            if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($nuc->amount * ($insurance->yield/100))/360);
+            else $coupon->amount -= intval($initialdiff) * (($nuc->amount * ($insurance->yield/100))/360);
         }
         else
         {
-            for($cont = 0; $cont < 24; $cont += 2)
-            {
-                $coupon = new Coupon;
-                $coupon->number = $number;
-                if($cont != 0) $date1->modify('+2 month');
-                $diff = $date1->diff($date2)->days;
-                $coupon->amount = intval($diff) * 10.06943 * ($nuc->amount/25000);
-                // dd($coupon->amount);
-                $coupon->pay_date = $date1;
-                $coupon->fk_nuc = $nuc->id;
-                $coupon->save();
-                $number++;
-                $date2= clone $date1;
-            }
+            $coupon->amount = intval($diff) * (($nuc->amount * ($insurance->yield_usd/100))/360);
+            if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($nuc->amount * ($insurance->yield_usd/100))/360);
+            else $coupon->amount -= intval($initialdiff) * (($nuc->amount * ($insurance->yield_usd/100))/360);
         }
+        // dd($coupon->amount);
+        $coupon->pay_date = $date1;
+        $coupon->fk_nuc = $nuc->id;
+        $coupon->save();
         return response()->json(["status"=>true, "message"=>"Fondo creado"]);
         // $date1 = new DateTime("2023-11-01");
         // $date2 = new DateTime("2024-01-01");

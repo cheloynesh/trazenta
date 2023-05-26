@@ -84,7 +84,7 @@ class OpeningController extends Controller
         {
             $insurances = Insurance::where('fund_type','CP')->get();
             $opening = DB::table('Opening')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS cname'),
-                'Opening.fk_agent','fk_application','fk_payment_form','Opening.fk_insurance','nuc','currency','estatus','Client.id as clid','Opening.id as opid','fund_type','fk_charge')
+                'Opening.fk_agent','fk_application','fk_payment_form','Opening.fk_insurance','nuc','currency','estatus','Client.id as clid','Opening.id as opid','fund_type','fk_charge','yield','yield_usd')
                 ->join('Client','Opening.fk_client','=','Client.id')
                 ->join('Insurance','Opening.fk_insurance','=','Insurance.id')
                 ->join('Nuc','Opening.fk_nuc','=','Nuc.id')
@@ -94,7 +94,7 @@ class OpeningController extends Controller
         {
             $insurances = Insurance::where('fund_type','LP')->get();
             $opening = DB::table('Opening')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS cname'),
-                'Opening.fk_agent','fk_application','fk_payment_form','Opening.fk_insurance','nuc','currency','deposit_date','amount','Client.id as clid','Opening.id as opid','fund_type','fk_charge')
+                'Opening.fk_agent','fk_application','fk_payment_form','Opening.fk_insurance','nuc','currency','deposit_date','amount','Client.id as clid','Opening.id as opid','fund_type','fk_charge','yield','yield_usd')
                 ->join('Client','Opening.fk_client','=','Client.id')
                 ->join('Insurance','Opening.fk_insurance','=','Insurance.id')
                 ->join('SixMonth_fund','Opening.fk_nuc','=','SixMonth_fund.id')
@@ -151,23 +151,32 @@ class OpeningController extends Controller
         {
             $deposit_date = new DateTime($request->deposit_date);
             $initial_date = new DateTime($deposit_date->format('Y')."-".$deposit_date->format('m')."-01");
+            $initial = clone $initial_date;
+            $initialflag = 0;
+            $initialdiff = 0;
+
             if(intval($deposit_date->format('d')) <= 10)
             {
                 $initial_date->modify('+2 month');
+                $initialflag = 0;
+                $initialdiff = $deposit_date->diff($initial)->days;
             }
             else
             {
                 $initial_date->modify('+3 month');
+                $initialflag = 1;
+                $initial->modify('+1 month');
+                $initialdiff = $deposit_date->diff($initial)->days;
             }
 
-            $end_date = clone $initial_date;
+            $end_date = clone $deposit_date;
             $end_date->modify('+2 year');
 
             $nuc = new SixMonth_fund;
             $nuc->nuc = $request->nuc;
             $nuc->currency = $request->selectCurrency;
             $nuc->amount = $request->amount;
-            $nuc->fk_client = $request->fk_client;
+            $nuc->fk_client = $fk_client;
             $nuc->deposit_date = $deposit_date;
             $nuc->initial_date = $initial_date;
             $nuc->end_date = $end_date;
@@ -181,40 +190,46 @@ class OpeningController extends Controller
             $date1 = clone $initial_date;
             $date2= clone $deposit_date;
             $number = 1;
-            if($nuc->currency == "MXN")
+            for($cont = 0; $cont < 22; $cont += 2)
             {
-                for($cont = 0; $cont < 24; $cont += 2)
+                $coupon = new Coupon;
+                $coupon->number = $number;
+                if($cont != 0) $date1->modify('+2 month');
+                $diff = $date1->diff($date2)->days;
+                if($request->currency == "MXN")
                 {
-                    $coupon = new Coupon;
-                    $coupon->number = $number;
-                    if($cont != 0) $date1->modify('+2 month');
-                    $diff = $date1->diff($date2)->days;
-                    $coupon->amount = intval($diff) * 256.94443 * ($nuc->amount/500000);
-                    // dd($coupon->amount);
-                    $coupon->pay_date = $date1;
-                    $coupon->fk_nuc = $nuc->id;
-                    $coupon->save();
-                    $number++;
-                    $date2= clone $date1;
+                    $coupon->amount = intval($diff) * (($nuc->amount * ($request->yield/100))/360);
                 }
+                else
+                {
+                    $coupon->amount = intval($diff) * (($nuc->amount * ($request->yield_usd/100))/360);
+                }
+                $coupon->pay_date = $date1;
+                $coupon->fk_nuc = $nuc->id;
+                $coupon->save();
+                $number++;
+                $date2= clone $date1;
+            }
+            $coupon = new Coupon;
+            $coupon->number = $number;
+            $date1->modify('+2 month');
+            $diff = $date1->diff($date2)->days;
+            if($request->currency == "MXN")
+            {
+                $coupon->amount = intval($diff) * (($nuc->amount * ($request->yield/100))/360);
+                if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($nuc->amount * ($request->yield/100))/360);
+                else $coupon->amount -= intval($initialdiff) * (($nuc->amount * ($request->yield/100))/360);
             }
             else
             {
-                for($cont = 0; $cont < 24; $cont += 2)
-                {
-                    $coupon = new Coupon;
-                    $coupon->number = $number;
-                    if($cont != 0) $date1->modify('+2 month');
-                    $diff = $date1->diff($date2)->days;
-                    $coupon->amount = intval($diff) * 10.06943 * ($nuc->amount/25000);
-                    // dd($coupon->amount);
-                    $coupon->pay_date = $date1;
-                    $coupon->fk_nuc = $nuc->id;
-                    $coupon->save();
-                    $number++;
-                    $date2= clone $date1;
-                }
+                $coupon->amount = intval($diff) * (($nuc->amount * ($request->yield_usd/100))/360);
+                if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($nuc->amount * ($request->yield_usd/100))/360);
+                else $coupon->amount -= intval($initialdiff) * (($nuc->amount * ($request->yield_usd/100))/360);
             }
+            // dd($coupon->amount);
+            $coupon->pay_date = $date1;
+            $coupon->fk_nuc = $nuc->id;
+            $coupon->save();
         }
 
         $opening = new Opening;
@@ -271,70 +286,87 @@ class OpeningController extends Controller
         {
             $deposit_date = new DateTime($request->deposit_date);
             $initial_date = new DateTime($deposit_date->format('Y')."-".$deposit_date->format('m')."-01");
+            $initial = clone $initial_date;
+            $initialflag = 0;
+            $initialdiff = 0;
+
             if(intval($deposit_date->format('d')) <= 10)
             {
                 $initial_date->modify('+2 month');
+                $initialflag = 0;
+                $initialdiff = $deposit_date->diff($initial)->days;
             }
             else
             {
                 $initial_date->modify('+3 month');
+                $initialflag = 1;
+                $initial->modify('+1 month');
+                $initialdiff = $deposit_date->diff($initial)->days;
             }
 
-            $end_date = clone $initial_date;
+            $end_date = clone $deposit_date;
             $end_date->modify('+2 year');
 
-            $nuc = SixMonth_fund::where('id',$opening->fk_nuc)->first();
+            $nuc = DB::table('SixMonth_fund')->select('*')
+            ->join('Insurance','Insurance.id','=','fk_insurance')
+            ->where('SixMonth_fund.id',$opening->fk_nuc)->first();
 
-            $nucEdit = SixMonth_fund::where('id',$opening->fk_nuc)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client, 'amount'=>$request->amount,'currency'=>$request->selectCurrency,
+            $nucEdit = SixMonth_fund::where('id',$opening->fk_nuc)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client, 'amount'=>$request->amount,'currency'=>$request->currency,
                 'deposit_date'=>$deposit_date,'initial_date'=>$initial_date,'end_date'=>$end_date, 'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,
                 'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance]);
 
-            if(floatval($request->amount) != floatval($nuc->amount) || $request->selectCurrency != $nuc->currency || $request->initial_date != $nuc->deposit_date)
-            {
-                $coupons = Coupon::where("fk_nuc",$opening->fk_nuc)->get();
-                foreach($coupons as $coup)
+                if(floatval($request->amount) != floatval($nuc->amount) || $request->currency != $nuc->currency || $request->deposit_date != $nuc->deposit_date)
                 {
-                    $coup->delete();
-                }
+                    $coupons = Coupon::where("fk_nuc",$opening->fk_nuc)->get();
+                    foreach($coupons as $coup)
+                    {
+                        $coup->delete();
+                    }
 
-                $date1 = clone $initial_date;
-                $date2= clone $deposit_date;
-                $number = 1;
-                if($request->currency == "MXN")
-                {
-                    for($cont = 0; $cont < 24; $cont += 2)
+                    $date1 = clone $initial_date;
+                    $date2= clone $deposit_date;
+                    $number = 1;
+                    for($cont = 0; $cont < 22; $cont += 2)
                     {
                         $coupon = new Coupon;
                         $coupon->number = $number;
                         if($cont != 0) $date1->modify('+2 month');
                         $diff = $date1->diff($date2)->days;
-                        $coupon->amount = intval($diff) * 256.94443 * ($request->amount/500000);
-                        // dd($coupon->amount);
+                        if($request->currency == "MXN")
+                        {
+                            $coupon->amount = intval($diff) * (($request->amount * ($nuc->yield/100))/360);
+                        }
+                        else
+                        {
+                            $coupon->amount = intval($diff) * (($request->amount * ($nuc->yield_usd/100))/360);
+                        }
                         $coupon->pay_date = $date1;
                         $coupon->fk_nuc = $opening->fk_nuc;
                         $coupon->save();
                         $number++;
                         $date2= clone $date1;
                     }
-                }
-                else
-                {
-                    for($cont = 0; $cont < 24; $cont += 2)
+                    $coupon = new Coupon;
+                    $coupon->number = $number;
+                    $date1->modify('+2 month');
+                    $diff = $date1->diff($date2)->days;
+                    if($request->currency == "MXN")
                     {
-                        $coupon = new Coupon;
-                        $coupon->number = $number;
-                        if($cont != 0) $date1->modify('+2 month');
-                        $diff = $date1->diff($date2)->days;
-                        $coupon->amount = intval($diff) * 10.06943 * ($request->amount/25000);
-                        // dd($coupon->amount);
-                        $coupon->pay_date = $date1;
-                        $coupon->fk_nuc = $opening->fk_nuc;
-                        $coupon->save();
-                        $number++;
-                        $date2= clone $date1;
+                        $coupon->amount = intval($diff) * (($request->amount * ($nuc->yield/100))/360);
+                        if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($request->amount * ($nuc->yield/100))/360);
+                        else $coupon->amount -= intval($initialdiff) * (($request->amount * ($nuc->yield/100))/360);
                     }
+                    else
+                    {
+                        $coupon->amount = intval($diff) * (($request->amount * ($nuc->yield_usd/100))/360);
+                        if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($request->amount * ($nuc->yield_usd/100))/360);
+                        else $coupon->amount -= intval($initialdiff) * (($request->amount * ($nuc->yield_usd/100))/360);
+                    }
+                    // dd($coupon->amount);
+                    $coupon->pay_date = $date1;
+                    $coupon->fk_nuc = $opening->fk_nuc;
+                    $coupon->save();
                 }
-            }
         }
 
         $opening = Opening::where('id',$request->id)->update(['fk_agent'=>$request->fk_agent,'fk_insurance'=>$request->fk_insurance]);

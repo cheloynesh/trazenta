@@ -77,6 +77,8 @@ $(document).ready( function () {
 
 idClient = 0;
 fund_type = "";
+yieldr = 0;
+yield_usd = 0;
 
 function FillTable(data,profile,permission)
 {
@@ -178,7 +180,9 @@ function guardarApertura()
         'nuc':nuc,
         'deposit_date':initial_date,
         'fund_type':fund_type,
-        'estatus':reinvest
+        'estatus':reinvest,
+        'yield':yieldr,
+        'yield_usd':yield_usd
     };
     jQuery.ajax({
         url:route,
@@ -242,6 +246,8 @@ function editarApertura(id)
                 lp.style.display = "";
             }
             fund_type = result.data.fund_type;
+            yieldr = result.data.yieldr;
+            yield_usd = result.data.yield_usd;
 
             $("#myModaledit").modal('show');
         }
@@ -288,7 +294,7 @@ function actualizarApertura()
         'cellphone':cellphone,
         'email':email,
         'fk_insurance':fk_insurance,
-        'selectCurrency':fk_currency,
+        'currency':fk_currency,
         'fk_application':fk_application,
         'fk_payment_form':fk_payment_form,
         'fk_charge':fk_charge,
@@ -297,7 +303,9 @@ function actualizarApertura()
         'nuc':nuc,
         'deposit_date':initial_date,
         'fund_type':fund_type,
-        'estatus':reinvest
+        'estatus':reinvest,
+        'yield':yieldr,
+        'yield_usd':yield_usd
     };
     jQuery.ajax({
         url:route,
@@ -582,6 +590,8 @@ function fundchange(flag)
                 lp.style.display = "";
             }
             fund_type = result.data.fund_type;
+            yieldr = result.data.yieldr;
+            yield_usd = result.data.yield_usd;
         }
     })
 }

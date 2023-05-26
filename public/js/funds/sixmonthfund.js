@@ -228,7 +228,7 @@ function actualizarNuc()
         'id':editNuc,
         "_token": $("meta[name='csrf-token']").attr("content"),
         'nuc':nuc,
-        'selectCurrency':selectCurrency,
+        'currency':selectCurrency,
         'amount':amount,
         'deposit_date':deposit_date,
         'fk_charge':fk_charge,
