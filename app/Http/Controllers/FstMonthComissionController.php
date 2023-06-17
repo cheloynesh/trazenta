@@ -18,8 +18,8 @@ class FstMonthComissionController extends Controller
     public function index(){
         $profile = User::findProfile();
         $users = DB::table('users')->select('users.id',DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(users.firstname, "")," ",IFNULL(users.lastname, "")) AS name'))
-            ->join('Client',"fk_agent","=","users.id")
-            ->join('Nuc',"fk_client","=","Client.id")
+            ->join('Nuc',"fk_agent","=","users.id")
+            ->join('Client',"fk_client","=","Client.id")
             ->where("month_flag","<","8")
             ->groupBy("name")
             ->whereNull('users.deleted_at')->get();
@@ -38,8 +38,10 @@ class FstMonthComissionController extends Controller
     public function GetInfo($id)
     {
         $clients = DB::table('Nuc')->select("Nuc.id as idNuc","nuc", DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS client_name'))
-        ->join('Client',"Client.id","=","fk_client")->where('fk_agent',$id)->where("month_flag","<","8")
-        ->get();
+            ->join('Client',"Client.id","=","fk_client")
+            ->where('Nuc.fk_agent',$id)
+            ->where("month_flag","<","8")
+            ->get();
         $regime = DB::table('users')->select('regime')->where('id',$id)->first();
         return response()->json(['status'=>true, "regime"=>$regime->regime, "data"=>$clients]);
     }
@@ -55,7 +57,7 @@ class FstMonthComissionController extends Controller
         // setlocale(LC_TIME, 'es_ES.UTF-8');
         // $monthName = date('F', mktime(0, 0, 0, $month, 10));
         $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
-        $clients = DB::table('Client')->select(DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS name'),"fk_agent")
+        $clients = DB::table('Client')->select(DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS name'),"Nuc.fk_agent")
             ->join('Nuc',"fk_client","=","Client.id")
             ->where("month_flag","<","8")
             ->groupBy("name")

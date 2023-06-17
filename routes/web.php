@@ -78,12 +78,15 @@ Route::get('funds/monthfund/monthfunds/ExportFunds/{id}','MonthFundsController@E
 Route::post('funds/monthfund/monthfunds/import','MonthFundsController@import');
 Route::post('funds/monthfund/monthfunds/updateFund','MonthFundsController@updateFund');
 Route::post('funds/monthfund/monthfunds/deleteFund','MonthFundsController@deleteFund');
+Route::get('funds/monthfund/monthfunds/updateFundNet/{id}', 'MonthFundsController@updateFundNet')->name('monthfunds.updateFundNet');
+Route::get('funds/monthfund/monthfunds/GetCP/{id}', 'MonthFundsController@GetCP')->name('monthfunds.GetCP');
 // Route::get('funds/monthfund/monthfunds/GetNuc/{id}','MonthFundsController@GetNuc')->name('monthfunds.GetNuc');
 
 // -------------------------------------------------- Asignación de clientes--------------------------------------------
 
 Route::resource('admin/assiment/assigment', 'AssigmentController');
 Route::get('admin/assiment/assigment/Viewclients/{id}','AssigmentController@Viewclients')->name('assigment.Viewclients');
+Route::get('admin/assiment/assigment/ViewNonAssigned/{id}','AssigmentController@ViewNonAssigned')->name('assigment.ViewNonAssigned');
 Route::post('admin/assiment/assigment/updateClient', 'AssigmentController@updateClient')->name('assigment.updateClient');
 
 //---------------------------------------------------Comisiones fondo mensual--------------------------------------------
@@ -92,8 +95,9 @@ Route::resource('funds/monthlycomission/monthcomission', 'MonthComissionControll
 Route::get('funds/monthlycomission/monthcomission/GetInfo/{id}','MonthComissionController@GetInfo')->name('monthcomission.GetInfo');
 // Route::get('funds/monthlycomission/monthcomission/GetInfoMonth/{id}/{month}/{year}','MonthComissionController@GetInfoMonth')->name('monthcomission.GetInfoMonth');
 // Route::get('funds/monthlycomission/monthcomission/GetInfoLast/{id}/{month}/{year}','MonthComissionController@GetInfoLast')->name('monthcomission.GetInfoLast');
-Route::get('funds/monthlycomission/monthcomission/ExportPDF/{id}/{month}/{year}/{TC}/{regime}','MonthComissionController@ExportPDF');
+Route::get('funds/monthlycomission/monthcomission/ExportPDF/{id}/{month}/{year}/{TC}/{regime}/{dlls}','MonthComissionController@ExportPDF');
 Route::post('funds/monthlycomission/monthcomission/GetInfoComition','MonthComissionController@GetInfoComition')->name('monthcomission.GetInfoComition');
+Route::post('funds/monthlycomission/monthcomission/updateDlls','MonthComissionController@updateDlls')->name('monthcomission.updateDlls');
 
 //---------------------------------------------------Primera comision fondo mensual--------------------------------------------
 Route::resource('funds/fstmonthcomission/fstmonthcomission', 'FstMonthComissionController');
@@ -108,13 +112,18 @@ Route::resource('funds/sixmonthfund/sixmonthfunds', 'SixMonthFundController');
 Route::get('funds/sixmonthfund/sixmonthfunds/GetInfo/{id}','SixMonthFundController@GetInfo')->name('sixmonthfunds.GetInfo');
 Route::post('funds/sixmonthfund/sixmonthfunds/import','SixMonthFundController@import');
 Route::get('funds/sixmonthfund/sixmonthfunds/GetNuc/{id}','SixMonthFundController@GetNuc')->name('sixmonthfunds.GetNuc');
+Route::get('funds/sixmonthfund/sixmonthfunds/GetLP/{id}', 'SixMonthFundController@GetLP')->name('sixmonthfunds.GetLP');
 
 //---------------------------------------------------Comisiones fondo 6 meses--------------------------------------------
 Route::resource('funds/sixmonthlycomission/sixmonthcomission', 'SixMonthComissionController');
 Route::get('funds/sixmonthlycomission/sixmonthcomission/GetInfo/{id}','SixMonthComissionController@GetInfo')->name('sixmonthcomission.GetInfo');
 Route::get('funds/sixmonthlycomission/sixmonthcomission/ExportPDF/{id}/{month}/{year}/{TC}/{regime}','SixMonthComissionController@ExportPDF');
+Route::get('funds/sixmonthlycomission/sixmonthcomission/ExportPDFAll/{id}/{month}/{year}/{TC}/{regime}','SixMonthComissionController@ExportPDFAll');
 Route::post('funds/sixmonthlycomission/sixmonthcomission/GetInfoComition','SixMonthComissionController@GetInfoComition')->name('sixmonthcomission.GetInfoComition');
 Route::post('funds/sixmonthlycomission/sixmonthcomission/SetPayment','SixMonthComissionController@SetPayment')->name('sixmonthcomission.SetPayment');
+Route::post('funds/sixmonthlycomission/sixmonthcomission/SetPaymentAll','SixMonthComissionController@SetPaymentAll')->name('sixmonthcomission.SetPaymentAll');
+Route::get('funds/sixmonthlycomission/sixmonthcomission/GetInfoAgents/{id}','SixMonthComissionController@GetInfoAgents');
+Route::get('funds/sixmonthlycomission/sixmonthcomission/GetComitions/{paid}','SixMonthComissionController@GetComitions');
 
 // --------------------------------------------------------Aperturas----------------------------------------------------------
 Route::resource('process/opening/opening', 'OpeningController');

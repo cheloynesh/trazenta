@@ -27,7 +27,18 @@ $(document).ready( function () {
               "sSortDescending": ": Activar para ordenar la columna de manera descendente"
             }
         },
-        order: [[4, 'asc']],
+        order: [[5, 'asc']],
+        'columnDefs': [
+            {
+               'targets': 0,
+               'checkboxes': {
+                  'selectRow': true
+               }
+            }
+         ],
+         'select': {
+            'style': 'multi'
+         }
     });
 } );
 $(document).ready( function () {
@@ -71,6 +82,24 @@ var formatter = new Intl.NumberFormat('en-US', {
 
 var idUser = 0;
 var flagComition = 0;
+var nucId = 0;
+var active = 0;
+
+function FillTable(data,profile,permission)
+{
+    var table = $('#tbProf').DataTable();
+    var btnMov = '';
+    var activeStat = '';
+    table.clear();
+
+    data.forEach( function(valor, indice, array) {
+        btnMov = '<button type="button" class="btn btn-success" onclick="abrirResumen('+valor.nucid+')"><i class="fas fa-calculator"></i></button>';
+        if(valor.paid == 0) activeStat = '<font color="red">Falta de pago</font>'; else activeStat = '<font color="green">Pagado</font>';
+        table.row.add([valor.nucid,valor.usname,valor.clname,valor.nuc,activeStat,valor.pay_date,btnMov]).node().id = valor.nucid;
+    });
+    table.draw(false);
+}
+
 function abrirComision(id)
 {
     idUser = id;
@@ -121,7 +150,7 @@ function calcular()
     var year = date[0];
     var month = date[1];
 
-    var route = baseUrl + '/ExportPDF/'+ idUser + "/" + month + "/" + year + "/"+ comition + "/" + regime;
+    var route = baseUrl + '/ExportPDF/'+ nucId + "/" + month + "/" + year + "/"+ comition + "/" + regime;
 
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
@@ -150,16 +179,18 @@ function calcular()
 
 function abrirResumen(idNuc)
 {
-    idUser = idNuc;
+    nucId = idNuc;
+    flagComition = 0;
+
     $("#comition").val("13,500.00");
     var comition = $("#comition").val().replace(/[^0-9.]/g, '');
     var date = $("#month").val();
-    var reg = $("#onoffRegime").prop('checked');
-    var regime = 0;
-    if(reg)
-        regime = 1;
-    else
-        regime = 0;
+    // var reg = $("#onoffRegime").prop('checked');
+    // var regime = 0;
+    // if(reg)
+    //     regime = 1;
+    // else
+    //     regime = 0;
 
     date = date.split("-");
     var year = date[0];
@@ -169,8 +200,7 @@ function abrirResumen(idNuc)
         'comition':comition,
         'id':idNuc,
         'year':year,
-        'month':month,
-        'regime':regime
+        'month':month
     }
 
     var route = baseUrl+'/GetInfoComition';
@@ -188,6 +218,13 @@ function abrirResumen(idNuc)
             $("#ret_iva").val(formatter.format(parseFloat(result.ret_iva).toFixed(2)));
             $("#n_amount").val(formatter.format(parseFloat(result.n_amount).toFixed(2)));
 
+            idUser = result.idUser;
+            if(result.regime == 0)
+                $("#onoffRegime").bootstrapToggle('on');
+            else
+                $("#onoffRegime").bootstrapToggle('off');
+
+            flagComition = 1;
             if(result.paid == 0)
             {
                 document.getElementById("paybtn").hidden = false;
@@ -203,9 +240,9 @@ function abrirResumen(idNuc)
         }
     });
 }
-function cancelarCalc()
+function cancelarCalc(modal)
 {
-    $("#myModalCalc").modal('hide');
+    $(modal).modal('hide');
 }
 
 var arraySaldo = [];
@@ -255,11 +292,11 @@ function obtenerultimomovimiento(id,month,year)
     })
 }
 
-function updateRegime()
+function updateRegime(onoff)
 {
     if(flagComition != 0)
     {
-        var reg = $("#onoffRegime").prop('checked');
+        var reg = $(onoff).prop('checked');
         var regime = 0;
         if(reg)
             regime = 0;
@@ -279,6 +316,7 @@ function updateRegime()
             dataType:'json',
             success:function(result)
             {
+                fillCalc()
                 alertify.success(result.message);
             }
         })
@@ -287,9 +325,51 @@ function updateRegime()
 
 function fillCalc()
 {
-    if($("#change").val() == '' || $("#month").val() == '')
+    if($("#comition").val() == '')
     {
         alert("Llena todos los campos");
+    }
+    else
+    {
+        flagComition = 0;
+        var comition = $("#comition").val().replace(/[^0-9.]/g, '');
+        var date = $("#month").val();
+
+        date = date.split("-");
+        var year = date[0];
+        var month = date[1];
+        var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+            'comition':comition,
+            'id':nucId,
+            'year':year,
+            'month':month
+        }
+
+        var route = baseUrl+'/GetInfoComition';
+        jQuery.ajax({
+            url:route,
+            data:data,
+            type:'post',
+            dataType:'json',
+            success:function(result){
+                // alert(result.regime);
+                $("#balance").val(formatter.format(parseFloat(result.b_amount).toFixed(2)));
+                $("#b_amount").val(formatter.format(parseFloat(result.gross_amount).toFixed(2)));
+                $("#iva").val(formatter.format(parseFloat(result.iva_amount).toFixed(2)));
+                $("#ret_isr").val(formatter.format(parseFloat(result.ret_isr).toFixed(2)));
+                $("#ret_iva").val(formatter.format(parseFloat(result.ret_iva).toFixed(2)));
+                $("#n_amount").val(formatter.format(parseFloat(result.n_amount).toFixed(2)));
+
+                if(result.regime == 0)
+                    $("#onoffRegime").bootstrapToggle('on');
+                else
+                    $("#onoffRegime").bootstrapToggle('off');
+
+                flagComition = 1;
+                // obtenerSaldo(idNuc);
+            }
+        });
     }
 }
 
@@ -297,8 +377,9 @@ function pay(paym)
 {
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
-        'id':idUser,
-        'pay':paym
+        'id':nucId,
+        'pay':paym,
+        'active':active
     }
 
     var route = baseUrl+'/SetPayment';
@@ -313,8 +394,233 @@ function pay(paym)
                 success:function(result){
                     alertify.success(result.message);
                     // obtenerSaldo(idNuc);
+                    FillTable(result.users);
                     $("#myModalCalc").modal('hide');
-                    window.location.reload(true);
+                    // window.location.reload(true);
+                }
+            });
+        },
+        function(){
+            alertify.error('Cancelado');
+    });
+}
+
+function CalculoMult()
+{
+    var table = $('#tbProf').DataTable();
+    var rows_selected = table.column(0).checkboxes.selected();
+    var ids = [];
+
+    $.each(rows_selected, function(index, rowId){
+        ids.push(rowId);
+    });
+
+    if(ids.length == 0)
+    {
+        alert("No hay casillas seleccionadas.");
+    }
+    else
+    {
+        var route = baseUrl + '/GetInfoAgents/1';
+        $("#comitionAll").val("13,500.00");
+        var comition = $("#comitionAll").val().replace(/[^0-9.]/g, '');
+
+        var data = {
+            "_token": $("meta[name='csrf-token']").attr("content"),
+            'comition':comition,
+            'ids':ids
+        }
+
+        jQuery.ajax({
+            url:route,
+            data:data,
+            type:'get',
+            dataType:'json',
+            success:function(result)
+            {
+                if(result.agents.length != 1)
+                {
+                    alert("No es posible realizar el cálculo seleccionando diferentes agentes.");
+                }
+                else
+                {
+                    flagComition = 0;
+
+                    $("#balanceAll").val(formatter.format(parseFloat(result.b_amount).toFixed(2)));
+                    $("#b_amountAll").val(formatter.format(parseFloat(result.gross_amount).toFixed(2)));
+                    $("#ivaAll").val(formatter.format(parseFloat(result.iva_amount).toFixed(2)));
+                    $("#ret_isrAll").val(formatter.format(parseFloat(result.ret_isr).toFixed(2)));
+                    $("#ret_ivaAll").val(formatter.format(parseFloat(result.ret_iva).toFixed(2)));
+                    $("#n_amountAll").val(formatter.format(parseFloat(result.n_amount).toFixed(2)));
+
+                    if(result.regime == 0)
+                        $("#onoffRegimeAll").bootstrapToggle('on');
+                    else
+                        $("#onoffRegimeAll").bootstrapToggle('off');
+
+                    flagComition = 1;
+
+                    $("#myModalCalcAll").modal('show');
+                }
+            }
+        })
+    }
+}
+
+function chkActive()
+{
+    if (document.getElementById('chkActive').checked) active = 1; else active = 0;
+
+    var route = baseUrl + '/GetComitions/'+active;
+    // alert(route);
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            FillTable(result.users);
+        }
+    })
+}
+
+function fillCalcAll()
+{
+    if($("#comitionAll").val() == '')
+    {
+        alert("Llena todos los campos");
+    }
+    else
+    {
+        var table = $('#tbProf').DataTable();
+        var rows_selected = table.column(0).checkboxes.selected();
+        var ids = [];
+
+        $.each(rows_selected, function(index, rowId){
+            ids.push(rowId);
+        });
+
+        flagComition = 0;
+        var comition = $("#comitionAll").val().replace(/[^0-9.]/g, '');
+
+        var data = {
+            "_token": $("meta[name='csrf-token']").attr("content"),
+            'comition':comition,
+            'ids':ids
+        }
+
+        var route = baseUrl + '/GetInfoAgents/1';
+        jQuery.ajax({
+            url:route,
+            data:data,
+            type:'get',
+            dataType:'json',
+            success:function(result){
+                flagComition = 0;
+
+                $("#balanceAll").val(formatter.format(parseFloat(result.b_amount).toFixed(2)));
+                $("#b_amountAll").val(formatter.format(parseFloat(result.gross_amount).toFixed(2)));
+                $("#ivaAll").val(formatter.format(parseFloat(result.iva_amount).toFixed(2)));
+                $("#ret_isrAll").val(formatter.format(parseFloat(result.ret_isr).toFixed(2)));
+                $("#ret_ivaAll").val(formatter.format(parseFloat(result.ret_iva).toFixed(2)));
+                $("#n_amountAll").val(formatter.format(parseFloat(result.n_amount).toFixed(2)));
+
+                if(result.regime == 0)
+                    $("#onoffRegimeAll").bootstrapToggle('on');
+                else
+                    $("#onoffRegimeAll").bootstrapToggle('off');
+
+                flagComition = 1;
+            }
+        });
+    }
+}
+
+function calcularAll()
+{
+    var table = $('#tbProf').DataTable();
+    var rows_selected = table.column(0).checkboxes.selected();
+    var ids = "";
+
+    $.each(rows_selected, function(index, rowId){
+        ids += rowId.toString();
+        if(rows_selected.length-1 != index)
+            ids += "-";
+    });
+
+    var comition = $("#comitionAll").val().replace(/[^0-9.]/g, '');
+    var date = $("#monthAll").val();
+    var reg = $("#onoffRegimeAll").prop('checked');
+    var regime = 0;
+
+    if(reg)
+        regime = 1;
+    else
+        regime = 0;
+
+    date = date.split("-");
+    var year = date[0];
+    var month = date[1];
+
+    var route = baseUrl + '/ExportPDFAll/'+ ids + "/" + month + "/" + year + "/"+ comition + "/" + regime;
+
+    $.ajaxSetup({
+        headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
+    });
+
+    var form = $('<form></form>');
+
+    form.attr("method", "get");
+    form.attr("action", route);
+    form.attr('_token',$("meta[name='csrf-token']").attr("content"));
+    $.each(function(key, value) {
+        var field = $('<input></input>');
+        field.attr("type", "hidden");
+        field.attr("name", key);
+        field.attr("value", value);
+        form.append(field);
+    });
+    var field = $('<input></input>');
+    field.attr("type", "hidden");
+    field.attr("name", "_token");
+    field.attr("value", $("meta[name='csrf-token']").attr("content"));
+    form.append(field);
+    $(document.body).append(form);
+    form.submit();
+}
+
+function payAll(paym)
+{
+    var table = $('#tbProf').DataTable();
+    var rows_selected = table.column(0).checkboxes.selected();
+    var ids = [];
+
+    $.each(rows_selected, function(index, rowId){
+        ids.push(rowId);
+    });
+
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'ids':ids,
+        'pay':paym,
+        'active':active
+    }
+
+    var route = baseUrl+'/SetPaymentAll';
+
+    alertify.confirm("Modificar Estatus","¿Desea modificar el estatus de pago?",
+        function(){
+            jQuery.ajax({
+                url:route,
+                data:data,
+                type:'post',
+                dataType:'json',
+                success:function(result){
+                    alertify.success(result.message);
+                    // obtenerSaldo(idNuc);
+                    FillTable(result.users);
+                    $("#myModalCalcAll").modal('hide');
+                    // window.location.reload(true);
                 }
             });
         },

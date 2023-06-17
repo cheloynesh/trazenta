@@ -6,11 +6,14 @@ use Illuminate\Http\Request;
 use App\Client;
 use App\Permission;
 use App\User;
+use App\Nuc;
+use App\SixMonth_fund;
 use DB;
 
 class AssigmentController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $users = User::get();
         // $clients = Client::whereNull("fk_agent")->pluck('name','id');
         $clients = DB::table('Client')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'), 'id')
@@ -38,29 +41,54 @@ class AssigmentController extends Controller
         }
     }
 
-    public function Viewclients($id){
+    public function Viewclients($id)
+    {
         // dd($id);
-        $clients = Client::where('fk_agent',$id)->get();
+        $clients = DB::select('call asignaciones(?)',[$id]);
+        // $clients = Client::where('fk_agent',$id)->get();
         // dd($clients);
         return response()->json(['status'=>true, "data"=>$clients]);
     }
 
-    public function updateClient(Request $request){
-        // dd($request->all());
-        $client = Client::where('id',$request->client)->first();
-        // dd($client);
-        $client->fk_agent = $request->id;
-        $client->save();
-        return response()->json(['status'=>true, "message"=>"Cliente asignado"]);
+    public function ViewNonAssigned($id)
+    {
+        // dd($id);
+        $clients = DB::select('call noAsignados()');
+        // $clients = Client::where('fk_agent',$id)->get();
+        // dd($clients);
+        return response()->json(['status'=>true, "data"=>$clients]);
     }
 
-    public function destroy($id)
+    public function updateClient(Request $request)
     {
-        $client = Client::where('id',$id)->first();
-        // dd($client);
-        $client->fk_agent = NULL;
-        $client->save();
-        return response()->json(['status'=>true, "message"=>"cliente eliminado"]);
+        if($request->fund == "CP")
+        {
+            $nuc = Nuc::where('id',$request->nuc)->update(['fk_agent'=>$request->agent]);
+        }
+        else
+        {
+            $nucEdit = SixMonth_fund::where('id',$request->nuc)->update(['fk_agent'=>$request->agent]);
+        }
+
+        $clients = DB::select('call noAsignados()');
+
+        return response()->json(['status'=>true, "message"=>"Contrato Asignado", "data"=>$clients]);
+    }
+
+    public function destroy($id, Request $request)
+    {
+        if($request->fund == "CP")
+        {
+            $nuc = Nuc::where('id',$id)->update(['fk_agent'=>null]);
+        }
+        else
+        {
+            $nucEdit = SixMonth_fund::where('id',$id)->update(['fk_agent'=>null]);
+        }
+
+        $clients = DB::select('call asignaciones(?)',[$request->idAgent]);
+
+        return response()->json(['status'=>true, "message"=>"Asignación Removida", "data"=>$clients]);
 
     }
 }

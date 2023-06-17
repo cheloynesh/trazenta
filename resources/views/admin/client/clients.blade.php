@@ -258,10 +258,10 @@
                                         @if ($perm_btn['modify']==1)
                                             <a href="#|" class="btn btn-primary" onclick="nuevoNucSixMonth({{$client->id}})" ><i class="fas fa-plus"></i> LP</a>
                                             <a href="#|" class="btn btn-primary" onclick="nuevoNuc({{$client->id}})" ><i class="fas fa-plus"></i> CP</a>
-                                            <button href="#|" class="btn btn-warning" onclick="editarCliente({{$client->id}})" ><i class="fa-solid fa-pen-to-square"></i></button>
+                                            <button href="#|" class="btn btn-warning" onclick="editarCliente({{$client->id}})" ><i class="fas fa-edit"></i></button>
                                         @endif
                                         @if ($perm_btn['erase']==1)
-                                            <button href="#|" class="btn btn-danger" onclick="eliminarCliente({{$client->id}})"><i class="fa-solid fa-trash"></i></button>
+                                            <button href="#|" class="btn btn-danger" onclick="eliminarCliente({{$client->id}})"><i class="fas fa-trash"></i></button>
                                         @endif
                                     </td>
                                 @endif

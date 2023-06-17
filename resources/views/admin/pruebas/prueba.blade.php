@@ -233,8 +233,8 @@
                 <tr id="{{$profile->id}}">
                     <td>{{$profile->name}}</td>
                     <td>
-                        <button href="#|" class="btn btn-warning" onclick="editarperfil({{$profile->id}})" ><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button href="#|" class="btn btn-danger" onclick="eliminarperfil({{$profile->id}})"><i class="fa-solid fa-trash"></i></button>
+                        <button href="#|" class="btn btn-warning" onclick="editarperfil({{$profile->id}})" ><i class="fas fa-edit"></i></button>
+                        <button href="#|" class="btn btn-danger" onclick="eliminarperfil({{$profile->id}})"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
             @endforeach

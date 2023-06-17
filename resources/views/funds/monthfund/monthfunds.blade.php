@@ -159,6 +159,19 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
+                                            <label for="">Agente:</label>
+                                            <select name="selectAgent" id="selectAgent" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($agents as $id => $agent)
+                                                    <option value='{{ $id }}'>{{ $agent }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
                                             <label for="">Compañía:</label>
                                             <select name="selectInsurance" id="selectInsurance" class="form-select">
                                                 <option hidden selected value="">Selecciona una opción</option>
@@ -204,6 +217,18 @@
                                                 @foreach ($charges as $id => $charge)
                                                     <option value='{{ $id }}'>{{ $charge }}</option>
                                                 @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Estatus:</label>
+                                            <select name="selectActiveStat" id="selectActiveStat" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                <option value=0>INACTIVO</option>
+                                                <option value=1>ACTIVO</option>
                                             </select>
                                         </div>
                                     </div>
@@ -323,14 +348,25 @@
                     </div>
                 </div>
             @endif
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class = "form-group">
+                            <input class="form-check-input" type="checkbox" onclick="chkActive()" id="chkActive"> Mostrar Inactivos
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <br>
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
             <table class="table table-striped table-hover text-center" id="tbProf">
                 <thead>
-                    <th class="text-center">Nombre</th>
+                    <th class="text-center">Cliente</th>
                     <th class="text-center">NUC</th>
+                    <th class="text-center">Agente</th>
                     <th class="text-center">Estatus</th>
+                    <th class="text-center">Tipo</th>
                     <th class="text-center">Opciones</th>
                 </thead>
 
@@ -339,14 +375,20 @@
                         <tr id="{{$nuc->id}}">
                             <td>{{$nuc->name}}</td>
                             <td>{{$nuc->nuc}}</td>
+                            <td>{{$nuc->agname}}</td>
+                            @if($nuc->active_stat == 0)
+                                <td style="color: red">INACTIVO</td>
+                            @else
+                                <td style="color: green">ACTIVO</td>
+                            @endif
                             <td>
                                 <button class="btn btn-info" style="background-color: #{{$nuc->color}}; border-color: #{{$nuc->color}}" onclick="opcionesEstatus({{$nuc->id}},{{$nuc->statId}})">{{$nuc->estatus}}</button>
                             </td>
                             <td>
                                 <a href="#|" class="btn btn-primary" onclick="nuevoMovimiento({{$nuc->id}})" >Movimientos</a>
                                 @if ($perm_btn['modify']==1)
-                                    <button href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" ><i class="fa-solid fa-pen-to-square"></i></button>
-                                    <button href="#|" class="btn btn-danger" onclick="deleteFund({{$nuc->id}})" ><i class="fa-solid fa-trash"></i></button>
+                                    <button href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" ><i class="fas fa-edit"></i></button>
+                                    <button href="#|" class="btn btn-danger" onclick="deleteFund({{$nuc->id}})" ><i class="fa fa-trash"></i></button>
                                     {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
                                 @endif
                             </td>

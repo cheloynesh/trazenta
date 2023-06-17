@@ -128,7 +128,7 @@ class OpeningController extends Controller
             $client->cellphone = $request->cellphone;
             $client->email = $request->email;
             $client->domicile = $request->domicile;
-            $client->fk_agent = $request->fk_agent;
+            // $client->fk_agent = $request->fk_agent;
             $client->save();
             $fk_client = $client->id;
         }
@@ -144,6 +144,7 @@ class OpeningController extends Controller
             $nuc->fk_payment_form = $request->fk_payment_form;
             $nuc->fk_charge = $request->fk_charge;
             $nuc->fk_insurance = $request->fk_insurance;
+            $nuc->fk_agent = $request->fk_agent;
             $nuc->save();
             $fk_nuc = $nuc->id;
         }
@@ -184,6 +185,7 @@ class OpeningController extends Controller
             $nuc->fk_payment_form = $request->fk_payment_form;
             $nuc->fk_charge = $request->fk_charge;
             $nuc->fk_insurance = $request->fk_insurance;
+            $nuc->fk_agent = $request->fk_agent;
             $nuc->save();
             $fk_nuc = $nuc->id;
 
@@ -264,23 +266,23 @@ class OpeningController extends Controller
             $client->cellphone = $request->cellphone;
             $client->email = $request->email;
             $client->domicile = $request->domicile;
-            $client->fk_agent = $request->fk_agent;
+            // $client->fk_agent = $request->fk_agent;
             $client->save();
             $fk_client = $client->id;
         }
-        else
-        {
-            $client = Client::where('id',$fk_client)->first();
-            // dd($opening,$client);
-            if($client->fk_agent != $opening->fk_agent)
-            {
-                $clnt = Client::where('id',$fk_client)->update(['fk_agent'=>$request->fk_agent]);
-            }
-        }
+        // else
+        // {
+        //     $client = Client::where('id',$fk_client)->first();
+        //     // dd($opening,$client);
+        //     if($client->fk_agent != $opening->fk_agent)
+        //     {
+        //         $clnt = Client::where('id',$fk_client)->update(['fk_agent'=>$request->fk_agent]);
+        //     }
+        // }
         if($request->fund_type == "CP")
         {
             $nuc = Nuc::where('id',$opening->fk_nuc)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,
-            'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance,'currency'=>$request->selectCurrency]);
+            'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance,'currency'=>$request->currency,'fk_agent'=>$request->fk_agent]);
         }
         else
         {
@@ -313,63 +315,63 @@ class OpeningController extends Controller
 
             $nucEdit = SixMonth_fund::where('id',$opening->fk_nuc)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client, 'amount'=>$request->amount,'currency'=>$request->currency,
                 'deposit_date'=>$deposit_date,'initial_date'=>$initial_date,'end_date'=>$end_date, 'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,
-                'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance]);
+                'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance,'fk_agent'=>$request->fk_agent]);
 
-                if(floatval($request->amount) != floatval($nuc->amount) || $request->currency != $nuc->currency || $request->deposit_date != $nuc->deposit_date)
+            if(floatval($request->amount) != floatval($nuc->amount) || $request->currency != $nuc->currency || $request->deposit_date != $nuc->deposit_date)
+            {
+                $coupons = Coupon::where("fk_nuc",$opening->fk_nuc)->get();
+                foreach($coupons as $coup)
                 {
-                    $coupons = Coupon::where("fk_nuc",$opening->fk_nuc)->get();
-                    foreach($coupons as $coup)
-                    {
-                        $coup->delete();
-                    }
+                    $coup->delete();
+                }
 
-                    $date1 = clone $initial_date;
-                    $date2= clone $deposit_date;
-                    $number = 1;
-                    for($cont = 0; $cont < 22; $cont += 2)
-                    {
-                        $coupon = new Coupon;
-                        $coupon->number = $number;
-                        if($cont != 0) $date1->modify('+2 month');
-                        $diff = $date1->diff($date2)->days;
-                        if($request->currency == "MXN")
-                        {
-                            $coupon->amount = intval($diff) * (($request->amount * ($nuc->yield/100))/360);
-                        }
-                        else
-                        {
-                            $coupon->amount = intval($diff) * (($request->amount * ($nuc->yield_usd/100))/360);
-                        }
-                        $coupon->pay_date = $date1;
-                        $coupon->fk_nuc = $opening->fk_nuc;
-                        $coupon->save();
-                        $number++;
-                        $date2= clone $date1;
-                    }
+                $date1 = clone $initial_date;
+                $date2= clone $deposit_date;
+                $number = 1;
+                for($cont = 0; $cont < 22; $cont += 2)
+                {
                     $coupon = new Coupon;
                     $coupon->number = $number;
-                    $date1->modify('+2 month');
+                    if($cont != 0) $date1->modify('+2 month');
                     $diff = $date1->diff($date2)->days;
                     if($request->currency == "MXN")
                     {
                         $coupon->amount = intval($diff) * (($request->amount * ($nuc->yield/100))/360);
-                        if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($request->amount * ($nuc->yield/100))/360);
-                        else $coupon->amount -= intval($initialdiff) * (($request->amount * ($nuc->yield/100))/360);
                     }
                     else
                     {
                         $coupon->amount = intval($diff) * (($request->amount * ($nuc->yield_usd/100))/360);
-                        if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($request->amount * ($nuc->yield_usd/100))/360);
-                        else $coupon->amount -= intval($initialdiff) * (($request->amount * ($nuc->yield_usd/100))/360);
                     }
-                    // dd($coupon->amount);
                     $coupon->pay_date = $date1;
                     $coupon->fk_nuc = $opening->fk_nuc;
                     $coupon->save();
+                    $number++;
+                    $date2= clone $date1;
                 }
+                $coupon = new Coupon;
+                $coupon->number = $number;
+                $date1->modify('+2 month');
+                $diff = $date1->diff($date2)->days;
+                if($request->currency == "MXN")
+                {
+                    $coupon->amount = intval($diff) * (($request->amount * ($nuc->yield/100))/360);
+                    if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($request->amount * ($nuc->yield/100))/360);
+                    else $coupon->amount -= intval($initialdiff) * (($request->amount * ($nuc->yield/100))/360);
+                }
+                else
+                {
+                    $coupon->amount = intval($diff) * (($request->amount * ($nuc->yield_usd/100))/360);
+                    if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($request->amount * ($nuc->yield_usd/100))/360);
+                    else $coupon->amount -= intval($initialdiff) * (($request->amount * ($nuc->yield_usd/100))/360);
+                }
+                // dd($coupon->amount);
+                $coupon->pay_date = $date1;
+                $coupon->fk_nuc = $opening->fk_nuc;
+                $coupon->save();
+            }
         }
 
-        $opening = Opening::where('id',$request->id)->update(['fk_agent'=>$request->fk_agent,'fk_insurance'=>$request->fk_insurance]);
+        $opening = Opening::where('id',$request->id)->update(['fk_agent'=>$request->fk_agent,'fk_client'=>$request->fk_client,'fk_insurance'=>$request->fk_insurance]);
 
         $profile = User::findProfile();
         $perm_btn =Permission::permBtns($profile,31);

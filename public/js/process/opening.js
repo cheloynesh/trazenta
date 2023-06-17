@@ -91,7 +91,7 @@ function FillTable(data,profile,permission)
 
     data.forEach( function(valor, indice, array) {
         btnStatAg = '<button class="btn btn-info" style="color: #'+valor.font_color+'; background-color: #'+valor.color+'; border-color: #'+valor.border_color+'" onclick="opcionesEstatusAgente('+valor.oid+')">'+valor.name+'</button>';
-        btnEdit = '<button href="#|" class="btn btn-warning" onclick="editarApertura('+valor.oid+')" ><i class="fa fa-edit"></i></button>';
+        btnEdit = '<button href="#|" class="btn btn-warning" onclick="editarApertura('+valor.oid+')" ><i class="fas fa-edit"></i></button>';
         btnTrash = '<button href="#|" class="btn btn-danger" onclick="eliminarApertura('+valor.oid+')"><i class="fa fa-trash"></i></button>';
         if (profile != 12)
         {

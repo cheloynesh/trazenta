@@ -16,9 +16,9 @@ class MonthComissionController extends Controller
     public function index(){
         $profile = User::findProfile();
         $users = DB::table('users')->select('users.id',DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(users.firstname, "")," ",IFNULL(users.lastname, "")) AS name'))
-            ->join('Client',"fk_agent","=","users.id")
-            ->join('Nuc',"fk_client","=","Client.id")
-            ->where("month_flag","=","8")
+            ->join('Nuc',"fk_agent","=","users.id")
+            ->where("active_stat","=","1")
+            ->where("month_flag","=","7")
             ->groupBy("name")
             ->whereNull('users.deleted_at')->get();
         $perm = Permission::permView($profile,21);
@@ -36,13 +36,14 @@ class MonthComissionController extends Controller
     public function GetInfo($id)
     {
         $clients = DB::table('Nuc')->select("Nuc.id as idNuc","nuc", DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS client_name'))
-        ->join('Client',"Client.id","=","fk_client")
-        ->where('fk_agent',$id)
-        ->where("month_flag","=","8")
-        ->whereNull('Client.deleted_at')
-        ->get();
-        $regime = DB::table('users')->select('regime')->where('id',$id)->first();
-        return response()->json(['status'=>true, "regime"=>$regime->regime, "data"=>$clients]);
+            ->join('Client',"Client.id","=","fk_client")
+            ->where('Nuc.fk_agent',$id)
+            ->where("month_flag","=","7")
+            ->where("active_stat","=","1")
+            ->whereNull('Client.deleted_at')
+            ->get();
+        $regime = DB::table('users')->select('regime','dlls')->where('id',$id)->first();
+        return response()->json(['status'=>true, "regime"=>$regime, "data"=>$clients]);
     }
 
     // public function GetInfoMonth($id,$month,$year)
@@ -62,7 +63,7 @@ class MonthComissionController extends Controller
     //     return response()->json(['status'=>true, "data"=>$movements]);
     // }
 
-    public function ExportPDF($id,$month,$year,$TC,$regime){
+    public function ExportPDF($id,$month,$year,$TC,$regime,$dlls){
 
         // dd($id,$month,$year,$TC);
         $b_amount = 0;
@@ -76,14 +77,13 @@ class MonthComissionController extends Controller
         $userName = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
             ->where('users.id',$id)->whereNull('users.deleted_at')->first();
         $nucs = DB::table('Nuc')->select("Nuc.id as id")
-            ->join('Client',"Client.id","=","fk_client")
             ->where("month_flag","=","8")
             ->where('fk_agent',$id)
             ->get();
         $clients = DB::table('Client')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS clName'),'Nuc.id as nucid')
             ->join('Nuc',"fk_client","=","Client.id")
             ->where("month_flag","=","8")
-            ->where('fk_agent',$id)->get();
+            ->where('Nuc.fk_agent',$id)->get();
         $clientNames = "";
 
         if(intval($month) == 1)
@@ -104,7 +104,7 @@ class MonthComissionController extends Controller
         $cnnames = "";
         foreach ($nucs as $nuc)
         {
-            $value = $this->calculo($nuc->id,$monthless,$year,$TC,$regime);
+            $value = $this->calculo($nuc->id,$monthless,$year,$TC,$regime,$dlls);
             // dd($value);
             $b_amount += $value["gross_amount"];
             $IVA += $value["iva_amount"];
@@ -121,15 +121,13 @@ class MonthComissionController extends Controller
         {
             if(array_search($client->nucid, $validNucs) != false)
             {
-                // $clientNames = $clientNames.$client->clName."<br>";
-
-                if(array_search($client->clName, $validNames) == false)
-                {
-                    array_push($validNames,$client->clName);
-                    $clientNames = $clientNames.$client->clName."<br>";
-                }
-
+                array_push($validNames,$client->clName);
             }
+        }
+        $validNames = array_unique($validNames);
+        foreach ($validNames as $name)
+        {
+            $clientNames = $clientNames.$name."<br>";
         }
         // dd($cnnames);
         // dd($monthless);
@@ -282,14 +280,14 @@ class MonthComissionController extends Controller
         else
             $monthless = intval($request->month) - 1;
 
-        $values = $this->calculo($request->id,$monthless,$request->year,$request->TC,$request->regime);
+        $values = $this->calculo($request->id,$monthless,$request->year,$request->TC,$request->regime,$request->dlls);
         // dd(number_format($iva_amount,2,'.',''));
         return response()->json(['status'=>true, "b_amount"=>number_format($values["b_amount"],2,'.',','),'dll_conv'=>number_format($values["dll_conv"],2,'.',','),'usd_invest'=>number_format($values["usd_invest1"],2,'.',','),
         'gross_amount'=>number_format($values["gross_amount"],2,'.',','), 'iva_amount'=>number_format($values["iva_amount"],2,'.',','), 'ret_isr'=>number_format($values["ret_isr"],2,'.',','),
         'ret_iva'=>number_format($values["ret_iva"],2,'.',','), 'n_amount'=>number_format($values["n_amount"],2,'.',',')]);
     }
 
-    public function calculo($id, $month, $year, $TC, $regime)
+    public function calculo($id, $month, $year, $TC, $regime, $dlls)
     {
         // dd($request->all());
         $b_amount=0;//Saldo cierre de mes
@@ -503,7 +501,7 @@ class MonthComissionController extends Controller
         }
 
         $usd_invest = $dll_conv/5000; //por cada 5000 sobre el monto invertido
-        $usd_invest1 = $usd_invest*10; //se multiplica por 10 el resultado obtenido
+        $usd_invest1 = $usd_invest*$dlls; //se multiplica por 10 el resultado obtenido
 
         $gross_amount = $usd_invest1 * $TC; //monto bruto
 
@@ -531,5 +529,11 @@ class MonthComissionController extends Controller
     {
         $client = User::where('id',$request->id)->update(['regime'=>$request->regime]);
         return response()->json(['status'=>true, 'message'=>"Régimen Actualizado"]);
+    }
+
+    public function updateDlls(Request $request)
+    {
+        $client = User::where('id',$request->id)->update(['dlls'=>$request->dlls]);
+        return response()->json(['status'=>true, 'message'=>"Comisión Actualizada"]);
     }
 }

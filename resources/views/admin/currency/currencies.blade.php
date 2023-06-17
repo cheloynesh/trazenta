@@ -59,10 +59,10 @@
                             @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                                 <td>
                                     @if ($perm_btn['modify']==1)
-                                        <button href="#|" class="btn btn-warning" onclick="editarMoneda({{$application->id}})" ><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button href="#|" class="btn btn-warning" onclick="editarMoneda({{$application->id}})" ><i class="fas fa-edit"></i></button>
                                     @endif
                                     @if ($perm_btn['erase']==1)
-                                        <button href="#|" class="btn btn-danger" onclick="eliminarMoneda({{$application->id}})"><i class="fa-solid fa-trash"></i></button>
+                                        <button href="#|" class="btn btn-danger" onclick="eliminarMoneda({{$application->id}})"><i class="fas fa-trash"></i></button>
                                     @endif
                                 </td>
                             @endif

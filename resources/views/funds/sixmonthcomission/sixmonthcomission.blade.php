@@ -13,7 +13,7 @@
 
                     <div class="modal-header">
                         <h4 class="modal-title" id="gridModalLabek">Comisiones</h4>
-                        <button type="button" class="close" aria-label="Close" onclick="cancelarCalc()"><span aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" aria-label="Close" onclick=cancelarCalc("#myModalCalc")><span aria-hidden="true">&times;</span></button>
                     </div>
 
                     <div class="modal-body">
@@ -42,7 +42,7 @@
                                     <div class="col-lg-4">
                                         <div class="form-group">
                                             <label for="">Regimen</label> <br>
-                                            <input id = "onoffRegime" type="checkbox" data-toggle="toggle" data-on = "Regimen General" data-off="RESICO" data-width="180" onchange=updateRegime()>
+                                            <input id = "onoffRegime" type="checkbox" data-toggle="toggle" data-on = "Regimen General" data-off="RESICO" data-width="180" onchange=updateRegime("#onoffRegime")>
                                         </div>
                                     </div>
                                 </div>
@@ -90,11 +90,104 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secundary" onclick="cancelarCalc()">Cancelar</button>
-                        <button type="button" onclick="fillCalc()" class="btn btn-primary" title="Calcular"><i class="fa-solid fa-arrows-rotate"></i></button>
-                        <button type="button" hidden onclick="pay(1)" id="paybtn" class="btn btn-primary" title="Marcar como pagado"><i class="fa-solid fa-check"></i> <i class="fa-solid fa-dollar-sign"></i></button>
-                        <button type="button" hidden onclick="pay(0)" id="cancelbtn" class="btn btn-danger" title="Cancelar Pago"><i class="fa-solid fa-ban"></i> <i class="fa-solid fa-dollar-sign"></i></button>
-                        <button type="button" onclick="calcular()" class="btn btn-primary" title="Descargar recibo PDF"><i class="fa-regular fa-file-pdf"></i></button>
+                        <button type="button" class="btn btn-secundary" onclick=cancelarCalc("#myModalCalc")>Cancelar</button>
+                        <button type="button" onclick="fillCalc()" class="btn btn-primary" title="Calcular"><i class="fas fa-sync"></i></button>
+                        <button type="button" hidden onclick="pay(1)" id="paybtn" class="btn btn-primary" title="Marcar como pagado"><i class="fas fa-check"></i> <i class="fas fa-dollar-sign"></i></button>
+                        <button type="button" hidden onclick="pay(0)" id="cancelbtn" class="btn btn-danger" title="Cancelar Pago"><i class="fas fa-ban"></i> <i class="fas fa-dollar-sign"></i></button>
+                        <button type="button" onclick="calcular()" class="btn btn-primary" title="Descargar recibo PDF"><i class="fas fa-file-pdf"></i></button>
+                        {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- termina modal --}}
+        {{-- modal Cálculo multiple --}}
+        <div id="myModalCalcAll" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Comisiones</h4>
+                        <button type="button" class="close" aria-label="Close" onclick=cancelarCalc("#myModalCalcAll")><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-lg-12">
+                                {{-- <div class="row align-items-center"> --}}
+
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">Comisión</label>
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">$</div>
+                                                </div>
+                                                <input type="text" id="comitionAll" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency" name="comitionAll" placeholder="Ingresa la comsion" value="1,300.00" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">Mes</label>
+                                            <input type="month" id="monthAll" name="monthAll" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">Regimen</label> <br>
+                                            <input id = "onoffRegimeAll" type="checkbox" data-toggle="toggle" data-on = "Regimen General" data-off="RESICO" data-width="180" onchange=updateRegime("#onoffRegimeAll")>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">Suma de Saldos</label>
+                                            <input type="text" id="balanceAll" name="balanceAll" placeholder="Saldo al cierre" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">Monto bruto</label>
+                                            <input type="text" id="b_amountAll" name="b_amountAll" placeholder="Monto bruto" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">IVA</label>
+                                            <input type="text" id="ivaAll" name="ivaAll" placeholder="IVA" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">RET ISR</label>
+                                            <input type="text" id="ret_isrAll" name="ret_isrAll" placeholder="RET ISR" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">RET IVA</label>
+                                            <input type="text" id="ret_ivaAll" name="ret_ivaAll" placeholder="RET IVA" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">Monto Neto</label>
+                                            <input type="text" id="n_amountAll" name="n_amountAll" placeholder="Monto Neto" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick=cancelarCalc("#myModalCalcAll")>Cancelar</button>
+                        <button type="button" onclick="fillCalcAll()" class="btn btn-primary" title="Calcular"><i class="fas fa-sync"></i></button>
+                        <button type="button" onclick="calcularAll()" class="btn btn-primary" title="Descargar recibo PDF"><i class="fas fa-file-pdf"></i></button>
                         {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
                     </div>
                 </div>
@@ -102,11 +195,32 @@
         </div>
         {{-- termina modal --}}
         {{-- Inicia pantalla de inicio --}}
-        <br><br>
+        <br>
+        <div class="bd-example bd-example-padded-bottom">
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class = "form-group">
+                            <button type="button" class="btn btn-success" title="Calcular seleccionados" onclick="CalculoMult()"><i class="fas fa-check-square"></i> <i class="fas fa-calculator"></i></button>
+                            <button type="button" class="btn btn-primary" title="Marcar seleccionados como pagado" onclick="payAll(1)"><i class="fas fa-check-square"></i> <i class="fas fa-check"></i> <i class="fas fa-dollar-sign"></i></button>
+                            <button type="button" class="btn btn-danger" title="Cancelar pago de seleccionados" onclick="payAll(0)"><i class="fas fa-check-square"></i> <i class="fas fa-ban"></i> <i class="fas fa-dollar-sign"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class = "form-group">
+                            <input class="form-check-input" type="checkbox" onclick="chkActive()" id="chkActive"> Mostrar Pagado
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
             <table class="table table-striped table-hover text-center" id="tbProf">
                 <thead>
-                    <th class="text-center">Usuarios-Agentes</th>
+                    <th class="text-center"></th>
+                    <th class="text-center">Agente</th>
                     <th class="text-center">Cliente</th>
                     <th class="text-center">Obligación</th>
                     <th class="text-center">Pagado</th>
@@ -119,6 +233,7 @@
                 <tbody>
                     @foreach ($users as $user)
                         <tr id="{{$user->nucid}}">
+                            <td>{{$user->nucid}}</td>
                             <td>{{$user->usname}}</td>
                             <td>{{$user->clname}}</td>
                             <td>{{$user->nuc}}</td>

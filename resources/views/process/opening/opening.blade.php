@@ -466,7 +466,7 @@
                             </td>
                         @endif
                         <td>
-                            <button href="#|" class="btn btn-warning" onclick="editarApertura({{$opening->oid}})" ><i class="fa fa-edit"></i></button>
+                            <button href="#|" class="btn btn-warning" onclick="editarApertura({{$opening->oid}})" ><i class="fas fa-edit"></i></button>
                             @if ($perm_btn['erase']==1)
                                 <button href="#|" class="btn btn-danger" onclick="eliminarApertura({{$opening->oid}})"><i class="fa fa-trash"></i></button>
                             @endif

@@ -70,6 +70,37 @@ var formatter = new Intl.NumberFormat('en-US', {
 
 idnuc = 0;
 
+var active = 1;
+
+function FillTable(data,profile,permission)
+{
+    // alert("entre");
+    var table = $('#tbProf').DataTable();
+    var btnStat = '';
+    var btnMov = '';
+    var btnEdit = '';
+    var btnTrash = '';
+    var activeStat = '';
+    table.clear();
+
+    data.forEach( function(valor, indice, array) {
+        btnMov = '<a href="#|" class="btn btn-primary" onclick="nuevoMovimiento('+valor.id+')" >Cuponera</a>';
+        btnEdit = '<button href="#|" class="btn btn-warning" onclick="editarNuc('+valor.id+')" ><i class="fas fa-edit"></i></button>';
+        btnTrash = '<button href="#|" class="btn btn-danger" onclick="eliminarNuc('+valor.id+')"><i class="fa fa-trash"></i></button>';
+        if(valor.active_stat == 0) activeStat = '<font color="red">INACTIVO</font>'; else activeStat = '<font color="green">ACTIVO</font>';
+        console.log(valor.active_stat);
+        if (profile != 12)
+        {
+            table.row.add([valor.name,valor.nuc,valor.agname,valor.amount,valor.currency,activeStat,valor.deposit_date,valor.end_date,btnMov+" "+btnEdit+" "+btnTrash]).node().id = valor.id;
+        }
+        else
+        {
+            table.row.add([valor.name,valor.nuc,valor.agname,valor.amount,valor.currency,activeStat,valor.deposit_date,valor.end_date,btnMov]).node().id = valor.id;
+        }
+    });
+    table.draw(false);
+}
+
 function nuevoMovimiento(id)
 {
     idnuc = id;
@@ -110,6 +141,7 @@ function eliminarNuc(id)
     var data = {
         'id':id,
         "_token": $("meta[name='csrf-token']").attr("content"),
+        'active':active
     };
     alertify.confirm("Eliminar Contrato","¿Desea borrar el contrato?",
         function(){
@@ -120,10 +152,11 @@ function eliminarNuc(id)
                 dataType:'json',
                 success:function(result)
                 {
-                    window.location.reload(true);
+                    FillTable(result.nucs,result.profile,result.permission);
+                    alertify.success('Eliminado');
+                    // window.location.reload(true);
                 }
             })
-            alertify.success('Eliminado');
         },
         function(){
             alertify.error('Cancelado');
@@ -194,6 +227,7 @@ function editarNuc(id)
         {
             $("#nucSixMonth").val(result.data.nuc);
             $("#selectClient").val(result.data.fk_client);
+            $("#selectAgent").val(result.data.fk_agent);
             $("#amountSixMonth").val(parseFloat(result.data.amount).toLocaleString('en-US'));
             $("#selectCurrencySixMonth").val(result.data.currency);
             $("#initial_date").val(result.data.deposit_date);
@@ -215,6 +249,7 @@ function actualizarNuc()
 {
     var selectCurrency = $("#selectCurrencySixMonth").val();
     var nuc = $("#nucSixMonth").val();
+    var fk_agent = $("#selectAgent").val();
     var amount = $("#amountSixMonth").val().replace(/[^0-9.]/g, '');
     var deposit_date = $("#initial_date").val();
     var fk_application = $("#selectAppliSixMonth").val();
@@ -232,10 +267,12 @@ function actualizarNuc()
         'amount':amount,
         'deposit_date':deposit_date,
         'fk_charge':fk_charge,
+        'fk_agent':fk_agent,
         'fk_client':fk_client,
         'fk_application':fk_application,
         'fk_payment_form':fk_payment_form,
         'fk_insurance':fk_insurance,
+        'active':active
     };
     jQuery.ajax({
         url:route,
@@ -246,7 +283,25 @@ function actualizarNuc()
         {
             alertify.success(result.message);
             $("#sixMonthNucModal").modal('hide');
-            window.location.reload(true);
+            FillTable(result.nucs,result.profile,result.permission);
+            // window.location.reload(true);
+        }
+    })
+}
+
+function chkActive()
+{
+    if (document.getElementById('chkActive').checked) active = 0; else active = 1;
+
+    var route = baseUrl + '/GetLP/'+active;
+    // alert(route);
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            FillTable(result.nucs,result.profile,result.permission);
         }
     })
 }

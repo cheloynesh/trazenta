@@ -29,6 +29,9 @@ class SixMonthFundController extends Controller
         $cont = 0;
         $clients = DB::table('Client')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
         ->orderBy('name')->pluck('name','id');
+        $agents = DB::table('users')->select('users.id',DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
+        ->whereNull('users.deleted_at')
+        ->orderBy('name')->pluck('name','id');
         $perm = Permission::permView($profile,24);
         $perm_btn =Permission::permBtns($profile,24);
         $paymentForms = Paymentform::pluck('name','id');
@@ -42,20 +45,11 @@ class SixMonthFundController extends Controller
 
         if($profile == 12)
         {
-            $nucs = DB::table('SixMonth_fund')
-                ->select('*',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),'nuc','SixMonth_fund.id as id',DB::raw('CONCAT("$", FORMAT(amount, 2)) AS amount'))
-                ->join('Client',"Client.id","=","fk_client")
-                ->where('fk_agent',$user)
-                ->whereNull('SixMonth_fund.deleted_at')
-                ->get();
+            $nucs = DB::select('call fondolpAgente(?,?)',[1,$user]);
         }
         else
         {
-            $nucs = DB::table('SixMonth_fund')
-                ->select('*',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),'nuc','SixMonth_fund.id as id',DB::raw('CONCAT("$", FORMAT(amount, 2)) AS amount'))
-                ->join('Client',"Client.id","=","fk_client")
-                ->whereNull('SixMonth_fund.deleted_at')
-                ->get();
+            $nucs = DB::select('call fondolp(?)',[1]);
         }
         // dd($clients);
         if($perm==0)
@@ -64,19 +58,40 @@ class SixMonthFundController extends Controller
         }
         else
         {
-            return view('funds.sixmonthfund.sixmonthfund', compact('nucs','perm_btn','cmbStatus','clients','paymentForms','applications','insurances','charges'));
+            return view('funds.sixmonthfund.sixmonthfund', compact('nucs','perm_btn','cmbStatus','clients','paymentForms','applications','insurances','charges','agents'));
         }
     }
+
+    public function ReturnData($profile,$active)
+    {
+        if($active == 0) $active = '%';
+        $user = User::user_id();
+        if($profile == 12)
+        {
+            $nucs = DB::select('call fondolpAgente(?,?)',[$active,$user]);
+        }
+        else
+        {
+            $nucs = DB::select('call fondolp(?)',[$active]);
+        }
+        return $nucs;
+    }
+
     public function GetInfo($id)
     {
         $nuc = Coupon::where('fk_nuc',$id)->whereNull('deleted_at')->get();
         return response()->json(['status'=>true, "data"=>$nuc]);
     }
-    public function destroy($id)
+    public function destroy($id,Request $request)
     {
         $SixMonth_fund = SixMonth_fund::find($id);
         $SixMonth_fund->delete();
-        return response()->json(['status'=>true, "message"=>"Fondo eliminado"]);
+
+        $profile = User::findProfile();
+        $perm_btn =Permission::permBtns($profile,31);
+        $nucs = $this->ReturnData($profile,$request->active);
+
+        return response()->json(['status'=>true, "message"=>"Fondo eliminado", "nucs" => $nucs, "profile" => $profile, "permission" => $perm_btn]);
     }
     public function SaveNucSixMonth($moves)
     {
@@ -302,7 +317,7 @@ class SixMonthFundController extends Controller
 
         // dd($end_date);
 
-        $nucEdit = SixMonth_fund::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client, 'amount'=>$request->amount,'currency'=>$request->currency,
+        $nucEdit = SixMonth_fund::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_agent'=>$request->fk_agent, 'amount'=>$request->amount,'currency'=>$request->currency,
         'deposit_date'=>$deposit_date,'initial_date'=>$initial_date,'end_date'=>$end_date, 'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance]);
 
         if(floatval($request->amount) != floatval($nuc->amount) || $request->currency != $nuc->currency || $request->deposit_date != $nuc->deposit_date)
@@ -358,6 +373,19 @@ class SixMonthFundController extends Controller
             $coupon->save();
         }
 
-        return response()->json(['status'=>true, 'message'=>"Nuc Actualizado"]);
+        $profile = User::findProfile();
+        $perm_btn =Permission::permBtns($profile,31);
+        $nucs = $this->ReturnData($profile,$request->active);
+
+        return response()->json(['status'=>true, 'message'=>"Nuc Actualizado", "nucs" => $nucs, "profile" => $profile, "permission" => $perm_btn]);
+    }
+
+    public function GetLP($active)
+    {
+        $profile = User::findProfile();
+        $perm_btn =Permission::permBtns($profile,31);
+        $nucs = $this->ReturnData($profile,$active);
+        // dd($active);
+        return response()->json(['status'=>true, "nucs" => $nucs, "profile" => $profile, "permission" => $perm_btn]);
     }
 }

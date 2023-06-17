@@ -111,6 +111,19 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
+                                            <label for="">Agente:</label>
+                                            <select name="selectAgent" id="selectAgent" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($agents as $id => $agent)
+                                                    <option value='{{ $id }}'>{{ $agent }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
                                             <label for="">Monto</label>
                                             <input type="text" id="amountSixMonth" name="amountSixMonth" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency">
                                         </div>
@@ -202,7 +215,7 @@
     @include('funds.status.status')
         {{-- Inicia pantalla de inicio --}}
         <br>
-        @if ($perm_btn['addition']==1)
+        {{-- @if ($perm_btn['addition']==1)
             <div class="col-lg-12">
                 <div class="row">
                     <div class="col-lg-6">
@@ -217,15 +230,28 @@
                     </div>
                 </div>
             </div>
-        @endif
+        @endif --}}
+        <div class="bd-example bd-example-padded-bottom">
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class = "form-group">
+                            <input class="form-check-input" type="checkbox" onclick="chkActive()" id="chkActive"> Mostrar Inactivos
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <br>
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
             <table class="table table-striped table-hover text-center" id="tbProf">
                 <thead>
-                    <th class="text-center">Nombre</th>
+                    <th class="text-center">Cliente</th>
                     <th class="text-center">Obligación</th>
+                    <th class="text-center">Agente</th>
                     <th class="text-center">Monto</th>
                     <th class="text-center">Moneda</th>
+                    <th class="text-center">Estatus</th>
                     <th class="text-center">Fecha de Inicio</th>
                     <th class="text-center">Fecha de Fin</th>
                     {{-- <th class="text-center">Estatus</th> --}}
@@ -237,8 +263,14 @@
                         <tr id="{{$nuc->id}}">
                             <td>{{$nuc->name}}</td>
                             <td>{{$nuc->nuc}}</td>
+                            <td>{{$nuc->agname}}</td>
                             <td>{{$nuc->amount}}</td>
                             <td>{{$nuc->currency}}</td>
+                            @if($nuc->active_stat == 0)
+                                <td style="color: red">INACTIVO</td>
+                            @else
+                                <td style="color: green">ACTIVO</td>
+                            @endif
                             <td>{{$nuc->deposit_date}}</td>
                             <td>{{$nuc->end_date}}</td>
                             {{-- <td>
@@ -247,8 +279,8 @@
                             <td>
                                 <a href="#|" class="btn btn-primary" onclick="nuevoMovimiento({{$nuc->id}})" >Cuponera</a>
                                 @if ($perm_btn['modify']==1)
-                                    <button href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" ><i class="fa-solid fa-pen-to-square"></i></button>
-                                    <button href="#|" class="btn btn-danger" onclick="eliminarNuc({{$nuc->id}})" ><i class="fa-solid fa-trash"></i></button>
+                                    <button href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" ><i class="fas fa-edit"></i></button>
+                                    <button href="#|" class="btn btn-danger" onclick="eliminarNuc({{$nuc->id}})" ><i class="fa fa-trash"></i></button>
                                     {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
                                 @endif
                             </td>

@@ -103,7 +103,7 @@ function nuevoMovimiento(id)
                 {
                     button = valor.auth;
                 }
-                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa-solid fa-trash"></i></button>';
+                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fas fa-trash"></i></button>';
                 table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
                     valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
             });
@@ -203,7 +203,7 @@ function guardarMovimiento()
                         {
                             button = valor.auth;
                         }
-                        btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa-solid fa-trash"></i></button>';
+                        btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fas fa-trash"></i></button>';
                         table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
                             valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
                     });
@@ -304,7 +304,7 @@ function guardarAuth()
                 {
                     button = valor.auth;
                 }
-                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa-solid fa-trash"></i></button>';
+                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fas fa-trash"></i></button>';
                 table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
                     valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
             });
@@ -417,7 +417,7 @@ function deleteMove(id)
                         {
                             button = valor.auth;
                         }
-                        btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa-solid fa-trash"></i></button>';
+                        btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fas fa-trash"></i></button>';
                         table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
                             valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
                     });

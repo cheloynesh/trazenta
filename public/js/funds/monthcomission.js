@@ -83,10 +83,13 @@ function abrirComision(id)
         dataType:'json',
         success:function(result)
         {
-            if(result.regime == 0)
+            // alert(result.regime)
+            if(result.regime.regime == 0)
                 $("#onoffRegime").bootstrapToggle('on');
             else
                 $("#onoffRegime").bootstrapToggle('off');
+
+            $("#dlls_com").val(result.regime.dlls);
 
             flagComition = 1;
             table.clear();
@@ -107,50 +110,56 @@ function cancelarComision()
 function calcular()
 {
     var TC = $("#change").val();
+    var dlls = $("#dlls_com").val();
     var date = $("#month").val();
     var reg = $("#onoffRegime").prop('checked');
     var regime = 0;
 
-    if(reg)
-        regime = 1;
+    if(TC == "" || date == "") alert ("Ningun campo debe quedar vacio");
     else
-        regime = 0;
+    {
+        if(reg)
+            regime = 1;
+        else
+            regime = 0;
 
-    date = date.split("-");
-    var year = date[0];
-    var month = date[1];
+        date = date.split("-");
+        var year = date[0];
+        var month = date[1];
 
-    var route = baseUrl + '/ExportPDF/'+ idUser + "/" + month + "/" + year + "/"+ TC + "/" + regime;
+        var route = baseUrl + '/ExportPDF/'+ idUser + "/" + month + "/" + year + "/"+ TC + "/" + regime + "/" + dlls;
 
-    $.ajaxSetup({
-        headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
-    });
+        $.ajaxSetup({
+            headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
+        });
 
-    var form = $('<form></form>');
+        var form = $('<form></form>');
 
-    form.attr("method", "get");
-    form.attr("action", route);
-    form.attr('_token',$("meta[name='csrf-token']").attr("content"));
-    $.each(function(key, value) {
+        form.attr("method", "get");
+        form.attr("action", route);
+        form.attr('_token',$("meta[name='csrf-token']").attr("content"));
+        $.each(function(key, value) {
+            var field = $('<input></input>');
+            field.attr("type", "hidden");
+            field.attr("name", key);
+            field.attr("value", value);
+            form.append(field);
+        });
         var field = $('<input></input>');
         field.attr("type", "hidden");
-        field.attr("name", key);
-        field.attr("value", value);
+        field.attr("name", "_token");
+        field.attr("value", $("meta[name='csrf-token']").attr("content"));
         form.append(field);
-    });
-    var field = $('<input></input>');
-    field.attr("type", "hidden");
-    field.attr("name", "_token");
-    field.attr("value", $("meta[name='csrf-token']").attr("content"));
-    form.append(field);
-    $(document.body).append(form);
-    form.submit();
+        $(document.body).append(form);
+        form.submit();
+    }
 }
 
 function abrirResumen(idNuc)
 {
     var TC = $("#change").val();
     var date = $("#month").val();
+    var dlls = $("#dlls_com").val();
     var reg = $("#onoffRegime").prop('checked');
     var regime = 0;
     if(reg)
@@ -174,7 +183,8 @@ function abrirResumen(idNuc)
             'id':idNuc,
             'year':year,
             'month':month,
-            'regime':regime
+            'regime':regime,
+            'dlls':dlls
         }
 
         var route = baseUrl+'/GetInfoComition';
@@ -262,6 +272,7 @@ function updateRegime()
             regime = 1;
 
         var route = baseUrl+"/UpdateRegime";
+        // alert(route);
         var data = {
             "_token": $("meta[name='csrf-token']").attr("content"),
             'id':idUser,
@@ -278,4 +289,26 @@ function updateRegime()
             }
         })
     }
+}
+
+function updateDlls()
+{
+    var dlls = $("#dlls_com").val();
+
+    var route = baseUrl+"/updateDlls";
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'id':idUser,
+        'dlls':dlls
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+            alertify.success(result.message);
+        }
+    })
 }

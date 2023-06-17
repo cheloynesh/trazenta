@@ -98,6 +98,35 @@ var formatter = new Intl.NumberFormat('en-US', {
 
 var idnuc = 0;
 
+var active = 1;
+
+function FillTable(data,profile,permission)
+{
+    var table = $('#tbProf').DataTable();
+    var btnStat = '';
+    var btnMov = '';
+    var btnEdit = '';
+    var btnTrash = '';
+    var activeStat = '';
+    table.clear();
+
+    data.forEach( function(valor, indice, array) {
+        btnStat = '<button class="btn btn-info" style="background-color: #'+valor.color+'; border-color: #'+valor.color+'" onclick="opcionesEstatus('+valor.id+','+valor.statId+')">'+valor.estatus+'</button>';
+        btnMov = '<a href="#|" class="btn btn-primary" onclick="nuevoMovimiento('+valor.id+')" >Movimientos</a>';
+        btnEdit = '<button href="#|" class="btn btn-warning" onclick="editarNuc('+valor.id+')" ><i class="fas fa-edit"></i></button>';
+        btnTrash = '<button href="#|" class="btn btn-danger" onclick="deleteFund('+valor.id+')"><i class="fa fa-trash"></i></button>';
+        if(valor.active_stat == 0) activeStat = '<font color="red">INACTIVO</font>'; else activeStat = '<font color="green">ACTIVO</font>';
+        if (profile != 12)
+        {
+            table.row.add([valor.name,valor.nuc,valor.agname,activeStat,btnStat,btnMov+" "+btnEdit+" "+btnTrash]).node().id = valor.id;
+        }
+        else
+        {
+            table.row.add([valor.name,valor.nuc,valor.agname,activeStat,btnStat,btnMov]).node().id = valor.id;
+        }
+    });
+    table.draw(false);
+}
 
 function nuevoMovimiento(id)
 {
@@ -131,7 +160,7 @@ function nuevoMovimiento(id)
                 {
                     button = valor.auth;
                 }
-                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa-solid fa-trash"></i></button>';
+                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fas fa-trash"></i></button>';
                 table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
                     valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
             });
@@ -231,7 +260,7 @@ function guardarMovimiento()
                         {
                             button = valor.auth;
                         }
-                        btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa-solid fa-trash"></i></button>';
+                        btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fas fa-trash"></i></button>';
                         table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
                             valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
                     });
@@ -266,7 +295,8 @@ function actualizarEstatus()
     var data = {
         'id':id_initial,
         "_token": $("meta[name='csrf-token']").attr("content"),
-        'status':status
+        'status':status,
+        'active':active
     };
     jQuery.ajax({
         url:route,
@@ -277,7 +307,8 @@ function actualizarEstatus()
         {
             alertify.success(result.message);
             $("#myEstatusModal").modal('hide');
-            window.location.reload(true);
+            FillTable(result.nucs,result.profile,result.permission);
+            // window.location.reload(true);
         }
     })
 }
@@ -332,7 +363,7 @@ function guardarAuth()
                 {
                     button = valor.auth;
                 }
-                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa-solid fa-trash"></i></button>';
+                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fas fa-trash"></i></button>';
                 table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
                     valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
             });
@@ -355,10 +386,12 @@ function editarNuc(id)
         {
             $("#nuc").val(result.data.nuc);
             $("#selectClient").val(result.data.fk_client);
+            $("#selectAgent").val(result.data.fk_agent);
             $("#selectAppli").val(result.data.fk_application);
             $("#selectPaymentform").val(result.data.fk_payment_form);
             $("#selectCharge").val(result.data.fk_charge);
             $("#selectInsurance").val(result.data.fk_insurance);
+            $("#selectActiveStat").val(result.data.active_stat);
             $("#editModal").modal('show');
         }
     })
@@ -373,10 +406,12 @@ function actualizarNuc()
 {
     var nuc = $("#nuc").val();
     var fk_client = $("#selectClient").val();
+    var fk_agent = $("#selectAgent").val();
     var fk_application = $("#selectAppli").val();
     var fk_payment_form = $("#selectPaymentform").val();
     var fk_charge = $("#selectCharge").val();
     var fk_insurance = $("#selectInsurance").val();
+    var active_stat = $("#selectActiveStat").val();
     var route = "monthfunds/"+editNuc;
     var data = {
         'id':editNuc,
@@ -386,7 +421,10 @@ function actualizarNuc()
         'fk_payment_form':fk_payment_form,
         'fk_charge':fk_charge,
         'fk_client':fk_client,
+        'fk_agent':fk_agent,
         'fk_insurance':fk_insurance,
+        'active_stat':active_stat,
+        'active':active
     };
     jQuery.ajax({
         url:route,
@@ -397,7 +435,8 @@ function actualizarNuc()
         {
             alertify.success(result.message);
             $("#editModal").modal('hide');
-            window.location.reload(true);
+            FillTable(result.nucs,result.profile,result.permission);
+            // window.location.reload(true);
         }
     })
 }
@@ -457,7 +496,7 @@ function deleteMove(id)
                         {
                             button = valor.auth;
                         }
-                        btnTrash = '@if ($perm_btn['+'modify'+']==1)<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa-solid fa-trash"></i></button>@endif';
+                        btnTrash = '@if ($perm_btn['+'modify'+']==1)<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fas fa-trash"></i></button>@endif';
                         table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
                             valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
                     });
@@ -571,10 +610,11 @@ function deleteFund(id)
     var route = baseUrl + '/deleteFund';
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
-        "id":id
+        "id":id,
+        'active':active
     };
 
-    alertify.confirm("Eliminar Apertura","¿Desea borrar la Apertura?",
+    alertify.confirm("Eliminar Apertura","¿Desea borrar el fondo?",
         function(){
             jQuery.ajax({
                 url:route,
@@ -585,7 +625,7 @@ function deleteFund(id)
                 {
                     alertify.success(result.message);
                     $("#waitModal").modal('hide');
-
+                    FillTable(result.nucs,result.profile,result.permission);
                 },
                 error:function(result,error,errorTrown)
                 {
@@ -597,4 +637,21 @@ function deleteFund(id)
         function(){
             alertify.error('Cancelado');
     });
+}
+
+function chkActive()
+{
+    if (document.getElementById('chkActive').checked) active = 0; else active = 1;
+
+    var route = baseUrl + '/GetCP/'+active;
+    // alert(route);
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            FillTable(result.nucs,result.profile,result.permission);
+        }
+    })
 }

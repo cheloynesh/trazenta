@@ -61,7 +61,7 @@
                             @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                                 <td>
                                     @if ($perm_btn['modify']==1)
-                                        <button href="#|" class="btn btn-warning" onclick="editarCobro({{$charge->id}})" ><i class="fa fa-edit"></i></button>
+                                        <button href="#|" class="btn btn-warning" onclick="editarCobro({{$charge->id}})" ><i class="fas fa-edit"></i></button>
                                     @endif
                                     @if ($perm_btn['erase']==1)
                                         <button href="#|" class="btn btn-danger" onclick="eliminarCobro({{$charge->id}})"><i class="fa fa-trash"></i></button>

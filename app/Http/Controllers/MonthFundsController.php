@@ -14,6 +14,7 @@ use App\Status;
 use App\Paymentform;
 use App\Charge;
 use App\Application;
+use App\SixMonth_fund;
 use App\Exports\ExportFund;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\MovesImport;
@@ -28,6 +29,9 @@ class MonthFundsController extends Controller
         $clients = DB::table('Client')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
         ->whereNull('Client.deleted_at')
         ->orderBy('name')->pluck('name','id');
+        $agents = DB::table('users')->select('users.id',DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
+        ->whereNull('users.deleted_at')
+        ->orderBy('name')->pluck('name','id');
         $perm = Permission::permView($profile,19);
         $perm_btn =Permission::permBtns($profile,19);
         $paymentForms = Paymentform::pluck('name','id');
@@ -41,24 +45,11 @@ class MonthFundsController extends Controller
 
         if($profile == 12)
         {
-            $nucs = DB::table('Nuc')
-                ->select('Nuc.id as id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),"nuc",'Status.id as statId','Status.name as estatus','color')
-                ->join('Client',"Client.id","=","Nuc.fk_client")
-                ->join('Status',"Nuc.estatus","=","Status.id")
-                ->where('fk_agent',$user)
-                ->whereNull('Client.deleted_at')
-                ->whereNull('Nuc.deleted_at')
-                ->get();
+            $nucs = DB::select('call fondocpAgente(?,?)',[1,$user]);
         }
         else
         {
-            $nucs = DB::table('Nuc')
-                ->select('Nuc.id as id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),"nuc",'Status.id as statId','Status.name as estatus','color')
-                ->join('Client',"Client.id","=","Nuc.fk_client")
-                ->join('Status',"Nuc.estatus","=","Status.id")
-                ->whereNull('Client.deleted_at')
-                ->whereNull('Nuc.deleted_at')
-                ->get();
+            $nucs = DB::select('call fondocp(?)',[1]);
         }
 
         // dd($clients);
@@ -68,9 +59,25 @@ class MonthFundsController extends Controller
         }
         else
         {
-            return view('funds.monthfund.monthfunds', compact('nucs','perm_btn','cmbStatus','clients','paymentForms','applications','insurances','charges'));
+            return view('funds.monthfund.monthfunds', compact('nucs','perm_btn','cmbStatus','clients','paymentForms','applications','insurances','charges','agents'));
         }
     }
+
+    public function ReturnData($profile,$active)
+    {
+        if($active == 0) $active = '%';
+        $user = User::user_id();
+        if($profile == 12)
+        {
+            $nucs = DB::select('call fondocpAgente(?,?)',[$active,$user]);
+        }
+        else
+        {
+            $nucs = DB::select('call fondocp(?)',[$active]);
+        }
+        return $nucs;
+    }
+
     public function GetInfo($id)
     {
         $movimientos = DB::table('Month_fund')->select("*","Month_fund.id as id",DB::raw('IFNULL(auth_date, "-") as auth'))->join('Nuc',"Nuc.id","=","fk_nuc")->where('fk_nuc',$id)->whereNull('Month_fund.deleted_at')->get();
@@ -122,6 +129,7 @@ class MonthFundsController extends Controller
         $fk_nuc = $fund->fk_nuc;
         $fund->delete();
         $movimientos = DB::table('Month_fund')->select("*","Month_fund.id as id",DB::raw('IFNULL(auth_date, "-") as auth'))->join('Nuc',"Nuc.id","=","fk_nuc")->where('fk_nuc',$fk_nuc)->whereNull('Month_fund.deleted_at')->get();
+
         return response()->json(['status'=>true, "message"=>"Movimiento eliminado", "data"=>$movimientos]);
 
     }
@@ -131,7 +139,12 @@ class MonthFundsController extends Controller
         // dd($status);
         $status->estatus = $request->status;
         $status->save();
-        return response()->json(['status'=>true, "message"=>"Estatus Actualizado"]);
+
+        $profile = User::findProfile();
+        $perm_btn =Permission::permBtns($profile,31);
+        $nucs = $this->ReturnData($profile,$request->active);
+
+        return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "nucs" => $nucs, "profile" => $profile, "permission" => $perm_btn]);
     }
     public function updateAuth(Request $request)
     {
@@ -149,8 +162,13 @@ class MonthFundsController extends Controller
     }
     public function update(Request $request, $id)
     {
-        $nuc = Nuc::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance]);
-        return response()->json(['status'=>true, 'message'=>"Nuc Actualizado"]);
+        $nuc = Nuc::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_agent'=>$request->fk_agent,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance,'active_stat'=>$request->active_stat]);
+
+        $profile = User::findProfile();
+        $perm_btn =Permission::permBtns($profile,31);
+        $nucs = $this->ReturnData($profile,$request->active);
+
+        return response()->json(['status'=>true, 'message'=>"Nuc Actualizado", "nucs" => $nucs, "profile" => $profile, "permission" => $perm_btn]);
     }
     public function ExportFunds($id)
     {
@@ -286,6 +304,53 @@ class MonthFundsController extends Controller
     }
     public function updateFund()
     {
+        // $nucs = DB::table('Nuc')->select('Nuc.id as nucid', 'Client.fk_agent as agnt')
+        //     ->join('Client',"fk_client","=","Client.id")
+        //     ->whereNull('Nuc.deleted_at')->get();
+
+
+        // foreach($nucs as $nuc)
+        // {
+        //     $nuc = Nuc::where('id',$nuc->nucid)->update(['fk_agent'=>$nuc->agnt]);
+        // }
+
+        // $nucs = DB::table('Nuc')->select('Nuc.id as nucid')
+        //     ->join('Month_fund','fk_nuc',"=",'Nuc.id')
+        //     ->groupBy('fk_nuc')
+        //     ->where('type','=',"Retiro total")
+        //     ->whereNull('Nuc.deleted_at')->get();
+
+        // foreach($nucs as $nuc)
+        // {
+        //     $nuc = Nuc::where('id',$nuc->nucid)->update(['active_stat'=>0]);
+        // }
+
+        // $nucs = DB::table('SixMonth_fund')->select('SixMonth_fund.id as nucid', 'Client.fk_agent as agnt')
+        //     ->join('Client',"fk_client","=","Client.id")
+        //     ->whereNull('SixMonth_fund.deleted_at')->get();
+
+        // foreach($nucs as $nuc)
+        // {
+        //     $nuc = SixMonth_fund::where('id',$nuc->nucid)->update(['fk_agent'=>$nuc->agnt]);
+        // }
+
+        // date_default_timezone_set('America/Mexico_City');
+        // $date2 = new DateTime();
+
+        // $nucs = DB::table('SixMonth_fund')->select('end_date','id')
+        //     ->where('end_date','<',$date2)
+        //     ->where('active_stat','!=',0)
+        //     ->whereNull('SixMonth_fund.deleted_at')->get();
+
+        // foreach($nucs as $nuc)
+        // {
+        //     $nuc = SixMonth_fund::where('id',$nuc->id)->update(['active_stat'=>0]);
+        // }
+
+        return response()->json(['status'=>true, 'message'=>"Datos Actualizados"]);
+    }
+    public function updateFundNet()
+    {
         $nucs = DB::table('Month_fund')->select('Nuc.id', 'month_flag', 'apply_date','nuc')
             ->join('Nuc',"fk_nuc","=","Nuc.id")
             ->groupBy('fk_nuc')
@@ -301,10 +366,20 @@ class MonthFundsController extends Controller
         {
             $date1 = new DateTime($nuc->apply_date);
             $diff = $date1->diff($date2);
-            if($diff->m >= 8 || $diff->y >= 1)
-                $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>8]);
+            if($diff->m >= 7 || $diff->y >= 1)
+                $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>7]);
             else
                 $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>$diff->m]);
+        }
+
+        $nucs = DB::table('SixMonth_fund')->select('end_date','id')
+            ->where('end_date','<',$date2)
+            ->where('active_stat','!=',0)
+            ->whereNull('SixMonth_fund.deleted_at')->get();
+
+        foreach($nucs as $nuc)
+        {
+            $nuc = SixMonth_fund::where('id',$nuc->id)->update(['active_stat'=>0]);
         }
         return response()->json(['status'=>true, 'message'=>"Datos Actualizados"]);
     }
@@ -312,6 +387,21 @@ class MonthFundsController extends Controller
     {
         $fund = Nuc::find($request->id);
         $fund->delete();
-        return response()->json(['status'=>true, "message"=>"Fondo eliminado"]);
+
+        $profile = User::findProfile();
+        $perm_btn =Permission::permBtns($profile,31);
+        $nucs = $this->ReturnData($profile,$request->active);
+
+        return response()->json(['status'=>true, "message"=>"Fondo eliminado", "nucs" => $nucs, "profile" => $profile, "permission" => $perm_btn]);
+    }
+
+    public function GetCP($active)
+    {
+        // dd("entre");
+        $profile = User::findProfile();
+        $perm_btn =Permission::permBtns($profile,31);
+        $nucs = $this->ReturnData($profile,$active);
+
+        return response()->json(['status'=>true, "nucs" => $nucs, "profile" => $profile, "permission" => $perm_btn]);
     }
 }

@@ -34,6 +34,12 @@
                                     </div>
                                     <div class="col-lg-3">
                                         <div class="form-group">
+                                            <label for="">Dólares por cada 5000</label>
+                                            <input type="text" id="dlls_com" name="dlls_com" placeholder="Ingresa la cantidad" class="form-control" onchange=updateDlls()>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
                                             <label for="">Regimen</label> <br>
                                             <input id = "onoffRegime" type="checkbox" data-toggle="toggle" data-on = "Regimen General" data-off="RESICO" data-width="180" onchange=updateRegime()>
                                         </div>
