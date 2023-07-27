@@ -436,6 +436,7 @@
                     <th>Fondo</th>
                     <th>Tipo</th>
                     <th>Contrato</th>
+                    <th>Fecha Límite</th>
                     <th>Estatus</th>
                     @if ($profile != 12)
                         <th>Interno</th>
@@ -453,6 +454,7 @@
                         <td>{{$opening->insurance}}</td>
                         <td>{{$opening->fund_type}}</td>
                         <td>{{$opening->nuc}}</td>
+                        <td>{{$opening->limit_status}}</td>
                         <td>
                             <button class="btn btn-info" style="color: #{{$opening->font_color}}; background-color: #{{$opening->color}}; border-color: #{{$opening->border_color}}" onclick="opcionesEstatusAgente({{$opening->oid}})">{{$opening->name}}</button>
                         </td>

@@ -26,7 +26,8 @@ $(document).ready( function () {
               "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
               "sSortDescending": ": Activar para ordenar la columna de manera descendente"
             }
-        }
+        },
+        order: [[1, 'desc']]
     });
 } );
 $(document).ready( function () {
@@ -91,8 +92,11 @@ function abrirComision(id)
             flagComition = 1;
             table.clear();
             result.data.forEach( function(valor, indice, array) {
-                btn = '<button type="button" class="btn btn-success"'+'onclick="abrirIncrementos('+valor.idNuc+')">Incrementos</button>&nbsp;<button type="button" class="btn btn-success"'+'onclick="calcular('+valor.idNuc+')">Primer Pago</button>';
-                table.row.add([valor.nuc,valor.client_name,btn]).node().id = valor.idNuc;
+                if(valor.contpa != 0)
+                    btn = '<button type="button" class="btn btn-success"'+'onclick="abrirIncrementos('+valor.idNuc+')">Incrementos</button>&nbsp;<button type="button" class="btn btn-success"'+'onclick="calcular('+valor.idNuc+')">Primer Pago</button>';
+                else
+                    btn = '<button type="button" class="btn btn-success"'+'onclick="calcular('+valor.idNuc+')">Primer Pago</button>';
+                table.row.add([valor.nuc,valor.apertura,valor.client_name,valor.contpam,btn]).node().id = valor.idNuc;
             });
             table.draw(false);
         }

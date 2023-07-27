@@ -17,12 +17,12 @@ class FstMonthComissionController extends Controller
 {
     public function index(){
         $profile = User::findProfile();
-        $users = DB::table('users')->select('users.id',DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(users.firstname, "")," ",IFNULL(users.lastname, "")) AS name'))
-            ->join('Nuc',"fk_agent","=","users.id")
-            ->join('Client',"fk_client","=","Client.id")
-            ->where("month_flag","<","8")
-            ->groupBy("name")
-            ->whereNull('users.deleted_at')->get();
+        date_default_timezone_set('America/Mexico_City');
+        $date2 = new DateTime();
+        $date2->modify('-1 months');
+        // dd($date2->format('Y'));
+        $users = DB::select('call contpayfst(?,?)',[intval($date2->format('m')),intval($date2->format('Y'))]);
+        // dd($users);
         $perm = Permission::permView($profile,22);
         $perm_btn =Permission::permBtns($profile,22);
         // dd($clients);
@@ -37,11 +37,15 @@ class FstMonthComissionController extends Controller
     }
     public function GetInfo($id)
     {
-        $clients = DB::table('Nuc')->select("Nuc.id as idNuc","nuc", DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS client_name'))
-            ->join('Client',"Client.id","=","fk_client")
-            ->where('Nuc.fk_agent',$id)
-            ->where("month_flag","<","8")
-            ->get();
+        // $clients = DB::table('Nuc')->select("Nuc.id as idNuc","nuc", DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS client_name'))
+        //     ->join('Client',"Client.id","=","fk_client")
+        //     ->where('Nuc.fk_agent',$id)
+        //     ->where("month_flag","<","7")
+        //     ->get();
+        date_default_timezone_set('America/Mexico_City');
+        $date2 = new DateTime();
+        $date2->modify('-1 months');
+        $clients = DB::select('call fstclients(?,?,?)',[$id,intval($date2->format('m')),intval($date2->format('Y'))]);
         $regime = DB::table('users')->select('regime')->where('id',$id)->first();
         return response()->json(['status'=>true, "regime"=>$regime->regime, "data"=>$clients]);
     }
@@ -59,7 +63,7 @@ class FstMonthComissionController extends Controller
         $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
         $clients = DB::table('Client')->select(DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS name'),"Nuc.fk_agent")
             ->join('Nuc',"fk_client","=","Client.id")
-            ->where("month_flag","<","8")
+            ->where("month_flag","<","7")
             ->groupBy("name")
             ->where('Nuc.id',$id)->get();
         $clientNames = "";

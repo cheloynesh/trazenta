@@ -151,12 +151,12 @@
 
                 <tbody>
                     @foreach ($users as $user)
-                        <tr id="{{$user->id}}">
-                            <td>{{$user->name}}</td>
+                        <tr id="{{$user->uid}}">
+                            <td>{{$user->uname}}</td>
                             @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                                 <td>
                                     @if ($perm_btn['modify']==1)
-                                        <a href="#|" class="btn btn-primary" onclick="abrirComision({{$user->id}})" >Cálculo de Comision</a>
+                                        <a href="#|" class="btn btn-primary" onclick="abrirComision({{$user->uid}})" >Cálculo de Comision</a>
                                         {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
                                     @endif
                                 </td>

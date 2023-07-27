@@ -46,7 +46,9 @@
                                             <table class="table table-striped table-hover text-center" id="tbProf1">
                                                 <thead>
                                                     <th class="text-center">Nuc</th>
+                                                    <th class="text-center">Apertura</th>
                                                     <th class="text-center">Cliente</th>
+                                                    <th class="text-center">Incrementos</th>
                                                     <th class="text-center">Opciones</th>
                                                 </thead>
                                             </table>
@@ -176,10 +178,12 @@
         {{-- fin modal --}}
         {{-- Inicia pantalla de inicio --}}
         <br><br>
-        <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
-            <table class="table table-striped table-hover text-center" id="tbProf">
+        <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
+            <table class="table table-striped table-hover text-center" style="width: 100%;" id="tbProf">
                 <thead>
                     <th class="text-center">Usuarios-Agentes</th>
+                    <th class="text-center">Contratos Nuevos</th>
+                    <th class="text-center">Pago de Adelantos</th>
                     @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                         <th class="text-center">Opciones</th>
                     @endif
@@ -187,12 +191,14 @@
 
                 <tbody>
                     @foreach ($users as $user)
-                        <tr id="{{$user->id}}">
-                            <td>{{$user->name}}</td>
+                        <tr id="{{$user->uid}}">
+                            <td>{{$user->aname}}</td>
+                            <td>{{$user->contpp}}</td>
+                            <td>{{$user->contpa}}</td>
                             @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                                 <td>
                                     @if ($perm_btn['modify']==1)
-                                        <a href="#|" class="btn btn-primary" onclick="abrirComision({{$user->id}})" >Cálculo de Comision</a>
+                                        <a href="#|" class="btn btn-primary" onclick="abrirComision({{$user->uid}})" >Cálculo de Comision</a>
                                         {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
                                     @endif
                                 </td>

@@ -105,16 +105,16 @@ function FillTable(data,profile,permission)
                 btnStat = '<td><button class="btn btn-info" style="color: #'+valor.font_color+'; background-color: #'+valor.color+'; border-color: #'+valor.border_color+'" onclick="opcionesEstatus('+valor.oid+')">'+valor.name+'</button></td>'
             }
             if(permission["erase"] == 1)
-                table.row.add([valor.agent,valor.cname,valor.insurance,valor.fund_type,valor.nuc,btnStatAg,btnStat,btnEdit+" "+btnTrash]).node().id = valor.oid;
+                table.row.add([valor.agent,valor.cname,valor.insurance,valor.fund_type,valor.nuc,valor.limit_status,btnStatAg,btnStat,btnEdit+" "+btnTrash]).node().id = valor.oid;
             else
-                table.row.add([valor.agent,valor.cname,valor.insurance,valor.fund_type,valor.nuc,btnStatAg,btnStat,btnEdit]).node().id = valor.oid;
+                table.row.add([valor.agent,valor.cname,valor.insurance,valor.fund_type,valor.nuc,valor.limit_status,btnStatAg,btnStat,btnEdit]).node().id = valor.oid;
         }
         else
         {
             if(permission["erase"] == 1)
-                table.row.add([valor.agent,valor.cname,valor.insurance,valor.fund_type,valor.nuc,btnStatAg,btnEdit+" "+btnTrash]).node().id = valor.oid;
+                table.row.add([valor.agent,valor.cname,valor.insurance,valor.fund_type,valor.nuc,valor.limit_status,btnStatAg,btnEdit+" "+btnTrash]).node().id = valor.oid;
             else
-                table.row.add([valor.agent,valor.cname,valor.insurance,valor.fund_type,valor.nuc,btnStatAg,btnEdit]).node().id = valor.oid;
+                table.row.add([valor.agent,valor.cname,valor.insurance,valor.fund_type,valor.nuc,valor.limit_status,btnStatAg,btnEdit]).node().id = valor.oid;
         }
     });
     table.draw(false);

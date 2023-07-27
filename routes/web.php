@@ -131,3 +131,8 @@ Route::get('process/opening/opening/GetInfo/{id}','OpeningController@GetInfo')->
 Route::get('process/opening/opening/GetinfoStatus/{id}','OpeningController@GetinfoStatus')->name('opening.GetinfoStatus');
 Route::get('process/opening/opening/GetinfoFund/{id}','OpeningController@GetinfoFund')->name('opening.GetinfoFund');
 Route::post('process/opening/opening/updateStatus', 'OpeningController@updateStatus')->name('opening.updateStatus');
+
+// --------------------------------------------------------Reportes------------------------------------------------------------
+Route::resource('reports/moneyflow/moneyflow', 'MoneyFlowController');
+Route::get('reports/moneyflow/moneyflow/GetInfo/{id}','MoneyFlowController@GetInfo')->name('moneyflow.GetInfo');
+Route::get('reports/moneyflow/moneyflow/GetInfoFilters/{id}','MoneyFlowController@GetInfoFilters')->name('moneyflow.GetInfoFilters');

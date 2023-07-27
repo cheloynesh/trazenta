@@ -247,6 +247,22 @@ class MonthFundsController extends Controller
                     $fund->pay_date = $moves[6];
                     $fund->save();
                     $goodCont++;
+
+                    if($request->type == "Apertura")
+                    {
+                        $day = explode("-", $moves[5]);
+                        $day = intval($day[2]);
+                        $apr = Nuc::where('id', $movimientos->fk_nuc)->first();
+                        if($day <= 15)
+                        {
+                            $apr->cut_date = 15;
+                        }
+                        else
+                        {
+                            $apr->cut_date = 30;
+                        }
+                        $apr->save();
+                    }
                 }
             }
             else
@@ -278,18 +294,18 @@ class MonthFundsController extends Controller
                     // dd($day);
                     $fund->save();
 
-                    if($request->type == "Apertura")
+                    if($moves[2] == "Apertura")
                     {
-                        $nuc = Nuc::where('id', $request->fk_nuc)->first();
+                        $apr = Nuc::where('id', $nuc->id)->first();
                         if($day <= 15)
                         {
-                            $nuc->cut_date = 15;
+                            $apr->cut_date = 15;
                         }
                         else
                         {
-                            $nuc->cut_date = 30;
+                            $apr->cut_date = 30;
                         }
-                        $nuc->save();
+                        $apr->save();
                     }
 
                 }
@@ -347,6 +363,30 @@ class MonthFundsController extends Controller
         //     $nuc = SixMonth_fund::where('id',$nuc->id)->update(['active_stat'=>0]);
         // }
 
+        $nucs = DB::table('Nuc')->select('Nuc.id as nid','apply_date')
+            ->join('Month_fund',"fk_nuc","=","Nuc.id")
+            ->where('type','Apertura')
+            ->whereNull('cut_date')
+            ->whereNull('Nuc.deleted_at')
+            ->groupBy('nuc')->get();
+        // dd($nucs);
+        foreach($nucs as $nuc)
+        {
+            $dia = explode("-", $nuc->apply_date);
+            $day = intval($dia[2]);
+            // dd($nuc->apply_date,$dia[2]);
+            $apr = Nuc::where('id', $nuc->nid)->first();
+            if($day <= 15)
+            {
+                $apr->cut_date = 15;
+            }
+            else
+            {
+                $apr->cut_date = 30;
+            }
+            $apr->save();
+        }
+
         return response()->json(['status'=>true, 'message'=>"Datos Actualizados"]);
     }
     public function updateFundNet()
@@ -380,6 +420,17 @@ class MonthFundsController extends Controller
         foreach($nucs as $nuc)
         {
             $nuc = SixMonth_fund::where('id',$nuc->id)->update(['active_stat'=>0]);
+        }
+
+        $nucs = DB::table('Nuc')->select('Nuc.id as nucid')
+            ->join('Month_fund','fk_nuc',"=",'Nuc.id')
+            ->groupBy('fk_nuc')
+            ->where('type','=',"Retiro total")
+            ->whereNull('Nuc.deleted_at')->get();
+
+        foreach($nucs as $nuc)
+        {
+            $nuc = Nuc::where('id',$nuc->nucid)->update(['active_stat'=>0]);
         }
         return response()->json(['status'=>true, 'message'=>"Datos Actualizados"]);
     }

@@ -9,21 +9,40 @@ use App\Permission;
 use App\MonthlyComission;
 use App\Nuc;
 use App\Status;
+use DateTime;
 use DB;
 
 class MonthComissionController extends Controller
 {
     public function index(){
         $profile = User::findProfile();
-        $users = DB::table('users')->select('users.id',DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(users.firstname, "")," ",IFNULL(users.lastname, "")) AS name'))
-            ->join('Nuc',"fk_agent","=","users.id")
-            ->where("active_stat","=","1")
-            ->where("month_flag","=","7")
-            ->groupBy("name")
-            ->whereNull('users.deleted_at')->get();
+        // $users = DB::table('users')->select('users.id',DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(users.firstname, "")," ",IFNULL(users.lastname, "")) AS name'))
+        //     ->join('Nuc',"fk_agent","=","users.id")
+        //     ->where("active_stat","=","1")
+        //     ->where("month_flag","=","7")
+        //     ->groupBy("name")
+        //     ->whereNull('users.deleted_at')->get();
+        date_default_timezone_set('America/Mexico_City');
+        $date = new DateTime();
+        $date->setDate($date->format('Y'), $date->format('m'), 1);
+        $date->modify('-1 months');
+        $users = DB::select('call agentesCP(?)',[$date->format('Y-m-d')]);
         $perm = Permission::permView($profile,21);
         $perm_btn =Permission::permBtns($profile,21);
-        // dd($clients);
+
+
+        // $validNucs = array();
+        // $nucs = DB::table('Nuc')->select("Nuc.id as id")
+        //     ->where("month_flag","=","7")
+        //     ->get();
+        // foreach ($nucs as $nuc)
+        // {
+        //     $value = $this->calculo($nuc->id,6,2023,17,1,5);
+        //     if($value["gross_amount"] != 0) array_push($validNucs,$nuc->id);
+        // }
+        // dd($validNucs);
+
+
         if($perm==0)
         {
             return redirect()->route('home');
@@ -35,13 +54,18 @@ class MonthComissionController extends Controller
     }
     public function GetInfo($id)
     {
-        $clients = DB::table('Nuc')->select("Nuc.id as idNuc","nuc", DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS client_name'))
-            ->join('Client',"Client.id","=","fk_client")
-            ->where('Nuc.fk_agent',$id)
-            ->where("month_flag","=","7")
-            ->where("active_stat","=","1")
-            ->whereNull('Client.deleted_at')
-            ->get();
+        // $clients = DB::table('Nuc')->select("Nuc.id as idNuc","nuc", DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS client_name'))
+        //     ->join('Client',"Client.id","=","fk_client")
+        //     ->where('Nuc.fk_agent',$id)
+        //     ->where("month_flag","=","7")
+        //     ->where("active_stat","=","1")
+        //     ->whereNull('Client.deleted_at')
+        //     ->get();
+        date_default_timezone_set('America/Mexico_City');
+        $date = new DateTime();
+        $date->setDate($date->format('Y'), $date->format('m'), 1);
+        $date->modify('-1 months');
+        $clients = DB::select('call clientesCP(?,?)',[$date->format('Y-m-d'),$id]);
         $regime = DB::table('users')->select('regime','dlls')->where('id',$id)->first();
         return response()->json(['status'=>true, "regime"=>$regime, "data"=>$clients]);
     }
@@ -77,12 +101,12 @@ class MonthComissionController extends Controller
         $userName = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
             ->where('users.id',$id)->whereNull('users.deleted_at')->first();
         $nucs = DB::table('Nuc')->select("Nuc.id as id")
-            ->where("month_flag","=","8")
+            ->where("month_flag","=","7")
             ->where('fk_agent',$id)
             ->get();
         $clients = DB::table('Client')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS clName'),'Nuc.id as nucid')
             ->join('Nuc',"fk_client","=","Client.id")
-            ->where("month_flag","=","8")
+            ->where("month_flag","=","7")
             ->where('Nuc.fk_agent',$id)->get();
         $clientNames = "";
 

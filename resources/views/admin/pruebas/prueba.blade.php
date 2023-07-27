@@ -166,6 +166,7 @@
 
         <div>
             Columnas: <a class="toggle-vis" data-column="4">Recogido</a> - <a class="toggle-vis" data-column="5">Entregado a agente</a> - <a class="toggle-vis" data-column="6">Oficina</a> - <a class="toggle-vis" data-column="7">Entregado a finestra</a>
+            <input class="toggle-vis" data-column="4" id = "onoff" type="checkbox" checked data-toggle="toggle" data-on = "Si" data-off="No" data-width="120" data-offstyle="secondary">
         </div>
 
         <br><br>
