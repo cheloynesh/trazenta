@@ -19,8 +19,8 @@ class FstMonthComissionController extends Controller
         $profile = User::findProfile();
         date_default_timezone_set('America/Mexico_City');
         $date2 = new DateTime();
-        $date2->modify('-1 months');
-        // dd($date2->format('Y'));
+        $date2->modify('-2 months');
+        // dd($date2->format('Y'),$date2->format('m'));
         $users = DB::select('call contpayfst(?,?)',[intval($date2->format('m')),intval($date2->format('Y'))]);
         // dd($users);
         $perm = Permission::permView($profile,22);

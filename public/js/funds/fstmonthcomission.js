@@ -116,65 +116,74 @@ function calcular(id)
     var month = date[1];
     var reg = $("#onoffRegime").prop('checked');
     var regime = 0;
-
-    if(reg)
-        regime = 1;
+    if(TC == "" || date == "") alert ("Los campos de Tipo de cambio y Fecha no deben quedar vacíos");
     else
-        regime = 0;
+    {
+        if(reg)
+            regime = 1;
+        else
+            regime = 0;
 
-    var route = baseUrl + '/ExportPDF/'+ id + "/" + month + "/" + year + "/"+ TC + "/" + regime;
-    $.ajaxSetup({
-        headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
-    });
+        var route = baseUrl + '/ExportPDF/'+ id + "/" + month + "/" + year + "/"+ TC + "/" + regime;
+        $.ajaxSetup({
+            headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
+        });
 
-    var form = $('<form></form>');
+        var form = $('<form></form>');
 
-    form.attr("method", "get");
-    form.attr("action", route);
-    form.attr('_token',$("meta[name='csrf-token']").attr("content"));
-    $.each(function(key, value) {
+        form.attr("method", "get");
+        form.attr("action", route);
+        form.attr('_token',$("meta[name='csrf-token']").attr("content"));
+        $.each(function(key, value) {
+            var field = $('<input></input>');
+            field.attr("type", "hidden");
+            field.attr("name", key);
+            field.attr("value", value);
+            form.append(field);
+        });
         var field = $('<input></input>');
         field.attr("type", "hidden");
-        field.attr("name", key);
-        field.attr("value", value);
+        field.attr("name", "_token");
+        field.attr("value", $("meta[name='csrf-token']").attr("content"));
         form.append(field);
-    });
-    var field = $('<input></input>');
-    field.attr("type", "hidden");
-    field.attr("name", "_token");
-    field.attr("value", $("meta[name='csrf-token']").attr("content"));
-    form.append(field);
-    $(document.body).append(form);
-    form.submit();
+        $(document.body).append(form);
+        form.submit();
+    }
 }
 
 function calcularAll(id)
 {
+    var TC = $("#change").val();
+    var date = $("#month").val();
     var route = baseUrl + '/ExportPDFAll/'+ id + '/' + $("#change").val();
     // alert(route);
-    $.ajaxSetup({
-        headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
-    });
+    if(TC == "" || date == "") alert ("Los campos de Tipo de cambio y Fecha no deben quedar vacíos");
+    else
+    {
+        $.ajaxSetup({
+            headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
+        });
 
-    var form = $('<form></form>');
+        var form = $('<form></form>');
 
-    form.attr("method", "get");
-    form.attr("action", route);
-    form.attr('_token',$("meta[name='csrf-token']").attr("content"));
-    $.each(function(key, value) {
+        form.attr("method", "get");
+        form.attr("action", route);
+        form.attr('_token',$("meta[name='csrf-token']").attr("content"));
+        $.each(function(key, value) {
+            var field = $('<input></input>');
+            field.attr("type", "hidden");
+            field.attr("name", key);
+            field.attr("value", value);
+            form.append(field);
+        });
         var field = $('<input></input>');
         field.attr("type", "hidden");
-        field.attr("name", key);
-        field.attr("value", value);
+        field.attr("name", "_token");
+        field.attr("value", $("meta[name='csrf-token']").attr("content"));
         form.append(field);
-    });
-    var field = $('<input></input>');
-    field.attr("type", "hidden");
-    field.attr("name", "_token");
-    field.attr("value", $("meta[name='csrf-token']").attr("content"));
-    form.append(field);
-    $(document.body).append(form);
-    form.submit();
+        $(document.body).append(form);
+        form.submit();
+    }
 }
 
 function abrirResumen(idNuc)
@@ -194,7 +203,7 @@ function abrirResumen(idNuc)
 
     if(date == null || date == "" && TC == null || TC == "")
     {
-        alert("Ningun campo debe quedar vacio");
+        alert("Los campos de Tipo de cambio y Fecha no deben quedar vacíos");
         return false;
     }else
     {
