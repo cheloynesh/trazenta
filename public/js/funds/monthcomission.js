@@ -152,6 +152,10 @@ function calcular()
         form.append(field);
         $(document.body).append(form);
         form.submit();
+
+        userid = idUser;
+        flagtype = 1;
+        $("#authModal").modal('show');
     }
 }
 
@@ -311,4 +315,100 @@ function updateDlls()
             alertify.success(result.message);
         }
     })
+}
+
+var flagtype = 0;
+var userid = 0;
+
+function setStatDate(id, type)
+{
+    userid = id;
+    flagtype = type;
+    $("#authModal").modal('show');
+}
+
+function setNullDate(id, type)
+{
+    var route = baseUrl + '/setNullDate';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        "id":id,
+        'flagtype':type,
+    }
+    alertify.confirm("Cancelar fecha","¿Desea remover la fecha?",
+        function(){
+            jQuery.ajax({
+                url:route,
+                data: data,
+                type:'post',
+                dataType:'json',
+                success:function(result){
+                    alertify.success(result.message);
+                    RefreshTable(result.users);
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
+                }
+            })
+        },
+        function(){});
+}
+
+function guardarAuth()
+{
+    var route = baseUrl + '/setStatDate';
+    var date = $("#auth").val();
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        "id":userid,
+        'flagtype':flagtype,
+        'date':date
+    }
+    jQuery.ajax({
+        url:route,
+        data: data,
+        type:'post',
+        dataType:'json',
+        success:function(result){
+            alertify.success(result.message);
+            $("#authModal").modal('hide');
+            RefreshTable(result.users);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
+}
+
+function cerrarAuth()
+{
+    $("#authModal").modal('hide');
+}
+
+function RefreshTable(data,profile,permission)
+{
+    var table = $('#tbProf').DataTable();
+    var btnInvoice = '';
+    var btnPay = '';
+    var btnComition = '';
+
+    table.clear();
+    data.forEach( function(valor, indice, array) {
+        if(valor.invoice_flag == null)
+            btnInvoice = '<button href="#|" class="btn btn-danger" onclick="setStatDate('+valor.uid+',1)" >Pendiente</button>'
+        else
+            btnInvoice = '<button href="#|" class="btn btn-success" onclick="setNullDate('+valor.uid+',1)">'+valor.invoice_flag+'</button>'
+
+        if(valor.pay_flag == null)
+            btnPay = '<button href="#|" class="btn btn-danger" onclick="setStatDate('+valor.uid+',2)" >Sin Pago</button>'
+        else
+            btnPay = '<button href="#|" class="btn btn-success" onclick="setNullDate('+valor.uid+',2)">'+valor.pay_flag+'</button>'
+
+        btnComition = '<a href="#|" class="btn btn-primary" onclick="abrirComision('+valor.uid+')" >Cálculo de Comision</a>';
+
+        table.row.add([valor.uname,btnInvoice,btnPay,btnComition]).node().id = valor.uid;
+    });
+    table.draw(false);
 }

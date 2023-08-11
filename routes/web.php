@@ -98,6 +98,8 @@ Route::get('funds/monthlycomission/monthcomission/GetInfo/{id}','MonthComissionC
 Route::get('funds/monthlycomission/monthcomission/ExportPDF/{id}/{month}/{year}/{TC}/{regime}/{dlls}','MonthComissionController@ExportPDF');
 Route::post('funds/monthlycomission/monthcomission/GetInfoComition','MonthComissionController@GetInfoComition')->name('monthcomission.GetInfoComition');
 Route::post('funds/monthlycomission/monthcomission/updateDlls','MonthComissionController@updateDlls')->name('monthcomission.updateDlls');
+Route::post('funds/monthlycomission/monthcomission/setStatDate','MonthComissionController@setStatDate')->name('monthcomission.setStatDate');
+Route::post('funds/monthlycomission/monthcomission/setNullDate','MonthComissionController@setNullDate')->name('monthcomission.setNullDate');
 
 //---------------------------------------------------Primera comision fondo mensual--------------------------------------------
 Route::resource('funds/fstmonthcomission/fstmonthcomission', 'FstMonthComissionController');

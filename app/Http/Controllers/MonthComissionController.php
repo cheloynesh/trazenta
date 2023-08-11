@@ -16,32 +16,15 @@ class MonthComissionController extends Controller
 {
     public function index(){
         $profile = User::findProfile();
-        // $users = DB::table('users')->select('users.id',DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(users.firstname, "")," ",IFNULL(users.lastname, "")) AS name'))
-        //     ->join('Nuc',"fk_agent","=","users.id")
-        //     ->where("active_stat","=","1")
-        //     ->where("month_flag","=","7")
-        //     ->groupBy("name")
-        //     ->whereNull('users.deleted_at')->get();
+
         date_default_timezone_set('America/Mexico_City');
         $date = new DateTime();
         $date->setDate($date->format('Y'), $date->format('m'), 1);
         $date->modify('-1 months');
         $users = DB::select('call agentesCP(?)',[$date->format('Y-m-d')]);
+
         $perm = Permission::permView($profile,21);
         $perm_btn =Permission::permBtns($profile,21);
-
-
-        // $validNucs = array();
-        // $nucs = DB::table('Nuc')->select("Nuc.id as id")
-        //     ->where("month_flag","=","7")
-        //     ->get();
-        // foreach ($nucs as $nuc)
-        // {
-        //     $value = $this->calculo($nuc->id,6,2023,17,1,5);
-        //     if($value["gross_amount"] != 0) array_push($validNucs,$nuc->id);
-        // }
-        // dd($validNucs);
-
 
         if($perm==0)
         {
@@ -52,15 +35,20 @@ class MonthComissionController extends Controller
             return view('funds.monthcomission.monthcomission', compact('users','perm_btn'));
         }
     }
+
+    public function ReturnData()
+    {
+        date_default_timezone_set('America/Mexico_City');
+        $date = new DateTime();
+        $date->setDate($date->format('Y'), $date->format('m'), 1);
+        $date->modify('-1 months');
+        $users = DB::select('call agentesCP(?)',[$date->format('Y-m-d')]);
+
+        return $users;
+    }
+
     public function GetInfo($id)
     {
-        // $clients = DB::table('Nuc')->select("Nuc.id as idNuc","nuc", DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS client_name'))
-        //     ->join('Client',"Client.id","=","fk_client")
-        //     ->where('Nuc.fk_agent',$id)
-        //     ->where("month_flag","=","7")
-        //     ->where("active_stat","=","1")
-        //     ->whereNull('Client.deleted_at')
-        //     ->get();
         date_default_timezone_set('America/Mexico_City');
         $date = new DateTime();
         $date->setDate($date->format('Y'), $date->format('m'), 1);
@@ -69,23 +57,6 @@ class MonthComissionController extends Controller
         $regime = DB::table('users')->select('regime','dlls')->where('id',$id)->first();
         return response()->json(['status'=>true, "regime"=>$regime, "data"=>$clients]);
     }
-
-    // public function GetInfoMonth($id,$month,$year)
-    // {
-    //     $movimientos = DB::table('Month_fund')->select("*")->where('fk_nuc',$id)->whereMonth('apply_date',$month)->whereYear('apply_date',$year)->whereNull('deleted_at')->get();
-    //     // dd($movimientos);
-    //     return response()->json(['status'=>true, "data"=>$movimientos]);
-    // }
-
-    // public function GetInfoLast($id,$month,$year)
-    // {
-    //     $fecha = $year.'/'.$month.'/01';
-    //     // dd($fecha);
-    //     $movements = DB::table('Month_fund')->select('*')->where('fk_nuc',$id)->where('apply_date','<',$fecha)
-    //     ->orderByRaw('id DESC')->first();
-    //     // dd($movements);
-    //     return response()->json(['status'=>true, "data"=>$movements]);
-    // }
 
     public function ExportPDF($id,$month,$year,$TC,$regime,$dlls){
 
@@ -559,5 +530,39 @@ class MonthComissionController extends Controller
     {
         $client = User::where('id',$request->id)->update(['dlls'=>$request->dlls]);
         return response()->json(['status'=>true, 'message'=>"Comisión Actualizada"]);
+    }
+
+    public function setStatDate(Request $request)
+    {
+        $status = User::where('id',$request->id)->first();
+        if(intval($request->flagtype) == "1")
+        {
+            $status->invoice_flag = $request->date;
+        }
+        else
+        {
+            $status->pay_flag = $request->date;
+        }
+        $status->save();
+
+        $users = $this->ReturnData();
+        return response()->json(['status'=>true, "message"=>"Fecha aplicada", "users" => $users]);
+    }
+
+    public function setNullDate(Request $request)
+    {
+        $status = User::where('id',$request->id)->first();
+        if(intval($request->flagtype) == "1")
+        {
+            $status->invoice_flag = null;
+        }
+        else
+        {
+            $status->pay_flag = null;
+        }
+        $status->save();
+
+        $users = $this->ReturnData();
+        return response()->json(['status'=>true, "message"=>"Fecha cancelada", "users" => $users]);
     }
 }

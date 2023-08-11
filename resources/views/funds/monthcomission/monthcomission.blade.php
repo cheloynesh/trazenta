@@ -138,12 +138,46 @@
             </div>
         </div>
         {{-- termina modal --}}
+        {{-- modal auth --}}
+        <div id="authModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Aplicar fecha</h4>
+                        <button type="button" class="close" onclick="cerrarAuth()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Fecha</label>
+                                            <input type="date" id="auth" name="auth" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick="cerrarAuth()">Cancelar</button>
+                        <button type="button" onclick="guardarAuth()" class="btn btn-primary">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- termina modal --}}
         {{-- Inicia pantalla de inicio --}}
         <br><br>
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
             <table class="table table-striped table-hover text-center" id="tbProf">
                 <thead>
                     <th class="text-center">Usuarios-Agentes</th>
+                    <th class="text-center">Enviado</th>
+                    <th class="text-center">Pagado</th>
                     @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                         <th class="text-center">Opciones</th>
                     @endif
@@ -153,6 +187,20 @@
                     @foreach ($users as $user)
                         <tr id="{{$user->uid}}">
                             <td>{{$user->uname}}</td>
+                            <td>
+                                @if ($user->invoice_flag == null)
+                                    <button href="#|" class="btn btn-danger" onclick="setStatDate({{$user->uid}},1)" >Pendiente</button>
+                                @else
+                                    <button href="#|" class="btn btn-success" onclick="setNullDate({{$user->uid}},1)">{{$user->invoice_flag}}</button>
+                                @endif
+                            </td>
+                            <td>
+                                @if ($user->pay_flag == null)
+                                    <button href="#|" class="btn btn-danger" onclick="setStatDate({{$user->uid}},2)">Sin Pago</button>
+                                @else
+                                    <button href="#|" class="btn btn-success btn-sm" onclick="setNullDate({{$user->uid}},2)">{{$user->pay_flag}}</button>
+                                @endif
+                            </td>
                             @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                                 <td>
                                     @if ($perm_btn['modify']==1)
