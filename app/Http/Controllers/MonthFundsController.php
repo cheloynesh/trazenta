@@ -46,6 +46,7 @@ class MonthFundsController extends Controller
         if($profile == 12)
         {
             $nucs = DB::select('call fondocpAgente(?,?)',[1,$user]);
+            // dd($user);
         }
         else
         {

@@ -235,6 +235,7 @@ function editarNuc(id)
             $("#selectCharge").val(result.data.fk_charge);
             $("#selectPaymentformSixMonth").val(result.data.fk_payment_form);
             $("#selectInsurance").val(result.data.fk_insurance);
+            $("#selectRenew").val(result.data.renew_stat);
             $("#sixMonthNucModal").modal('show');
         }
     })
@@ -257,6 +258,7 @@ function actualizarNuc()
     var fk_charge = $("#selectCharge").val();
     var fk_client = $("#selectClient").val();
     var fk_insurance = $("#selectInsurance").val();
+    var renew_stat = $("#selectRenew").val();
 
     var route = "sixmonthfunds/"+editNuc;
     var data = {
@@ -272,6 +274,7 @@ function actualizarNuc()
         'fk_application':fk_application,
         'fk_payment_form':fk_payment_form,
         'fk_insurance':fk_insurance,
+        'renew_stat':renew_stat,
         'active':active
     };
     jQuery.ajax({

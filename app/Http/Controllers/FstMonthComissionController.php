@@ -18,10 +18,12 @@ class FstMonthComissionController extends Controller
     public function index(){
         $profile = User::findProfile();
         date_default_timezone_set('America/Mexico_City');
+        $date1 = new DateTime();
         $date2 = new DateTime();
+        $date1->modify('-1 months');
         $date2->modify('-2 months');
         // dd($date2->format('Y'),$date2->format('m'));
-        $users = DB::select('call contpayfst(?,?)',[intval($date2->format('m')),intval($date2->format('Y'))]);
+        $users = DB::select('call contpayfst(?,?,?)',[intval($date2->format('m')),intval($date2->format('Y')),intval($date1->format('m'))]);
         // dd($users);
         $perm = Permission::permView($profile,22);
         $perm_btn =Permission::permBtns($profile,22);
@@ -251,7 +253,7 @@ class FstMonthComissionController extends Controller
         $client = DB::table('Client')->select('*',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS cname'))
             ->where('id',$nuc->fk_client)->first();
         $userName = DB::table('users')->select('*',DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS usname'))
-            ->where('users.id',$client->fk_agent)->whereNull('users.deleted_at')->first();
+            ->where('users.id',$nuc->fk_agent)->whereNull('users.deleted_at')->first();
         $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
         $clientNames = $client->cname;
 

@@ -201,12 +201,27 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Acción de término:</label>
+                                            <select name="selectRenew" id="selectRenew" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                <option value=0>RETIRADO</option>
+                                                <option value=1>RENOVADO</option>
+                                                <option value=2>PENDIENTE</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secundary" onclick="cerrarNuc()">Cancelar</button>
-                        <button type="button" onclick="actualizarNuc()" class="btn btn-primary">Guardar</button>
+                        @if ($perm_btn['modify']==1)
+                            <button type="button" onclick="actualizarNuc()" class="btn btn-primary">Guardar</button>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -278,8 +293,8 @@
                             </td> --}}
                             <td>
                                 <a href="#|" class="btn btn-primary" onclick="nuevoMovimiento({{$nuc->id}})" >Cuponera</a>
-                                @if ($perm_btn['modify']==1)
-                                    <button href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" ><i class="fas fa-edit"></i></button>
+                                <button href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" ><i class="fas fa-edit"></i></button>
+                                @if ($perm_btn['erase']==1)
                                     <button href="#|" class="btn btn-danger" onclick="eliminarNuc({{$nuc->id}})" ><i class="fa fa-trash"></i></button>
                                     {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
                                 @endif

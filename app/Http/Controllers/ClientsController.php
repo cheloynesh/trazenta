@@ -13,6 +13,7 @@ use App\Paymentform;
 use App\Application;
 use App\Insurance;
 use App\Charge;
+use DB;
 use DateTime;
 
 class ClientsController extends Controller
@@ -26,6 +27,7 @@ class ClientsController extends Controller
         $paymentForms = Paymentform::pluck('name','id');
         $charges = Charge::pluck('name','id');
         $applications = Application::pluck('name','id');
+        $agents = User::select('id', DB::raw('CONCAT(name," ",firstname) AS name'))->orderBy('name')->where("fk_profile","12")->pluck('name','id');
         // dd($perm_btn);
         if($perm==0)
         {
@@ -33,7 +35,7 @@ class ClientsController extends Controller
         }
         else
         {
-            return view('admin.client.clients', compact('clients','perm_btn','paymentForms','applications','insurances','charges'));
+            return view('admin.client.clients', compact('clients','perm_btn','paymentForms','applications','insurances','charges','agents'));
         }
     }
 
@@ -104,6 +106,7 @@ class ClientsController extends Controller
         $nuc->fk_payment_form = $request->fk_payment_form;
         $nuc->fk_charge = $request->fk_charge;
         $nuc->fk_insurance = $request->fk_insurance;
+        $nuc->fk_agent = $request->fk_agent;
         $nuc->save();
         return response()->json(["status"=>true, "message"=>"Nuc creado"]);
     }
@@ -145,6 +148,7 @@ class ClientsController extends Controller
         $nuc->fk_payment_form = $request->fk_payment_form;
         $nuc->fk_charge = $request->fk_charge;
         $nuc->fk_insurance = $request->fk_insurance;
+        $nuc->fk_agent = $request->fk_agent;
         $nuc->save();
 
         $date1 = clone $initial_date;

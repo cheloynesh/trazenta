@@ -77,12 +77,26 @@ function abrirColumnas(modal)
     $(modal).modal("show");
 }
 
+function QuarterChange()
+{
+    $("#month").val("%");
+    GetFilters();
+}
+function MonthChange()
+{
+    $("#selectQuarter").val("%");
+    GetFilters();
+}
+
 function GetFilters()
 {
     var route = baseUrl + '/GetInfoFilters/'+ 1;
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
-        'year':$("#selectYear").val()
+        'month':$("#month").val(),
+        'quarter':$("#selectQuarter").val(),
+        'year':$("#selectYear").val(),
+        'fund':$("#selectFund").val()
     };
     var table = $('#tbProf').DataTable();
 

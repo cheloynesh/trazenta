@@ -1,0 +1,142 @@
+@extends('home')
+<head>
+    <title>Servicios | Trazenta</title>
+</head>
+@section('content')
+    <div class="text-center"><h1>Servicios
+        </h1></div>
+        {{-- modal| --}}
+    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title" id="gridModalLabek">Registro de Servicio</h4>
+                    <button type="button" class="close" onclick="cerrarModal('#myModal')" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="container-fluid bd-example-row">
+
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="">Fondo:</label>
+                                    <select name="selectFund" id="selectFund" class="form-select" onchange="fundChange()">
+                                        <option hidden selected value=0>Selecciona una opción</option>
+                                        <option value="CP">CP</option>
+                                        <option value="LP">LP</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="">Contrato</label>
+                                    <input type="text" id="nuc_edit" class="form-control" disabled placeholder="Contrato">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                @if ($perm_btn['modify']==1)
+                                    <label for="">Cambiar</label>
+                                    <button type="button" id="btnSrcNuc" class="btn btn-primary" onclick="buscarnuc(0)" disabled>Buscar</button>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="">Servicio</label>
+                                    <select name="selectService" id="selectService" class="form-select">
+                                        <option hidden selected value="">Selecciona una opción</option>
+                                        @foreach ($services_types as $id => $type)
+                                            <option value='{{ $id }}'>{{ $type }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Tipo de Servicio</label>
+                                    <select name="selectType" id="selectType" class="form-select">
+                                        <option hidden selected value="">Selecciona una opción</option>
+                                        <option value=0>Digital</option>
+                                        <option value=1>Entrega Original</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secundary" onclick="cerrarModal('#myModal')">Cancelar</button>
+                    <button type="button" onclick="guardarServicio()" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- fin modal| --}}
+    @include('process.services.servicesEdit')
+    @include('searchnuc')
+    {{-- Inicia pantalla de inicio --}}
+    <div class="col-lg-12">
+        <div class="row">
+            @if ($perm_btn['modify']==1)
+                <div class="col-md-12">
+                    <div class="form-group">
+                        @if ($perm_btn['addition']==1)
+                            <button type="button" class="btn btn-primary" onclick="nuevoServicio()" title="Nuevo Servicio"><i class="fas fa-plus"></i></button>
+                        @endif
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+    {{-- <div>
+        Columnas: <a class="toggle-vis" data-column="6">Fecha límite</a> - <a class="toggle-vis" data-column="7">Entregado a agente</a> - <a class="toggle-vis" data-column="8">Entregado a finestra</a>
+    </div> --}}
+
+    <br><br>
+
+    <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
+        <table class="table table-striped table-hover text-center" style="width:100%" id="example">
+            <thead>
+                <tr>
+                    <th class="text-center">Fondo</th>
+                    <th class="text-center">Contrato</th>
+                    <th class="text-center">Agente</th>
+                    <th class="text-center">Servicio</th>
+                    <th class="text-center">Tipo</th>
+                    <th class="text-center">Entregado</th>
+                    <th class="text-center">Estatus</th>
+                    <th class="text-center">Opciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($services as $service)
+                    <tr id="{{$service->sid}}">
+                        <td>{{$service->fund}}</td>
+                        <td>{{$service->nuc}} - {{$service->cname}}</td>
+                        <td>{{$service->agent}}</td>
+                        <td>{{$service->servname}}</td>
+                        <td>{{$service->type}}</td>
+                        <td>{{$service->delivered}}</td>
+                        <td>
+                            <button class="btn btn-info" style="color: #{{$service->font_color}}; background-color: #{{$service->color}}; border-color: #{{$service->border_color}}" onclick="opcionesEstatus({{$service->sid}})">{{$service->name}}</button>
+                        </td>
+                        <td>
+                            <button href="#|" class="btn btn-warning" onclick="editarApertura({{$service->sid}})" ><i class="fas fa-edit"></i></button>
+                            @if ($perm_btn['erase']==1)
+                                <button href="#|" class="btn btn-danger" onclick="eliminarApertura({{$service->sid}})"><i class="fa fa-trash"></i></button>
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    <script src="{{URL::asset('js/currencyformat.js')}}" ></script>
+@endsection
+@push('head')
+<script src="{{URL::asset('js/process/services.js')}}" ></script>
+@endpush

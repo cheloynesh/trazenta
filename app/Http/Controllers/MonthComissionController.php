@@ -58,9 +58,8 @@ class MonthComissionController extends Controller
         return response()->json(['status'=>true, "regime"=>$regime, "data"=>$clients]);
     }
 
-    public function ExportPDF($id,$month,$year,$TC,$regime,$dlls){
-
-        // dd($id,$month,$year,$TC);
+    public function ExportPDF($id,$month,$year,$TC,$regime,$dlls)
+    {
         $b_amount = 0;
         $IVA = 0;
         $ret_isr = 0;

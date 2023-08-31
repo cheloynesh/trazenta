@@ -43,6 +43,19 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
+                                            <label for="">Agente:</label>
+                                            <select name="selectAgent" id="selectAgent" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($agents as $id => $agent)
+                                                    <option value='{{ $id }}'>{{ $agent }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
                                             <label for="">Compañía:</label>
                                             <select name="selectInsurance" id="selectInsurance" class="form-select">
                                                 <option hidden selected value="">Selecciona una opción</option>
@@ -151,6 +164,19 @@
                                                 <option hidden selected>Selecciona una opción</option>
                                                 <option value="MXN">MXN</option>
                                                 <option value="USD">USD</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Agente:</label>
+                                            <select name="selectAgentSixMonth" id="selectAgentSixMonth" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($agents as $id => $agent)
+                                                    <option value='{{ $id }}'>{{ $agent }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>

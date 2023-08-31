@@ -55,6 +55,10 @@ Route::get('admin/currency/currencies/GetInfo/{id}','CurrencyController@GetInfo'
 Route::resource('admin/charge/charges', 'ChargeController');
 Route::get('admin/charge/charges/GetInfo/{id}','ChargeController@GetInfo')->name('charges.GetInfo');
 
+// Tipos de Servicios
+Route::resource('admin/service_type/service_type', 'ServiceTypeController');
+Route::get('admin/service_type/service_type/GetInfo/{id}','ServiceTypeController@GetInfo')->name('servicetype.GetInfo');
+
 // clientes
 Route::resource('admin/client/client', 'ClientsController');
 Route::get('admin/client/client/GetInfo/{id}','ClientsController@GetInfo')->name('client.GetInfo');
@@ -133,6 +137,13 @@ Route::get('process/opening/opening/GetInfo/{id}','OpeningController@GetInfo')->
 Route::get('process/opening/opening/GetinfoStatus/{id}','OpeningController@GetinfoStatus')->name('opening.GetinfoStatus');
 Route::get('process/opening/opening/GetinfoFund/{id}','OpeningController@GetinfoFund')->name('opening.GetinfoFund');
 Route::post('process/opening/opening/updateStatus', 'OpeningController@updateStatus')->name('opening.updateStatus');
+
+// --------------------------------------------------------Servicios----------------------------------------------------------
+Route::resource('process/services/services', 'ServicesController');
+Route::get('process/services/services/GetInfo/{id}','ServicesController@GetInfo')->name('services.GetInfo');
+Route::get('process/services/services/GetInfoStatus/{id}','ServicesController@GetInfoStatus')->name('services.GetInfoStatus');
+Route::post('process/services/services/updateStatus', 'ServicesController@updateStatus')->name('services.updateStatus');
+Route::get('process/services/services/GetFunds/{type}','ServicesController@GetFunds')->name('services.GetFunds');
 
 // --------------------------------------------------------Reportes------------------------------------------------------------
 Route::resource('reports/moneyflow/moneyflow', 'MoneyFlowController');

@@ -14,11 +14,11 @@ class AssigmentController extends Controller
 {
     public function index()
     {
-        $users = User::get();
+        $users = User::where("fk_profile","12")->get();
         // $clients = Client::whereNull("fk_agent")->pluck('name','id');
         $clients = DB::table('Client')->select('Client.id',DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'), 'id')
         ->whereNull("fk_agent")->whereNull('deleted_at')->pluck('name','id');
-        $agents = DB::table('users')->select('id',DB::raw('CONCAT(IFNULL(name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
+        $agents = DB::table('users')->select('id',DB::raw('CONCAT(IFNULL(name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))->where("fk_profile","12")
         ->orderBy('name')->whereNull('deleted_at')->pluck('name','id');
         // dd($clients);
         // if($clients->isEmpty())

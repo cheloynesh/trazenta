@@ -92,11 +92,11 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="">Fondo</label>
-                    <select class="form-select" id="selectInsurance" aria-label="Default select example">
+                    <select class="form-select" id="selectFund" aria-label="Default select example" onchange="GetFilters()">
                         <option selected hidden value="%">Selecciona una opción</option>
-                        {{-- @foreach ($insurances as $id => $insurance)
+                        @foreach ($insurances as $id => $insurance)
                             <option value='{{ $id }}'>{{ $insurance }}</option>
-                        @endforeach --}}
+                        @endforeach
                         <option value="%">Todos</option>
                     </select>
                 </div>

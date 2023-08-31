@@ -28,7 +28,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" onclick="cerrarmodal()" class="btn btn-secundary">Cancelar</button>
-                <button type="button" onclick="actualizarEstatus()" class="btn btn-primary">Guardar</button>
+                @if ($perm_btn['modify']==1)
+                    <button type="button" onclick="actualizarEstatus()" class="btn btn-primary">Guardar</button>
+                @endif
             </div>
         </div>
     </div>

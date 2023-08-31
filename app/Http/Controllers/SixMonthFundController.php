@@ -318,7 +318,8 @@ class SixMonthFundController extends Controller
         // dd($end_date);
 
         $nucEdit = SixMonth_fund::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_agent'=>$request->fk_agent, 'amount'=>$request->amount,'currency'=>$request->currency,
-        'deposit_date'=>$deposit_date,'initial_date'=>$initial_date,'end_date'=>$end_date, 'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance]);
+        'deposit_date'=>$deposit_date,'initial_date'=>$initial_date,'end_date'=>$end_date, 'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_charge'=>$request->fk_charge,
+        'fk_insurance'=>$request->fk_insurance,'renew_stat'=>$request->renew_stat]);
 
         if(floatval($request->amount) != floatval($nuc->amount) || $request->currency != $nuc->currency || $request->deposit_date != $nuc->deposit_date)
         {

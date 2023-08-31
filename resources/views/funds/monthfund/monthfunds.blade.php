@@ -238,7 +238,9 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" onclick="cerrarNuc()" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
-                        <button type="button" onclick="actualizarNuc()" class="btn btn-primary">Guardar</button>
+                        @if ($perm_btn['modify']==1)
+                            <button type="button" onclick="actualizarNuc()" class="btn btn-primary">Guardar</button>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -386,8 +388,8 @@
                             </td>
                             <td>
                                 <a href="#|" class="btn btn-primary" onclick="nuevoMovimiento({{$nuc->id}})" >Movimientos</a>
-                                @if ($perm_btn['modify']==1)
-                                    <button href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" ><i class="fas fa-edit"></i></button>
+                                <button href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" ><i class="fas fa-edit"></i></button>
+                                @if ($perm_btn['erase']==1)
                                     <button href="#|" class="btn btn-danger" onclick="deleteFund({{$nuc->id}})" ><i class="fa fa-trash"></i></button>
                                     {{-- <a href="#|" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" >Movimientos</a> --}}
                                 @endif

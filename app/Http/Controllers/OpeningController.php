@@ -245,7 +245,7 @@ class OpeningController extends Controller
         $perm_btn =Permission::permBtns($profile,31);
         $openings = $this->ReturnData($profile);
 
-        return response()->json(["status"=>true, "message"=>"Apertura Creada", "openings" => $openings, "profile" => $profile, "permission" => $perm_btn]);
+        return response()->json(["status"=>true, "message"=>"Servicio Creado", "openings" => $openings, "profile" => $profile, "permission" => $perm_btn]);
     }
 
     public function update(Request $request, $id)
