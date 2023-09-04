@@ -118,11 +118,11 @@ function FillTable(data,profile,permission)
         if(valor.active_stat == 0) activeStat = '<font color="red">INACTIVO</font>'; else activeStat = '<font color="green">ACTIVO</font>';
         if (profile != 12)
         {
-            table.row.add([valor.name,valor.nuc,valor.agname,activeStat,btnStat,btnMov+" "+btnEdit+" "+btnTrash]).node().id = valor.id;
+            table.row.add([valor.agname,valor.nuc,valor.name,activeStat,btnStat,btnMov+" "+btnEdit+" "+btnTrash]).node().id = valor.id;
         }
         else
         {
-            table.row.add([valor.name,valor.nuc,valor.agname,activeStat,btnStat,btnMov]).node().id = valor.id;
+            table.row.add([valor.agname,valor.nuc,valor.name,activeStat,btnStat,btnMov]).node().id = valor.id;
         }
     });
     table.draw(false);

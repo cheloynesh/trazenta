@@ -38,13 +38,8 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="">Servicio</label>
-                                <select name="selectService1" id="selectService1" class="form-select">
-                                    <option hidden selected value="">Selecciona una opción</option>
-                                    @foreach ($services_types as $id => $type)
-                                        <option value='{{ $id }}'>{{ $type }}</option>
-                                    @endforeach
-                                </select>
+                                <label for="">Folio</label>
+                                <input type="text" id="folio1" class="form-control" placeholder="Folio">
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -65,6 +60,26 @@
                                     <option value=0>FALTANTE</option>
                                     <option value=1>ENTREGADO</option>
                                 </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="">Servicio</label>
+                                <select name="selectService1" id="selectService1" class="form-select" onchange="showAmount('#selectService1','amountDiv1','#amount1')">
+                                    <option hidden selected value="">Selecciona una opción</option>
+                                    @foreach ($services_types as $id => $type)
+                                        <option value='{{ $id }}'>{{ $type }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4" id="amountDiv1">
+                            <div class="form-group">
+                                <label for="">Monto</label>
+                                <input type="text" id="amount1" name="amount1" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value=0 data-type="currency">
                             </div>
                         </div>
                     </div>

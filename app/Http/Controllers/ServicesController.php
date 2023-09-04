@@ -119,6 +119,8 @@ class ServicesController extends Controller
         $service->fk_nuc = $request->fk_nuc;
         $service->fk_service_type = $request->fk_service_type;
         $service->type = $request->type;
+        $service->folio = $request->folio;
+        $service->amount = $request->amount;
         $service->save();
 
         $profile = User::findProfile();
@@ -131,7 +133,7 @@ class ServicesController extends Controller
     public function update(Request $request, $id)
     {
         $service = Service::where('id',$request->id)->update(['fund'=>$request->fund,'fk_nuc'=>$request->fk_nuc,'fk_service_type'=>$request->fk_service_type,
-        'type'=>$request->type,'delivered'=>$request->delivered]);
+        'type'=>$request->type,'delivered'=>$request->delivered,'amount'=>$request->amount,'folio'=>$request->folio]);
 
         $profile = User::findProfile();
         $perm_btn =Permission::permBtns($profile,31);

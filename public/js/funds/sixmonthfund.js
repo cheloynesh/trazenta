@@ -91,11 +91,11 @@ function FillTable(data,profile,permission)
         console.log(valor.active_stat);
         if (profile != 12)
         {
-            table.row.add([valor.name,valor.nuc,valor.agname,valor.amount,valor.currency,activeStat,valor.deposit_date,valor.end_date,btnMov+" "+btnEdit+" "+btnTrash]).node().id = valor.id;
+            table.row.add([valor.agname,valor.nuc,valor.name,valor.amount,valor.currency,activeStat,valor.deposit_date,valor.end_date,btnMov+" "+btnEdit+" "+btnTrash]).node().id = valor.id;
         }
         else
         {
-            table.row.add([valor.name,valor.nuc,valor.agname,valor.amount,valor.currency,activeStat,valor.deposit_date,valor.end_date,btnMov]).node().id = valor.id;
+            table.row.add([valor.agname,valor.nuc,valor.name,valor.amount,valor.currency,activeStat,valor.deposit_date,valor.end_date,btnMov]).node().id = valor.id;
         }
     });
     table.draw(false);

@@ -364,9 +364,9 @@
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
             <table class="table table-striped table-hover text-center" id="tbProf">
                 <thead>
-                    <th class="text-center">Cliente</th>
-                    <th class="text-center">NUC</th>
                     <th class="text-center">Agente</th>
+                    <th class="text-center">NUC</th>
+                    <th class="text-center">Cliente</th>
                     <th class="text-center">Estatus</th>
                     <th class="text-center">Tipo</th>
                     <th class="text-center">Opciones</th>
@@ -375,9 +375,9 @@
                 <tbody>
                     @foreach ($nucs as $nuc)
                         <tr id="{{$nuc->id}}">
-                            <td>{{$nuc->name}}</td>
-                            <td>{{$nuc->nuc}}</td>
                             <td>{{$nuc->agname}}</td>
+                            <td>{{$nuc->nuc}}</td>
+                            <td>{{$nuc->name}}</td>
                             @if($nuc->active_stat == 0)
                                 <td style="color: red">INACTIVO</td>
                             @else

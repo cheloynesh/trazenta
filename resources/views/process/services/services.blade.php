@@ -44,18 +44,13 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="">Servicio</label>
-                                    <select name="selectService" id="selectService" class="form-select">
-                                        <option hidden selected value="">Selecciona una opción</option>
-                                        @foreach ($services_types as $id => $type)
-                                            <option value='{{ $id }}'>{{ $type }}</option>
-                                        @endforeach
-                                    </select>
+                                    <label for="">Folio</label>
+                                    <input type="text" id="folio" class="form-control" placeholder="Folio">
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Tipo de Servicio</label>
                                     <select name="selectType" id="selectType" class="form-select">
@@ -63,6 +58,26 @@
                                         <option value=0>Digital</option>
                                         <option value=1>Entrega Original</option>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="">Servicio</label>
+                                    <select name="selectService" id="selectService" class="form-select" onchange="showAmount('#selectService','amountDiv','#amount')">
+                                        <option hidden selected value="">Selecciona una opción</option>
+                                        @foreach ($services_types as $id => $type)
+                                            <option value='{{ $id }}'>{{ $type }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4" id="amountDiv">
+                                <div class="form-group">
+                                    <label for="">Monto</label>
+                                    <input type="text" id="amount" name="amount" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value=0 data-type="currency">
                                 </div>
                             </div>
                         </div>
@@ -102,10 +117,10 @@
         <table class="table table-striped table-hover text-center" style="width:100%" id="example">
             <thead>
                 <tr>
-                    <th class="text-center">Fondo</th>
-                    <th class="text-center">Contrato</th>
                     <th class="text-center">Agente</th>
+                    <th class="text-center">Contrato</th>
                     <th class="text-center">Servicio</th>
+                    <th class="text-center">Monto</th>
                     <th class="text-center">Tipo</th>
                     <th class="text-center">Entregado</th>
                     <th class="text-center">Estatus</th>
@@ -115,10 +130,10 @@
             <tbody>
                 @foreach ($services as $service)
                     <tr id="{{$service->sid}}">
-                        <td>{{$service->fund}}</td>
-                        <td>{{$service->nuc}} - {{$service->cname}}</td>
                         <td>{{$service->agent}}</td>
+                        <td>{{$service->nuc}} - {{$service->cname}}</td>
                         <td>{{$service->servname}}</td>
+                        <td>{{$service->mnt}}</td>
                         <td>{{$service->type}}</td>
                         <td>{{$service->delivered}}</td>
                         <td>

@@ -78,9 +78,9 @@ function FillTable(data,profile,permission)
         btnEdit = '<button href="#|" class="btn btn-warning" onclick="editarApertura('+valor.sid+')" ><i class="fas fa-edit"></i></button>';
         btnTrash = '<button href="#|" class="btn btn-danger" onclick="eliminarApertura('+valor.sid+')"><i class="fa fa-trash"></i></button>';
         if(permission["erase"] == 1)
-            table.row.add([valor.fund,valor.nuc + " - " + valor.cname,valor.agent,valor.servname,valor.type,valor.delivered,btnStat,btnEdit+" "+btnTrash]).node().id = valor.sid;
+            table.row.add([valor.agent,valor.nuc + " - " + valor.cname,valor.servname,valor.mnt,valor.type,valor.delivered,btnStat,btnEdit+" "+btnTrash]).node().id = valor.sid;
         else
-            table.row.add([valor.fund,valor.nuc + " - " + valor.cname,valor.agent,valor.servname,type,delivered,btnStat,btnEdit]).node().id = valor.sid;
+            table.row.add([valor.agent,valor.nuc + " - " + valor.cname,valor.servname,valor.mnt,type,delivered,btnStat,btnEdit]).node().id = valor.sid;
     });
     table.draw(false);
 }
@@ -89,7 +89,9 @@ function nuevoServicio()
 {
     idClient = 0;
     $("#nuc_edit").val("");
+    $("#amount").val(0);
     document.getElementById('btnSrcNuc').disabled = true;
+    document.getElementById("amountDiv").style.display = "none";
     $("#myModal").modal('show');
 }
 
@@ -154,6 +156,8 @@ function guardarServicio()
     var fk_nuc = idnuc;
     var fk_service_type = $("#selectService").val();
     var type = $("#selectType").val();
+    var folio = $("#folio").val();
+    var amount = $("#amount").val().replace(/[^0-9.]/g, '');
 
     var route = "services";
     var data = {
@@ -161,6 +165,8 @@ function guardarServicio()
         'fund':fund,
         'fk_nuc':fk_nuc,
         'fk_service_type':fk_service_type,
+        'folio':folio,
+        'amount':amount,
         'type':type
     };
     jQuery.ajax({
@@ -195,6 +201,17 @@ function editarApertura(id)
             $("#selectService1").val(result.data.fk_service_type);
             $("#selectType1").val(result.data.type);
             $("#selectDelivered1").val(result.data.delivered);
+            $("#amount1").val(parseFloat(result.data.amount).toLocaleString('en-US'));
+            $("#folio1").val(result.data.folio);
+
+            if(result.data.fk_service_type == 5 || result.data.fk_service_type == 6)
+            {
+                document.getElementById("amountDiv1").style.display = "";
+            }
+            else
+            {
+                document.getElementById("amountDiv1").style.display = "none";
+            }
 
             $("#myModaledit").modal('show');
         }
@@ -208,6 +225,8 @@ function actualizarServicio()
     var fk_service_type = $("#selectService1").val();
     var type = $("#selectType1").val();
     var delivered = $("#selectDelivered1").val();
+    var folio = $("#folio1").val();
+    var amount = $("#amount1").val().replace(/[^0-9.]/g, '');
 
     var route = "services/"+idupdate;
     var data = {
@@ -217,6 +236,8 @@ function actualizarServicio()
         'fk_nuc':fk_nuc,
         'fk_service_type':fk_service_type,
         'type':type,
+        'folio':folio,
+        'amount':amount,
         'delivered':delivered
     };
     jQuery.ajax({
@@ -375,4 +396,17 @@ function eliminarApertura(id)
         function(){
             alertify.error('Cancelado');
     });
+}
+
+function showAmount(select, div, txt)
+{
+    if($(select).val() == 5 || $(select).val() == 6)
+    {
+        document.getElementById(div).style.display = "";
+    }
+    else
+    {
+        document.getElementById(div).style.display = "none";
+    }
+    $(txt).val(0);
 }
