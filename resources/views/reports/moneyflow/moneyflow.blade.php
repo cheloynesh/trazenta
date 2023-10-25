@@ -207,10 +207,10 @@
                     @foreach ($moneyflow as $flow)
                         <tr id="{{$flow->AgentId}}">
                             <td>{{$flow->AgentName}}</td>
-                            <td>{{$flow->NCP}}</td>
-                            <td>{{$flow->NLP}}</td>
+                            <td><a onclick="downloadBreakdown({{$flow->AgentId}},1)">{{$flow->NCP}}</a></td>
+                            <td><a onclick="downloadBreakdown({{$flow->AgentId}},2)">{{$flow->NLP}}</a></td>
                             <td>{{$flow->ToN}}</td>
-                            <td>{{$flow->OCP}}</td>
+                            <td><a onclick="downloadBreakdown({{$flow->AgentId}},3)">{{$flow->OCP}}</a></td>
                             <td>{{$flow->OLP}}</td>
                             <td>{{$flow->ToO}}</td>
                             <td>{{$flow->RCP}}</td>

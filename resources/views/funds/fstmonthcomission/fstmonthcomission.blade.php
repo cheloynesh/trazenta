@@ -49,6 +49,7 @@
                                                     <th class="text-center">Apertura</th>
                                                     <th class="text-center">Cliente</th>
                                                     <th class="text-center">Incrementos</th>
+                                                    <th class="text-center">Primer Pago</th>
                                                     <th class="text-center">Opciones</th>
                                                 </thead>
                                             </table>
@@ -176,6 +177,38 @@
             </div>
         </div>
         {{-- fin modal --}}
+        {{-- modal auth --}}
+        <div id="authModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Aplicar fecha</h4>
+                        <button type="button" class="close" onclick="cerrarAuth()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Fecha</label>
+                                            <input type="date" id="auth" name="auth" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick="cerrarAuth()">Cancelar</button>
+                        <button type="button" onclick="guardarAuth()" class="btn btn-primary">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- termina modal --}}
         {{-- Inicia pantalla de inicio --}}
         <br><br>
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">

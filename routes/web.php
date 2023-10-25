@@ -112,6 +112,8 @@ Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDF/{id}/{month}/{ye
 Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDFAll/{id}/{tc}','FstMonthComissionController@ExportPDFAll');
 Route::post('funds/fstmonthcomission/fstmonthcomission/GetInfoComition','FstMonthComissionController@GetInfoComition')->name('fstmonthcomission.GetInfoComition');
 Route::get('funds/fstmonthcomission/fstmonthcomission/GetInfoAugments/{id}','FstMonthComissionController@GetInfoAugments')->name('fstmonthcomission.GetInfoAugments');
+Route::post('funds/fstmonthcomission/fstmonthcomission/setStatDate','FstMonthComissionController@setStatDate')->name('fstmonthcomission.setStatDate');
+Route::post('funds/fstmonthcomission/fstmonthcomission/setNullDate','FstMonthComissionController@setNullDate')->name('fstmonthcomission.setNullDate');
 
 //---------------------------------------------------Fondo de 6 meses ----------------------------------------------------------
 Route::resource('funds/sixmonthfund/sixmonthfunds', 'SixMonthFundController');
@@ -149,3 +151,4 @@ Route::get('process/services/services/GetFunds/{type}','ServicesController@GetFu
 Route::resource('reports/moneyflow/moneyflow', 'MoneyFlowController');
 Route::get('reports/moneyflow/moneyflow/GetInfo/{id}','MoneyFlowController@GetInfo')->name('moneyflow.GetInfo');
 Route::get('reports/moneyflow/moneyflow/GetInfoFilters/{id}','MoneyFlowController@GetInfoFilters')->name('moneyflow.GetInfoFilters');
+Route::get('reports/moneyflow/moneyflow/ExportBreakdown/{id}/{month}/{quarter}/{year}/{fund}/{type}','MoneyFlowController@ExportBreakdown');

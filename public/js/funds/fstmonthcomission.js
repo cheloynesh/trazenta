@@ -70,12 +70,32 @@ var formatter = new Intl.NumberFormat('en-US', {
   });
 var idUser = 0;
 var flagComition = 0;
+
+function RefreshTable(data)
+{
+    var table = $('#tbProf1').DataTable();
+    var btn;
+    var btnPay;
+
+    table.clear();
+    data.forEach( function(valor, indice, array) {
+        if(valor.contpa != 0)
+            btn = '<button type="button" class="btn btn-success"'+'onclick="abrirIncrementos('+valor.idNuc+')">Incrementos</button>&nbsp;<button type="button" class="btn btn-success"'+'onclick="calcular('+valor.idNuc+')">Primer Pago</button>';
+        else
+            btn = '<button type="button" class="btn btn-success"'+'onclick="calcular('+valor.idNuc+')">Primer Pago</button>';
+        if(valor.fst_pay == null)
+            btnPay = '<button href="#|" class="btn btn-danger" onclick="setStatDate('+valor.idNuc+',2)" >Sin Pago</button>'
+        else
+            btnPay = '<button href="#|" class="btn btn-success" onclick="setNullDate('+valor.idNuc+',2)">'+valor.fst_pay+'</button>'
+        table.row.add([valor.nuc,valor.apertura,valor.client_name,valor.contpam,btnPay,btn]).node().id = valor.idNuc;
+    });
+    table.draw(false);
+}
+
 function abrirComision(id)
 {
     idUser = id;
-    var table = $('#tbProf1').DataTable();
     var route = baseUrl + '/GetInfo/'+ idUser;
-    var btn;
     flagComition = 0;
 
     jQuery.ajax({
@@ -90,19 +110,73 @@ function abrirComision(id)
                 $("#onoffRegime").bootstrapToggle('off');
 
             flagComition = 1;
-            table.clear();
-            result.data.forEach( function(valor, indice, array) {
-                if(valor.contpa != 0)
-                    btn = '<button type="button" class="btn btn-success"'+'onclick="abrirIncrementos('+valor.idNuc+')">Incrementos</button>&nbsp;<button type="button" class="btn btn-success"'+'onclick="calcular('+valor.idNuc+')">Primer Pago</button>';
-                else
-                    btn = '<button type="button" class="btn btn-success"'+'onclick="calcular('+valor.idNuc+')">Primer Pago</button>';
-                table.row.add([valor.nuc,valor.apertura,valor.client_name,valor.contpam,btn]).node().id = valor.idNuc;
-            });
-            table.draw(false);
+            RefreshTable(result.data);
         }
     })
     $("#myModal2").modal('show');
 }
+
+function setStatDate(id, type)
+{
+    userid = id;
+    flagtype = type;
+    $("#authModal").modal('show');
+}
+
+function setNullDate(id, type)
+{
+    var route = baseUrl + '/setNullDate';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        "id":id,
+        'flagtype':type,
+    }
+    alertify.confirm("Cancelar fecha","¿Desea remover la fecha?",
+        function(){
+            jQuery.ajax({
+                url:route,
+                data: data,
+                type:'post',
+                dataType:'json',
+                success:function(result){
+                    alertify.success(result.message);
+                    RefreshTable(result.data);
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
+                }
+            })
+        },
+        function(){});
+}
+
+function guardarAuth()
+{
+    var route = baseUrl + '/setStatDate';
+    var date = $("#auth").val();
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        "id":userid,
+        'date':date
+    }
+    jQuery.ajax({
+        url:route,
+        data: data,
+        type:'post',
+        dataType:'json',
+        success:function(result){
+            alertify.success(result.message);
+            $("#authModal").modal('hide');
+            RefreshTable(result.data);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
+}
+
 function cancelarComision()
 {
     $("#myModal2").modal('hide');

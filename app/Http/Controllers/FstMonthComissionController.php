@@ -48,6 +48,7 @@ class FstMonthComissionController extends Controller
         $date2 = new DateTime();
         $date2->modify('-1 months');
         $clients = DB::select('call fstclients(?,?,?)',[$id,intval($date2->format('m')),intval($date2->format('Y'))]);
+        // dd($clients);
         $regime = DB::table('users')->select('regime')->where('id',$id)->first();
         return response()->json(['status'=>true, "regime"=>$regime->regime, "data"=>$clients]);
     }
@@ -580,6 +581,32 @@ class FstMonthComissionController extends Controller
     {
         $movimientos = DB::table('Month_fund')->select("*","Month_fund.id as id",DB::raw('IFNULL(auth_date, "-") as auth'))->join('Nuc',"Nuc.id","=","fk_nuc")->where('fk_nuc',$id)->where('type',"Abono")->whereNull('Month_fund.deleted_at')->get();
         return response()->json(['status'=>true, "data"=>$movimientos]);
+    }
+
+    public function setStatDate(Request $request)
+    {
+        $status = Nuc::where('id',$request->id)->first();
+        $status->fst_pay = $request->date;
+        $status->save();
+
+        date_default_timezone_set('America/Mexico_City');
+        $date2 = new DateTime();
+        $date2->modify('-1 months');
+        $clients = DB::select('call fstclients(?,?,?)',[$status->fk_agent,intval($date2->format('m')),intval($date2->format('Y'))]);
+        return response()->json(['status'=>true, "message"=>"Fecha aplicada", "data" => $clients]);
+    }
+
+    public function setNullDate(Request $request)
+    {
+        $status = Nuc::where('id',$request->id)->first();
+        $status->fst_pay = null;
+        $status->save();
+
+        date_default_timezone_set('America/Mexico_City');
+        $date2 = new DateTime();
+        $date2->modify('-1 months');
+        $clients = DB::select('call fstclients(?,?,?)',[$status->fk_agent,intval($date2->format('m')),intval($date2->format('Y'))]);
+        return response()->json(['status'=>true, "message"=>"Fecha cancelada", "data" => $clients]);
     }
 }
 

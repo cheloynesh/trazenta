@@ -10,6 +10,8 @@ use App\MonthlyComission;
 use App\Nuc;
 use App\Status;
 use App\Insurance;
+use App\Exports\ExportBreakdown;
+use Maatwebsite\Excel\Facades\Excel;
 use DB;
 
 class MoneyFlowController extends Controller
@@ -36,5 +38,14 @@ class MoneyFlowController extends Controller
         $moneyflow = DB::select('call moneyflow(?,?,?,?)',[$request->year,$request->month,$request->quarter,$request->fund]);
         // dd($request->all());
         return response()->json(['status'=>true, "moneyflow"=>$moneyflow]);
+    }
+
+    public function ExportBreakdown($id,$month,$quarter,$year,$fund,$type)
+    {
+        $user = User::where('id',$id)->first();
+        // dd($id);
+        $nombre = "DESGLOSE_".(string)$user->name."_".$user->firstname.".xlsx";
+        $sheet = new ExportBreakdown($id,$month,$quarter,$year,$fund,$type);
+        return Excel::download($sheet,$nombre);
     }
 }
