@@ -76,7 +76,7 @@ function RefreshTable(data)
     var table = $('#tbProf1').DataTable();
     var btn;
     var btnPay;
-
+    console.log(data);
     table.clear();
     data.forEach( function(valor, indice, array) {
         if(valor.contpa != 0)

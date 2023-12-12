@@ -407,8 +407,8 @@ class MonthFundsController extends Controller
         {
             $date1 = new DateTime($nuc->apply_date);
             $diff = $date1->diff($date2);
-            if($diff->m >= 7 || $diff->y >= 1)
-                $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>7]);
+            if($diff->m >= 8 || $diff->y >= 1)
+                $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>8]);
             else
                 $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>$diff->m]);
         }

@@ -51,6 +51,10 @@ Route::get('admin/insurance/insurances/GetInfo/{id}','InsuranceController@GetInf
 Route::resource('admin/currency/currencies', 'CurrencyController');
 Route::get('admin/currency/currencies/GetInfo/{id}','CurrencyController@GetInfo')->name('currencies.GetInfo');
 
+// régimen
+Route::resource('admin/regime/regime', 'RegimeController');
+Route::get('admin/regime/regime/GetInfo/{id}','RegimeController@GetInfo')->name('regime.GetInfo');
+
 // Cálculo de Cobro
 Route::resource('admin/charge/charges', 'ChargeController');
 Route::get('admin/charge/charges/GetInfo/{id}','ChargeController@GetInfo')->name('charges.GetInfo');
@@ -58,6 +62,18 @@ Route::get('admin/charge/charges/GetInfo/{id}','ChargeController@GetInfo')->name
 // Tipos de Servicios
 Route::resource('admin/service_type/service_type', 'ServiceTypeController');
 Route::get('admin/service_type/service_type/GetInfo/{id}','ServiceTypeController@GetInfo')->name('servicetype.GetInfo');
+
+// Lideres
+Route::resource('admin/leader/leader', 'LeaderController');
+Route::get('admin/leader/leader/ViewNonAssigned/{id}','LeaderController@ViewNonAssigned')->name('leader.ViewNonAssigned');
+Route::get('admin/leader/leader/ViewAssigned/{id}','LeaderController@ViewAssigned')->name('leader.ViewAssigned');
+Route::get('admin/leader/leader/ViewNonLeader/{id}','LeaderController@ViewNonLeader')->name('leader.ViewNonLeader');
+Route::get('admin/leader/leader/GetInfo/{id}','LeaderController@GetInfo')->name('leader.GetInfo');
+Route::get('admin/leader/leader/GetInfoAll/{id}','LeaderController@GetInfoAll')->name('leader.GetInfoAll');
+Route::post('admin/leader/leader/Dessign','LeaderController@Dessign')->name('leader.Dessign');
+Route::post('admin/leader/leader/DeleteLeader','LeaderController@DeleteLeader')->name('leader.DeleteLeader');
+Route::post('admin/leader/leader/Assign','LeaderController@Assign')->name('leader.Assign');
+Route::post('admin/leader/leader/DeleteAgent','LeaderController@DeleteAgent')->name('leader.DeleteAgent');
 
 // clientes
 Route::resource('admin/client/client', 'ClientsController');
