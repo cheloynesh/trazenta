@@ -65,6 +65,21 @@
                     <div class="modal-body">
                         <div class="container-fluid bd-example-row">
                             <div class="col-lg-12">
+                                <div class="row align-items-end">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="">Tipo de Cambio</label>
+                                            <input type="text" id="change" name="change" placeholder="Ingresa el tipo de cambio" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="">Mes</label>
+                                            <input type="month" id="month" name="month" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
                                 <div class="row">
                                     <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
                                         <table class="table table-striped table-hover text-center" id="tableAgents">
@@ -88,6 +103,73 @@
             </div>
         </div>
         {{-- fin modal| --}}
+        {{-- modal Cálculo --}}
+        <div id="myModalCalc" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Comisiones</h4>
+                        <button type="button" class="close" aria-label="Close" onclick="cerrarmodal('#myModalCalc')"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-lg-12">
+                                {{-- <div class="row align-items-center"> --}}
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="">Saldo Total</label>
+                                            <input type="text" id="b_amount" name="b_amount" placeholder="Monto bruto" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="">Saldo Total Dolares</label>
+                                            <input type="text" id="dll_conv" name="dll_conv" placeholder="IVA" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="">/5000</label>
+                                            <input type="text" id="usd_invest" name="usd_invest" placeholder="RET ISR" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="">*Dolares</label>
+                                            <input type="text" id="usd_invest1" name="usd_invest1" placeholder="RET IVA" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="">70%</label>
+                                            <input type="text" id="seventy" name="seventy" placeholder="Monto Neto" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="">30%</label>
+                                            <input type="text" id="thirty" name="thirty" placeholder="Monto Neto" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick="cerrarmodal('#myModalCalc')">Cancelar</button>
+                        {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- termina modal --}}
         {{-- Inicia pantalla de inicio --}}
         <div class="tab-content" id="mytabcontent">
             <div class="table-responsive" style="margin-bottom: 10px; max-width: auto; margin: auto;">

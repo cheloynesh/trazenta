@@ -185,6 +185,7 @@ function abrirResumen(idNuc)
     $("#comition").val("13,500.00");
     var comition = $("#comition").val().replace(/[^0-9.]/g, '');
     var date = $("#month").val();
+    var regime = $("#selectRegime").val();
     // var reg = $("#onoffRegime").prop('checked');
     // var regime = 0;
     // if(reg)
@@ -200,7 +201,8 @@ function abrirResumen(idNuc)
         'comition':comition,
         'id':idNuc,
         'year':year,
-        'month':month
+        'month':month,
+        'regime':regime
     }
 
     var route = baseUrl+'/GetInfoComition';

@@ -104,10 +104,7 @@ function abrirComision(id)
         dataType:'json',
         success:function(result)
         {
-            if(result.regime == 0)
-                $("#onoffRegime").bootstrapToggle('on');
-            else
-                $("#onoffRegime").bootstrapToggle('off');
+            $("#selectRegime").val(result.regime);
 
             flagComition = 1;
             RefreshTable(result.data);
@@ -188,16 +185,10 @@ function calcular(id)
     date = date.split("-");
     var year = date[0];
     var month = date[1];
-    var reg = $("#onoffRegime").prop('checked');
-    var regime = 0;
+    var regime = $("#selectRegime").val();
     if(TC == "" || date == "") alert ("Los campos de Tipo de cambio y Fecha no deben quedar vacíos");
     else
     {
-        if(reg)
-            regime = 1;
-        else
-            regime = 0;
-
         var route = baseUrl + '/ExportPDF/'+ id + "/" + month + "/" + year + "/"+ TC + "/" + regime;
         $.ajaxSetup({
             headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
@@ -268,12 +259,7 @@ function abrirResumen(idNuc)
     date = date.split("-");
     var year = date[0];
     var month = date[1];
-    var reg = $("#onoffRegime").prop('checked');
-    var regime = 0;
-    if(reg)
-        regime = 1;
-    else
-        regime = 0;
+    var regime = $("#selectRegime").val();
 
     if(date == null || date == "" && TC == null || TC == "")
     {
@@ -367,12 +353,7 @@ function updateRegime()
 {
     if(flagComition != 0)
     {
-        var reg = $("#onoffRegime").prop('checked');
-        var regime = 0;
-        if(reg)
-            regime = 0;
-        else
-            regime = 1;
+        var regime = $("#selectRegime").val();
 
         var route = baseUrl+"/UpdateRegime";
         var data = {

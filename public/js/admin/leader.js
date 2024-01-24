@@ -118,7 +118,8 @@ function FillTableAgents(data)
     table.clear();
     data.forEach(function(valor, indice, array){
         buttonTrash = '<button type="button" class="btn btn-danger" onclick=deleteAgent('+ valor.id +')><i class="fas fa-trash"></i></button>';
-        table.row.add([valor.name, valor.email, buttonTrash]).node().id=valor.id;
+        buttonCalc = '<button type="button" class="btn btn-success"'+'onclick="abrirResumen('+valor.id+')"><i class="fas fa-calculator"></i></button>';
+        table.row.add([valor.name, valor.email, buttonCalc + " " + buttonTrash]).node().id=valor.id;
     })
     table.draw(false);
 }
@@ -310,4 +311,49 @@ function deleteAgent(id)
         function(){
             alertify.error('Cancelado');
     });
+}
+
+function abrirResumen(idNuc)
+{
+    var TC = $("#change").val();
+    var date = $("#month").val();
+
+    date = date.split("-");
+    var year = date[0];
+    var month = date[1];
+
+    if(date == null || date == "" && TC == null || TC == "")
+    {
+        alert("Ningun campo debe quedar vacio");
+        return false;
+    }else
+    {
+        var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+            'TC':TC,
+            'id':idNuc,
+            'year':year,
+            'month':month
+        }
+
+        var route = baseUrl+'/GetInfoComition';
+        jQuery.ajax({
+            url:route,
+            data:data,
+            type:'post',
+            dataType:'json',
+            success:function(result){
+                // alert(result.regime);
+                $("#b_amount").val(result.b_amount);
+                $("#dll_conv").val(result.dll_conv);
+                $("#usd_invest").val(result.usd_invest);
+                $("#usd_invest1").val(result.usd_invest1);
+                $("#seventy").val(result.seventy);
+                $("#thirty").val(result.thirty);
+
+                // obtenerSaldo(idNuc);
+                $("#myModalCalc").modal('show');
+            }
+        });
+    }
 }

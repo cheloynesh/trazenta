@@ -84,10 +84,7 @@ function abrirComision(id)
         success:function(result)
         {
             // alert(result.regime)
-            if(result.regime.regime == 0)
-                $("#onoffRegime").bootstrapToggle('on');
-            else
-                $("#onoffRegime").bootstrapToggle('off');
+            $("#selectRegime").val(result.regime.fk_regime);
 
             $("#dlls_com").val(result.regime.dlls);
 
@@ -112,17 +109,11 @@ function calcular()
     var TC = $("#change").val();
     var dlls = $("#dlls_com").val();
     var date = $("#month").val();
-    var reg = $("#onoffRegime").prop('checked');
-    var regime = 0;
+    var regime = $("#selectRegime").val();
 
     if(TC == "" || date == "") alert ("Ningun campo debe quedar vacio");
     else
     {
-        if(reg)
-            regime = 1;
-        else
-            regime = 0;
-
         date = date.split("-");
         var year = date[0];
         var month = date[1];
@@ -164,12 +155,7 @@ function abrirResumen(idNuc)
     var TC = $("#change").val();
     var date = $("#month").val();
     var dlls = $("#dlls_com").val();
-    var reg = $("#onoffRegime").prop('checked');
-    var regime = 0;
-    if(reg)
-        regime = 1;
-    else
-        regime = 0;
+    var regime = $("#selectRegime").val();
 
     date = date.split("-");
     var year = date[0];
@@ -268,12 +254,7 @@ function updateRegime()
 {
     if(flagComition != 0)
     {
-        var reg = $("#onoffRegime").prop('checked');
-        var regime = 0;
-        if(reg)
-            regime = 0;
-        else
-            regime = 1;
+        var regime = $("#selectRegime").val();
 
         var route = baseUrl+"/UpdateRegime";
         // alert(route);

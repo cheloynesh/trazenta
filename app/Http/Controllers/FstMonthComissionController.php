@@ -9,6 +9,7 @@ use App\Permission;
 use App\MonthlyComission;
 use App\Nuc;
 use App\Status;
+use App\Regime;
 use App\MonthFund;
 use DateTime;
 use DB;
@@ -27,6 +28,7 @@ class FstMonthComissionController extends Controller
         // dd($users);
         $perm = Permission::permView($profile,22);
         $perm_btn =Permission::permBtns($profile,22);
+        $regimes = Regime::pluck('name','id');
         // dd($clients);
         if($perm==0)
         {
@@ -34,7 +36,7 @@ class FstMonthComissionController extends Controller
         }
         else
         {
-            return view('funds.fstmonthcomission.fstmonthcomission', compact('users','perm_btn'));
+            return view('funds.fstmonthcomission.fstmonthcomission', compact('users','perm_btn','regimes'));
         }
     }
     public function GetInfo($id)
@@ -49,8 +51,8 @@ class FstMonthComissionController extends Controller
         $date2->modify('-1 months');
         $clients = DB::select('call fstclients(?,?,?)',[$id,intval($date2->format('m')),intval($date2->format('Y'))]);
         // dd($clients);
-        $regime = DB::table('users')->select('regime')->where('id',$id)->first();
-        return response()->json(['status'=>true, "regime"=>$regime->regime, "data"=>$clients]);
+        $regime = DB::table('users')->select('fk_regime','dlls')->where('id',$id)->first();
+        return response()->json(['status'=>true, "regime"=>$regime->fk_regime, "data"=>$clients]);
     }
     public function ExportPDF($id,$month,$year,$TC,$regime){
 
@@ -66,12 +68,14 @@ class FstMonthComissionController extends Controller
         $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
         $clients = DB::table('Client')->select(DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS name'),"Nuc.fk_agent")
             ->join('Nuc',"fk_client","=","Client.id")
-            ->where("month_flag","<","7")
+            ->where("month_flag","<","8")
             ->groupBy("name")
             ->where('Nuc.id',$id)->get();
         $clientNames = "";
         $userName = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
             ->where('users.id',$clients[0]->fk_agent)->whereNull('users.deleted_at')->first();
+
+        $regime = Regime::where('id',$regime)->first();
 
         $value5 = $this->calculo($id,$month,$year,$TC,10,$regime);
         $value1 = $this->calculo($id,$month,$year,$TC,35,$regime);
@@ -265,7 +269,8 @@ class FstMonthComissionController extends Controller
         $date1->modify('+6 month');
         $diff = $date1->diff($date2);
 
-        $value = $this->calculoExtra($movement->amount,$TC,10,$userName->regime,$nuc);
+        $regime = Regime::where('id',$userName->fk_regime)->first();
+        $value = $this->calculoExtra($movement->amount,$TC,10,$regime,$nuc);
         // dd($value5,$value1);
         $days = $diff->d/31;
         // dd($value["gross_amount"]*$diff->m, $value["gross_amount"]*$days);
@@ -437,7 +442,8 @@ class FstMonthComissionController extends Controller
 
     public function GetInfoComition(Request $request)
     {
-        $values = $this->calculo($request->id,$request->month,$request->year,$request->TC,10,$request->regime);
+        $regime = Regime::where('id',$request->regime)->first();
+        $values = $this->calculo($request->id,$request->month,$request->year,$request->TC,10,$regime);
         // dd($request->id);
         // dd(number_format($iva_amount,2,'.',''));
         return response()->json(['status'=>true, "b_amount"=>number_format($values["b_amount"],2,'.',','),'dll_conv'=>number_format($values["dll_conv"],2,'.',','),'usd_invest'=>number_format($values["usd_invest1"],2,'.',','),
@@ -501,15 +507,12 @@ class FstMonthComissionController extends Controller
 
         $gross_amount = $usd_invest1 * $TC; //monto bruto
 
-        $iva_amount = $gross_amount * .16; // iva del monto bruto
+        $iva_amount = $gross_amount*$regime->iva/100; // iva del monto bruto
 
-        if($regime == 1)
-        $ret_isr = $gross_amount *.10; //isr del monto bruto
-        else
-        $ret_isr = $gross_amount *.0125;
+        // dd($regime);
+        $ret_isr = $gross_amount*$regime->ret_isr/100;
 
-        $ret_iva = 2*$iva_amount; //retencion de iva
-        $ret_iva = $ret_iva/3; //retencion del iva
+        $ret_iva = $iva_amount*$regime->ret_iva/100; //retencion de iva
 
         $n_amount= ($gross_amount + $iva_amount) - ($ret_isr + $ret_iva); //Monto neto
 
@@ -558,15 +561,12 @@ class FstMonthComissionController extends Controller
 
         $gross_amount = $usd_invest1 * $TC; //monto bruto
 
-        $iva_amount = $gross_amount * .16; // iva del monto bruto
+        $iva_amount = $gross_amount*$regime->iva/100; // iva del monto bruto
 
-        if($regime == 0)
-            $ret_isr = $gross_amount *.10; //isr del monto bruto
-        else
-            $ret_isr = $gross_amount *.0125;
+        // dd($regime);
+        $ret_isr = $gross_amount*$regime->ret_isr/100;
 
-        $ret_iva = 2*$iva_amount; //retencion de iva
-        $ret_iva = $ret_iva/3; //retencion del iva
+        $ret_iva = $iva_amount*$regime->ret_iva/100; //retencion de iva
 
         $n_amount= ($gross_amount + $iva_amount) - ($ret_isr + $ret_iva); //Monto neto
 

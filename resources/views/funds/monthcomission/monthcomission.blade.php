@@ -41,7 +41,12 @@
                                     <div class="col-lg-3">
                                         <div class="form-group">
                                             <label for="">Regimen</label> <br>
-                                            <input id = "onoffRegime" type="checkbox" data-toggle="toggle" data-on = "Regimen General" data-off="RESICO" data-width="180" onchange=updateRegime()>
+                                            <select name="selectRegime" id="selectRegime" class="form-select" onchange=updateRegime()>
+                                                <option hidden selected>Selecciona una opción</option>
+                                                @foreach ($regimes as $id => $regime)
+                                                    <option value='{{ $id }}'>{{ $regime }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
                                 </div>

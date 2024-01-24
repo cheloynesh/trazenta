@@ -402,7 +402,9 @@ class MonthFundsController extends Controller
 
         date_default_timezone_set('America/Mexico_City');
         $date2 = new DateTime();
-        // dd($nucs);
+        $date2 = $date2->format('Y-m-t');
+        $date2 = new DateTime($date2);
+        // dd($date2);
         foreach ($nucs as $nuc)
         {
             $date1 = new DateTime($nuc->apply_date);

@@ -9,6 +9,7 @@ use App\Permission;
 use App\MonthlyComission;
 use App\Nuc;
 use App\Status;
+use App\Regime;
 use DateTime;
 use DB;
 
@@ -21,6 +22,7 @@ class MonthComissionController extends Controller
         $date = new DateTime();
         $date->setDate($date->format('Y'), $date->format('m'), 1);
         $date->modify('-1 months');
+        $regimes = Regime::pluck('name','id');
         $users = DB::select('call agentesCP(?)',[$date->format('Y-m-d')]);
 
         $perm = Permission::permView($profile,21);
@@ -32,7 +34,7 @@ class MonthComissionController extends Controller
         }
         else
         {
-            return view('funds.monthcomission.monthcomission', compact('users','perm_btn'));
+            return view('funds.monthcomission.monthcomission', compact('users','perm_btn','regimes'));
         }
     }
 
@@ -54,7 +56,7 @@ class MonthComissionController extends Controller
         $date->setDate($date->format('Y'), $date->format('m'), 1);
         $date->modify('-1 months');
         $clients = DB::select('call clientesCP(?,?)',[$date->format('Y-m-d'),$id]);
-        $regime = DB::table('users')->select('regime','dlls')->where('id',$id)->first();
+        $regime = DB::table('users')->select('fk_regime','dlls')->where('id',$id)->first();
         return response()->json(['status'=>true, "regime"=>$regime, "data"=>$clients]);
     }
 
@@ -71,12 +73,12 @@ class MonthComissionController extends Controller
         $userName = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
             ->where('users.id',$id)->whereNull('users.deleted_at')->first();
         $nucs = DB::table('Nuc')->select("Nuc.id as id")
-            ->where("month_flag","=","7")
+            ->where("month_flag","=","8")
             ->where('fk_agent',$id)
             ->get();
         $clients = DB::table('Client')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS clName'),'Nuc.id as nucid')
             ->join('Nuc',"fk_client","=","Client.id")
-            ->where("month_flag","=","7")
+            ->where("month_flag","=","8")
             ->where('Nuc.fk_agent',$id)->get();
         $clientNames = "";
 
@@ -96,9 +98,12 @@ class MonthComissionController extends Controller
         $validNames = array();
         array_push($validNucs,0);
         $cnnames = "";
+        $reg = Regime::where('id',$regime)->first();
+        // dd($reg);
         foreach ($nucs as $nuc)
         {
-            $value = $this->calculo($nuc->id,$monthless,$year,$TC,$regime,$dlls);
+
+            $value = $this->calculo($nuc->id,$monthless,$year,$TC,$reg,$dlls);
             // dd($value);
             $b_amount += $value["gross_amount"];
             $IVA += $value["iva_amount"];
@@ -274,7 +279,9 @@ class MonthComissionController extends Controller
         else
             $monthless = intval($request->month) - 1;
 
-        $values = $this->calculo($request->id,$monthless,$request->year,$request->TC,$request->regime,$request->dlls);
+        $regime = Regime::where('id',$request->regime)->first();
+
+        $values = $this->calculo($request->id,$monthless,$request->year,$request->TC,$regime,$request->dlls);
         // dd(number_format($iva_amount,2,'.',''));
         return response()->json(['status'=>true, "b_amount"=>number_format($values["b_amount"],2,'.',','),'dll_conv'=>number_format($values["dll_conv"],2,'.',','),'usd_invest'=>number_format($values["usd_invest1"],2,'.',','),
         'gross_amount'=>number_format($values["gross_amount"],2,'.',','), 'iva_amount'=>number_format($values["iva_amount"],2,'.',','), 'ret_isr'=>number_format($values["ret_isr"],2,'.',','),
@@ -499,16 +506,12 @@ class MonthComissionController extends Controller
 
         $gross_amount = $usd_invest1 * $TC; //monto bruto
 
-        $iva_amount = $gross_amount * .16; // iva del monto bruto
+        $iva_amount = $gross_amount*$regime->iva/100; // iva del monto bruto
 
         // dd($regime);
-        if($regime == 1)
-            $ret_isr = $gross_amount *.10; //isr del monto bruto
-        else
-            $ret_isr = $gross_amount *.0125;
+        $ret_isr = $gross_amount*$regime->ret_isr/100;
 
-        $ret_iva = 2*$iva_amount; //retencion de iva
-        $ret_iva = $ret_iva/3; //retencion del iva
+        $ret_iva = $iva_amount*$regime->ret_iva/100; //retencion de iva
 
         $n_amount= ($gross_amount + $iva_amount) - ($ret_isr + $ret_iva); //Monto neto
 
@@ -521,7 +524,7 @@ class MonthComissionController extends Controller
 
     public function update(Request $request)
     {
-        $client = User::where('id',$request->id)->update(['regime'=>$request->regime]);
+        $client = User::where('id',$request->id)->update(['fk_regime'=>$request->regime]);
         return response()->json(['status'=>true, 'message'=>"Régimen Actualizado"]);
     }
 

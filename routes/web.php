@@ -74,6 +74,7 @@ Route::post('admin/leader/leader/Dessign','LeaderController@Dessign')->name('lea
 Route::post('admin/leader/leader/DeleteLeader','LeaderController@DeleteLeader')->name('leader.DeleteLeader');
 Route::post('admin/leader/leader/Assign','LeaderController@Assign')->name('leader.Assign');
 Route::post('admin/leader/leader/DeleteAgent','LeaderController@DeleteAgent')->name('leader.DeleteAgent');
+Route::post('admin/leader/leader/GetInfoComition','LeaderController@GetInfoComition')->name('leader.GetInfoComition');
 
 // clientes
 Route::resource('admin/client/client', 'ClientsController');

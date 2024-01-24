@@ -10,6 +10,7 @@ use App\MonthlyComission;
 use App\Nuc;
 use App\Status;
 use App\SixMonth_fund;
+use App\Regime;
 use DB;
 
 class SixMonthComissionController extends Controller
@@ -26,6 +27,7 @@ class SixMonthComissionController extends Controller
             ->whereNull('SixMonth_fund.deleted_at')
             ->whereNull('Coupon.deleted_at')
             ->whereNull('users.deleted_at')->get();
+        $regimes = Regime::pluck('name','id');
         $perm = Permission::permView($profile,29);
         $perm_btn =Permission::permBtns($profile,29);
         // dd($clients);
@@ -35,7 +37,7 @@ class SixMonthComissionController extends Controller
         }
         else
         {
-            return view('funds.sixmonthcomission.sixmonthcomission', compact('users','perm_btn'));
+            return view('funds.sixmonthcomission.sixmonthcomission', compact('users','perm_btn','regimes'));
         }
     }
     public function GetInfo($id)
