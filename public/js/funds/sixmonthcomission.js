@@ -185,7 +185,6 @@ function abrirResumen(idNuc)
     $("#comition").val("13,500.00");
     var comition = $("#comition").val().replace(/[^0-9.]/g, '');
     var date = $("#month").val();
-    var regime = $("#selectRegime").val();
     // var reg = $("#onoffRegime").prop('checked');
     // var regime = 0;
     // if(reg)
@@ -202,7 +201,6 @@ function abrirResumen(idNuc)
         'id':idNuc,
         'year':year,
         'month':month,
-        'regime':regime
     }
 
     var route = baseUrl+'/GetInfoComition';
@@ -213,6 +211,7 @@ function abrirResumen(idNuc)
         dataType:'json',
         success:function(result){
             // alert(result.regime);
+            $("#selectRegime").val(result.regime);
             $("#balance").val(formatter.format(parseFloat(result.b_amount).toFixed(2)));
             $("#b_amount").val(formatter.format(parseFloat(result.gross_amount).toFixed(2)));
             $("#iva").val(formatter.format(parseFloat(result.iva_amount).toFixed(2)));
@@ -294,16 +293,11 @@ function obtenerultimomovimiento(id,month,year)
     })
 }
 
-function updateRegime(onoff)
+function updateRegime(selectreg)
 {
     if(flagComition != 0)
     {
-        var reg = $(onoff).prop('checked');
-        var regime = 0;
-        if(reg)
-            regime = 0;
-        else
-            regime = 1;
+        var regime = $(selectreg).val();
 
         var route = baseUrl+"/UpdateRegime";
         var data = {
@@ -362,11 +356,6 @@ function fillCalc()
                 $("#ret_isr").val(formatter.format(parseFloat(result.ret_isr).toFixed(2)));
                 $("#ret_iva").val(formatter.format(parseFloat(result.ret_iva).toFixed(2)));
                 $("#n_amount").val(formatter.format(parseFloat(result.n_amount).toFixed(2)));
-
-                if(result.regime == 0)
-                    $("#onoffRegime").bootstrapToggle('on');
-                else
-                    $("#onoffRegime").bootstrapToggle('off');
 
                 flagComition = 1;
                 // obtenerSaldo(idNuc);
@@ -448,17 +437,13 @@ function CalculoMult()
                 {
                     flagComition = 0;
 
+                    $("#selectRegimeAll").val(result.regime);
                     $("#balanceAll").val(formatter.format(parseFloat(result.b_amount).toFixed(2)));
                     $("#b_amountAll").val(formatter.format(parseFloat(result.gross_amount).toFixed(2)));
                     $("#ivaAll").val(formatter.format(parseFloat(result.iva_amount).toFixed(2)));
                     $("#ret_isrAll").val(formatter.format(parseFloat(result.ret_isr).toFixed(2)));
                     $("#ret_ivaAll").val(formatter.format(parseFloat(result.ret_iva).toFixed(2)));
                     $("#n_amountAll").val(formatter.format(parseFloat(result.n_amount).toFixed(2)));
-
-                    if(result.regime == 0)
-                        $("#onoffRegimeAll").bootstrapToggle('on');
-                    else
-                        $("#onoffRegimeAll").bootstrapToggle('off');
 
                     flagComition = 1;
 

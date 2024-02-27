@@ -75,6 +75,8 @@ Route::post('admin/leader/leader/DeleteLeader','LeaderController@DeleteLeader')-
 Route::post('admin/leader/leader/Assign','LeaderController@Assign')->name('leader.Assign');
 Route::post('admin/leader/leader/DeleteAgent','LeaderController@DeleteAgent')->name('leader.DeleteAgent');
 Route::post('admin/leader/leader/GetInfoComition','LeaderController@GetInfoComition')->name('leader.GetInfoComition');
+Route::get('admin/leader/leader/GetPDF/{id}/{year}/{month}/{TC}/{fst_yr}/{scnd_yr}', 'LeaderController@GetPDF')->name('leader.GetPDF');
+Route::get('admin/leader/leader/GetSixMonth/{id}/{yr}','LeaderController@GetSixMonth')->name('leader.GetSixMonth');
 
 // clientes
 Route::resource('admin/client/client', 'ClientsController');

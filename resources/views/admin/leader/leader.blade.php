@@ -97,6 +97,7 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secundary" onclick="closeModal('#agentsModal')">Cancelar</button>
+                        <button type="button" id="btnDescargarItem" onclick="GetPDF()" class="btn btn-primary">Descargar Factura</button>
                     </div>
 
                 </div>
@@ -170,6 +171,49 @@
             </div>
         </div>
         {{-- termina modal --}}
+        {{-- modal largo plazo| --}}
+        <div id="sixMonthModal" class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="sixMonthText"></h4>
+                        <button type="button" class="close" onclick="closeModal('#sixMonthModal')" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
+                                        <table class="table table-striped table-hover text-center" id="tbContract">
+                                            <thead>
+                                                <th class="text-center"></th>
+                                                <th class="text-center">Agente</th>
+                                                <th class="text-center">Cliente</th>
+                                                <th class="text-center">Obligación</th>
+                                                <th class="text-center">Primer año</th>
+                                                <th class="text-center">Segundo año</th>
+                                            </thead>
+
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick="closeModal('#sixMonthModal')">Cancelar</button>
+                        <button type="button" onclick="continueContract()" class="btn btn-primary">Continuar</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {{-- fin modal| --}}
         {{-- Inicia pantalla de inicio --}}
         <div class="tab-content" id="mytabcontent">
             <div class="table-responsive" style="margin-bottom: 10px; max-width: auto; margin: auto;">

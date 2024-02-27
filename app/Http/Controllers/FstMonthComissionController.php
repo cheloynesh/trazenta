@@ -22,7 +22,7 @@ class FstMonthComissionController extends Controller
         $date1 = new DateTime();
         $date2 = new DateTime();
         $date1->modify('-1 months');
-        $date2->modify('-2 months');
+        $date2->modify('-1 months');
         // dd($date2->format('Y'),$date2->format('m'));
         $users = DB::select('call contpayfst(?,?,?)',[intval($date2->format('m')),intval($date2->format('Y')),intval($date1->format('m'))]);
         // dd($users);

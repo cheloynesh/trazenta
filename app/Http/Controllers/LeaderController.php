@@ -7,6 +7,8 @@ use App\User;
 use App\Permission;
 use App\Profile;
 use App\Regime;
+use Codedge\Fpdf\Fpdf\Fpdf;
+use App\Controllers\PdfClass;
 use DB;
 
 
@@ -184,7 +186,8 @@ class LeaderController extends Controller
         $n_amount=0;//monto neto
 
         // condicion para determinar fecha de corte
-        $nuc = DB::table('Nuc')->select("cut_date","currency")->where('id',$id)->first();
+        $nuc = DB::table('Nuc')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS cname'),"cut_date","currency","nuc")
+            ->join('Client','Nuc.fk_client','=','Client.id')->where('Nuc.id',$id)->first();
         // dd($request->year."-".(intval($request->month)-1)."-15");
         // dd($cut_date->cut_date);
 
@@ -396,8 +399,191 @@ class LeaderController extends Controller
 
         $values = array("b_amount"=>$b_amount,'dll_conv'=>$dll_conv,'usd_invest'=>$usd_invest,
         'usd_invest1'=>$usd_invest1, 'gross_amount'=>$gross_amount, 'iva_amount'=>$iva_amount,
-        'ret_isr'=>$ret_isr, 'ret_iva'=>$ret_iva, 'n_amount'=>$n_amount);
+        'ret_isr'=>$ret_isr, 'ret_iva'=>$ret_iva, 'n_amount'=>$n_amount,'cname'=>$nuc->cname,'nuc'=>$nuc->nuc);
 
         return($values);
+    }
+
+    public function calculoLP($id,$year,$leaderId)
+    {
+        $div_amount=0;//Saldo cierre de mes
+
+        $gross_amount=0;//Monto bruto = usd_invest * $request->TC
+
+        $iva_amount=0;//iva del monto bruto
+        $ret_isr=0; //retencion del isr 10% monto bruto
+        $ret_iva=0;//retencion de iva son 2 3ras partes del iva de montro bruto 2(IVA)/3
+        $n_amount=0;//monto neto
+
+        // condicion para determinar fecha de corte
+
+        $nuc = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(users.firstname, "")) AS usname'),
+            DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")) AS clname'),'nuc','pay_date',"SixMonth_fund.amount","currency","fk_insurance","users.id as uid")
+            ->join('SixMonth_fund',"SixMonth_fund.fk_agent","=","users.id")
+            ->join('Client',"SixMonth_fund.fk_client","=","Client.id")
+            ->join('Coupon','fk_nuc','SixMonth_fund.id')
+            ->where('number',1)
+            ->whereNull('SixMonth_fund.deleted_at')
+            ->whereNull('Coupon.deleted_at')
+            ->where('SixMonth_fund.id',$id)->first();
+
+        if($nuc->currency == "MXN")
+        {
+            $div_amount = $nuc->amount / 500000;
+        }
+        else
+        {
+            $div_amount = $nuc->amount / 25000;
+        }
+
+        if($leaderId == $nuc->uid)
+        {
+            if($nuc->fk_insurance == 4 || $nuc->fk_insurance == 2)
+            {
+                if($year == 1) $gross_amount = 2400 * $div_amount;
+                else $gross_amount = 3500 * $div_amount;
+            }
+            else
+            {
+                if($year == 1) $gross_amount = 1500 * $div_amount;
+                else $gross_amount = 3000 * $div_amount;
+            }
+        }
+        else
+        {
+            if($nuc->fk_insurance == 4 || $nuc->fk_insurance == 2)
+            {
+                if($year == 1) $gross_amount = 2400 * $div_amount;
+                else $gross_amount = 3500 * $div_amount;
+            }
+            else
+            {
+                if($year == 1) $gross_amount = 1500 * $div_amount;
+                else $gross_amount = 2600 * $div_amount;
+            }
+        }
+
+        $values = array('gross_amount'=>$gross_amount, 'usname'=>$nuc->usname, 'clname'=>$nuc->clname, 'nuc'=>$nuc->nuc,
+        'pay_date'=>$nuc->pay_date, 'amount'=>$nuc->amount, 'currency'=>$nuc->currency);
+
+        return($values);
+    }
+
+    public function GetPDF($id,$year,$month,$TC,$fst_yr,$scnd_yr)
+    {
+        $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
+        set_time_limit(1000);
+        $usd_invest1 = 0;
+        $leader_usd_invest1 = 0;
+        $leader_b_amount = 0;
+
+        if(intval($month) == 1)
+        {
+            $monthless = 12;
+            $yearless = $year;
+            $yearless -= 1;
+        }
+        else
+        {
+            $monthless = intval($month) - 1;
+            $yearless = $year;
+        }
+
+        $user = DB::table('users')->select('fk_regime')->where('users.id',$id)->whereNull('users.deleted_at')->first();
+        $reg = Regime::where('id',$user->fk_regime)->first();
+
+        $nucs = DB::table('Nuc')->select("Nuc.id as id",'month_flag','nuc')
+            ->join('users','Nuc.fk_agent','=','users.id')
+            ->where("month_flag",">=","1")
+            ->where('fk_leader',$id)
+            ->whereNull('Nuc.deleted_at')
+            ->orderBy('nuc')
+            ->get();
+
+        $validNucs1 = array();
+        array_push($validNucs1,0);
+
+        foreach ($nucs as $nuc)
+        {
+            if($nuc->month_flag == 1) $value = $this->calculo($nuc->id,$monthless,$yearless,$TC,$reg,15);
+            else $value = $this->calculo($nuc->id,$monthless,$yearless,$TC,$reg,13);
+            $usd_invest1 += $value["usd_invest1"];
+            if($value["usd_invest1"] != 0) array_push($validNucs1,array("cname" => $value["cname"],"nuc" => $value["nuc"], "usd_invest1" => $value["usd_invest1"], "ten" => $value["usd_invest1"]*.9, "b_amount" => $value["b_amount"]));
+        }
+        $thirty = $usd_invest1*.30;
+
+        $nucsLeader = DB::table('Nuc')->select("Nuc.id as id",'month_flag','nuc')
+            ->where("month_flag",">=","1")
+            ->where('fk_agent',$id)
+            ->whereNull('deleted_at')
+            ->get();
+
+        $validNucs = array();
+
+        foreach ($nucsLeader as $nuc)
+        {
+            if($nuc->month_flag == 1) $value = $this->calculo($nuc->id,$monthless,$yearless,$TC,$reg,50);
+            else $value = $this->calculo($nuc->id,$monthless,$yearless,$TC,$reg,23);
+            $leader_usd_invest1 += $value["usd_invest1"];
+            $leader_b_amount += $value["b_amount"];
+            if($value["usd_invest1"] != 0) array_push($validNucs,array("cname" => $value["cname"],"nuc" => $value["nuc"], "usd_invest1" => $value["usd_invest1"], "ten" => $value["usd_invest1"]*.9, "b_amount" => $value["b_amount"]));
+        }
+
+        $lpTotal = 0;
+        $nucs_fst = explode("-",$fst_yr);
+        $fstNucsLP = array();
+        foreach ($nucs_fst as $nuc)
+        {
+            if($nuc != 0)
+            {
+                $fst = $this->calculoLP($nuc,1,$id);
+                array_push($fstNucsLP,$fst);
+                $lpTotal += $fst["gross_amount"];
+            }
+        }
+
+        $nucs_scnd = explode("-",$scnd_yr);
+        $scndNucsLP = array();
+        foreach ($nucs_scnd as $nuc)
+        {
+            if($nuc != 0)
+            {
+                $scnd = $this->calculoLP($nuc,2,$id);
+                array_push($scndNucsLP,$scnd);
+                $lpTotal += $scnd["gross_amount"];
+            }
+        }
+        // dd($fstNucsLP);
+
+        // dd($thirty,$leader_usd_invest1,$thirty+$leader_usd_invest1,$fstNucsLP);
+        $pdf = new VicPDF();
+        $pdf->PrintPDF($months[intval($monthless)]." ".$yearless,$thirty+$leader_usd_invest1,$TC,$validNucs,$fstNucsLP,$scndNucsLP,$lpTotal);
+        $pdf->Output('D',"Factura.pdf");
+        return;
+    }
+
+    public function GetSixMonth($id,$yr)
+    {
+        if($yr == 1)
+        {
+            $users = DB::table('users')->select('SixMonth_fund.id as nucid',DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(users.firstname, "")) AS usname'),
+                DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")) AS clname'),'nuc','fst_yr','scnd_yr')
+                ->join('SixMonth_fund',"SixMonth_fund.fk_agent","=","users.id")
+                ->join('Client',"SixMonth_fund.fk_client","=","Client.id")
+                ->whereNull('fst_yr')
+                ->whereNull('SixMonth_fund.deleted_at')
+                ->whereNull('users.deleted_at')->get();
+        }
+        else
+        {
+            $users = DB::table('users')->select('SixMonth_fund.id as nucid',DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(users.firstname, "")) AS usname'),
+                DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")) AS clname'),'nuc','fst_yr','scnd_yr')
+                ->join('SixMonth_fund',"SixMonth_fund.fk_agent","=","users.id")
+                ->join('Client',"SixMonth_fund.fk_client","=","Client.id")
+                ->whereNull('scnd_yr')
+                ->whereNull('SixMonth_fund.deleted_at')
+                ->whereNull('users.deleted_at')->get();
+        }
+        return response()->json(['status'=>true, "message"=>"Actualizado", "data"=>$users]);
     }
 }

@@ -85,8 +85,51 @@ $(document).ready( function () {
         }
     });
 } );
+$(document).ready( function () {
+    $('#tbContract').DataTable({
+        language : {
+            "sProcessing":     "Procesando...",
+            "sLengthMenu":     "Mostrar _MENU_ registros",
+            "sZeroRecords":    "No se encontraron resultados",
+            "sEmptyTable":     "Ningún dato disponible en esta tabla",
+            "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+            "sInfoPostFix":    "",
+            "sSearch":         "Buscar:",
+            "sUrl":            "",
+            "sInfoThousands":  ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
+            },
+            "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        },
+        order: [[5, 'asc']],
+        'columnDefs': [
+            {
+               'targets': 0,
+               'checkboxes': {
+                  'selectRow': true
+               }
+            }
+         ],
+         'select': {
+            'style': 'multi'
+         }
+    });
+} );
 
 idAssign = 0;
+idsFstYr = "";
+idsScndYr = "";
+flag = 0;
 
 function FillTable(data,tbl,func,text)
 {
@@ -356,4 +399,147 @@ function abrirResumen(idNuc)
             }
         });
     }
+
+}
+
+function GetPDFAll()
+{
+    var TC = $("#change").val();
+    var date = $("#month").val();
+
+    date = date.split("-");
+    var year = date[0];
+    var month = date[1];
+
+    if(date == null || date == "" && TC == null || TC == "")
+    {
+        alert("Ningun campo debe quedar vacio");
+        return false;
+    }else
+    {
+        var route = baseUrl + '/GetPDF/' + idAssign + '/' + year + '/' + month + '/' + TC + '/' + idsFstYr + '/' + idsScndYr;
+
+        $.ajaxSetup({
+            headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
+        });
+
+        var form = $('<form></form>');
+        form.attr("method", "get");
+        form.attr("action", route);
+        form.attr('_token',$("meta[name='csrf-token']").attr("content"));
+        $.each(function(key, value) {
+            var field = $('<input></input>');
+            field.attr("type", "hidden");
+            field.attr("name", key);
+            field.attr("value", value);
+            form.append(field);
+        });
+        var field = $('<input></input>');
+        field.attr("type", "hidden");
+        field.attr("name", "_token");
+        field.attr("value", $("meta[name='csrf-token']").attr("content"));
+        form.append(field);
+        $(document.body).append(form);
+        form.submit();
+    }
+}
+
+function GetPDF()
+{
+    var route = baseUrl + '/GetSixMonth/' + idAssign + '/1';
+    // console.log(route);
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result){
+            FillTableSixMonth(result.data);
+            $("#sixMonthText").html("Pago Primer Año");
+            $("#sixMonthModal").modal('show');
+            flag = 0;
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
+}
+
+function continueContract()
+{
+    var table = $('#tbContract').DataTable();
+
+    if(flag == 0)
+    {
+        var rows_selected = table.column(0).checkboxes.selected();
+        idsFstYr = "";
+
+        if(rows_selected.length == 0)
+        {
+            idsFstYr = "0";
+        }
+        else
+        {
+            $.each(rows_selected, function(index, rowId){
+                idsFstYr = idsFstYr+rowId
+                if(index != rows_selected.length-1) idsFstYr = idsFstYr + "-";
+            });
+            table.columns().checkboxes.deselect(true);
+        }
+
+        var route = baseUrl + '/GetSixMonth/' + idAssign + '/2';
+        // console.log(route);
+        jQuery.ajax({
+            url:route,
+            type:'get',
+            dataType:'json',
+            success:function(result){
+                FillTableSixMonth(result.data);
+                $("#sixMonthText").html("Pago Segundo Año");
+                $("#sixMonthModal").modal('show');
+                flag = 1;
+            },
+            error:function(result,error,errorTrown)
+            {
+                alertify.error(errorTrown);
+            }
+        })
+    }
+    else
+    {
+        var rows_selected = table.column(0).checkboxes.selected();
+        idsScndYr = "";
+
+        if(rows_selected.length == 0)
+        {
+            idsScndYr = "0";
+        }
+        else
+        {
+            $.each(rows_selected, function(index, rowId){
+                idsScndYr = idsScndYr+rowId
+                if(index != rows_selected.length-1) idsScndYr = idsScndYr + "-";
+            });
+            table.columns().checkboxes.deselect(true);
+        }
+
+        GetPDFAll();
+    }
+}
+
+function FillTableSixMonth(data,profile,permission)
+{
+    var table = $('#tbContract').DataTable();
+    var btnFst = '';
+    var btnScnd = '';
+    table.clear();
+
+    data.forEach( function(valor, indice, array) {
+        if(valor.fst_yr == null) btnFst = '<font color="red">Falta de pago</font>'; else btnFst = '<font color="green">Pagado</font>';
+
+        if(valor.scnd_yr == null) btnScnd = '<font color="red">Falta de pago</font>'; else btnScnd = '<font color="green">Pagado</font>';
+
+        table.row.add([valor.nucid,valor.usname,valor.clname,valor.nuc,btnFst,btnScnd]).node().id = valor.nucid;
+    });
+    table.draw(false);
 }

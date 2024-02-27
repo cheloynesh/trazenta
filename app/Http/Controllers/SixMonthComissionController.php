@@ -470,7 +470,8 @@ class SixMonthComissionController extends Controller
         $n_amount=0;//monto neto
 
         // condicion para determinar fecha de corte
-        $nuc = DB::table('SixMonth_fund')->select("amount","currency","paid","regime","fk_agent")->join('users','fk_agent','=','users.id')->where('SixMonth_fund.id',$id)->first();
+        $nuc = DB::table('SixMonth_fund')->select("amount","currency","paid","fk_regime","fk_agent")->join('users','fk_agent','=','users.id')->where('SixMonth_fund.id',$id)->first();
+        $regime = Regime::where('id',$nuc->fk_regime)->first();
 
         if($nuc->currency == "MXN")
         {
@@ -483,29 +484,25 @@ class SixMonthComissionController extends Controller
 
         $gross_amount = $comition * $div_amount;
 
-        $iva_amount = $gross_amount * .16;
+        $iva_amount = $gross_amount*$regime->iva/100; // iva del monto bruto
 
         // dd($regime);
-        if($nuc->regime == 0)
-            $ret_isr = $gross_amount *.10; //isr del monto bruto
-        else
-            $ret_isr = $gross_amount *.0125;
+        $ret_isr = $gross_amount*$regime->ret_isr/100;
 
-        $ret_iva = 2*$iva_amount; //retencion de iva
-        $ret_iva = $ret_iva/3; //retencion del iva
+        $ret_iva = $iva_amount*$regime->ret_iva/100; //retencion de iva
 
         $n_amount= ($gross_amount + $iva_amount) - ($ret_isr + $ret_iva); //Monto neto
 
         $values = array("b_amount"=>$nuc->amount,
         'gross_amount'=>$gross_amount, 'iva_amount'=>$iva_amount, 'ret_isr'=>$ret_isr,
-        'ret_iva'=>$ret_iva, 'n_amount'=>$n_amount, 'pay'=>$nuc->paid,'regime'=>$nuc->regime,'idUser'=>$nuc->fk_agent);
+        'ret_iva'=>$ret_iva, 'n_amount'=>$n_amount, 'pay'=>$nuc->paid,'regime'=>$regime->id,'idUser'=>$nuc->fk_agent);
 
         return($values);
     }
 
     public function update(Request $request)
     {
-        $client = User::where('id',$request->id)->update(['regime'=>$request->regime]);
+        $client = User::where('id',$request->id)->update(['fk_regime'=>$request->regime]);
         return response()->json(['status'=>true, 'message'=>"Régimen Actualizado"]);
     }
     public function SetPayment(Request $request)

@@ -96,6 +96,7 @@ class MonthComissionController extends Controller
 
         $validNucs = array();
         $validNames = array();
+        // $mounts = array();
         array_push($validNucs,0);
         $cnnames = "";
         $reg = Regime::where('id',$regime)->first();
@@ -103,8 +104,9 @@ class MonthComissionController extends Controller
         foreach ($nucs as $nuc)
         {
 
-            $value = $this->calculo($nuc->id,$monthless,$year,$TC,$reg,$dlls);
+            $value = $this->calculo($nuc->id,$monthless,$yearless,$TC,$reg,$dlls);
             // dd($value);
+            // array_push($mounts,$value["gross_amount"]);
             $b_amount += $value["gross_amount"];
             $IVA += $value["iva_amount"];
             $ret_isr += $value["ret_isr"];
@@ -113,6 +115,7 @@ class MonthComissionController extends Controller
             if($value["gross_amount"] != 0) array_push($validNucs,$nuc->id);
             // dd($clientNames);
         }
+        // dd($mounts);
         // dd($b_amount,$IVA,$ret_isr,$ret_iva,$n_amount);
         // dd(array_search(24, $validNucs));
         // dd($validNucs);
