@@ -25,6 +25,9 @@ class ServicesController extends Controller
         $cmbStatus = Status::select('id','name')
         ->where("fk_section","36")
         ->pluck('name','id');
+        $cmbStatusInt = Status::select('id','name')
+        ->where("fk_section","31")
+        ->pluck('name','id');
         $user = User::user_id();
 
         if($profile == 12)
@@ -42,7 +45,7 @@ class ServicesController extends Controller
         }
         else
         {
-            return view('process.services.services', compact('profile','perm_btn','services_types','cmbStatus','services'));
+            return view('process.services.services', compact('profile','perm_btn','services_types','cmbStatus','cmbStatusInt','services'));
         }
     }
 
@@ -150,6 +153,25 @@ class ServicesController extends Controller
         $status->paytime = $request->paytime;
         $status->attend_date = $request->attend_date;
         $status->pay_date = $request->pay_date;
+        $status->save();
+
+        $profile = User::findProfile();
+        $perm_btn =Permission::permBtns($profile,31);
+        $services = $this->ReturnData($profile);
+
+        return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "services" => $services, "profile" => $profile, "permission" => $perm_btn]);
+    }
+
+    public function updateStatusInt(Request $request)
+    {
+        $status = Service::where('id',$request->id)->first();
+        // dd($status);
+        $status->intern_status = $request->intern_status;
+        $status->pick_status = $request->pick_status;
+        $status->limit_status = $request->limit_status;
+        $status->agent_status = $request->agent_status;
+        $status->office_status = $request->office_status;
+        $status->finestra_status = $request->finestra_status;
         $status->save();
 
         $profile = User::findProfile();

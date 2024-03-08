@@ -164,6 +164,7 @@ Route::resource('process/services/services', 'ServicesController');
 Route::get('process/services/services/GetInfo/{id}','ServicesController@GetInfo')->name('services.GetInfo');
 Route::get('process/services/services/GetInfoStatus/{id}','ServicesController@GetInfoStatus')->name('services.GetInfoStatus');
 Route::post('process/services/services/updateStatus', 'ServicesController@updateStatus')->name('services.updateStatus');
+Route::post('process/services/services/updateStatusInt', 'ServicesController@updateStatusInt')->name('services.updateStatusInt');
 Route::get('process/services/services/GetFunds/{type}','ServicesController@GetFunds')->name('services.GetFunds');
 
 // --------------------------------------------------------Reportes------------------------------------------------------------

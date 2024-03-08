@@ -75,12 +75,33 @@ function FillTable(data,profile,permission)
 
     data.forEach( function(valor, indice, array) {
         btnStat = '<button class="btn btn-info" style="color: #'+valor.font_color+'; background-color: #'+valor.color+'; border-color: #'+valor.border_color+'" onclick="opcionesEstatus('+valor.sid+')">'+valor.name+'</button>';
+        btnStatAg = '<button class="btn btn-info" style="color: #'+valor.intFont+'; background-color: #'+valor.intColor+'; border-color: #'+valor.intBorder+'" onclick="opcionesEstatusAgente('+valor.sid+')">'+valor.intName+'</button>';
         btnEdit = '<button href="#|" class="btn btn-warning" onclick="editarApertura('+valor.sid+')" ><i class="fas fa-edit"></i></button>';
         btnTrash = '<button href="#|" class="btn btn-danger" onclick="eliminarApertura('+valor.sid+')"><i class="fa fa-trash"></i></button>';
-        if(permission["erase"] == 1)
-            table.row.add([valor.agent,valor.nuc + " - " + valor.cname,valor.servname,valor.mnt,valor.type,valor.delivered,btnStat,btnEdit+" "+btnTrash]).node().id = valor.sid;
+
+        if (profile != 12)
+        {
+            if(valor.intId == 6 && valor.finestra_status == null)
+            {
+                btnStatInt = '<td><button class="btn btn-info" style="color: #ffffff; background-color: #e98c46; border-color: #e98c46" onclick="opcionesEstatusInt('+valor.sid+')">Pend. Finestra</button></td>';
+
+            }
+            else
+            {
+                btnStatInt = '<td><button class="btn btn-info" style="color: #'+valor.intFont+'; background-color: #'+valor.intColor+'; border-color: #'+valor.intBorder+'" onclick="opcionesEstatusInt('+valor.sid+')">'+valor.intName+'</button></td>'
+            }
+            if(permission["erase"] == 1)
+                table.row.add([valor.agent,valor.folio,valor.nuc,valor.cname,valor.servname,valor.mnt,btnStat,btnStatAg,btnStatInt,btnEdit+" "+btnTrash]).node().id = valor.oid;
+            else
+                table.row.add([valor.agent,valor.folio,valor.nuc,valor.cname,valor.servname,valor.mnt,btnStat,btnStatAg,btnStatInt,btnEdit]).node().id = valor.oid;
+        }
         else
-            table.row.add([valor.agent,valor.nuc + " - " + valor.cname,valor.servname,valor.mnt,type,delivered,btnStat,btnEdit]).node().id = valor.sid;
+        {
+            if(permission["erase"] == 1)
+                table.row.add([valor.agent,valor.folio,valor.nuc,valor.cname,valor.servname,valor.mnt,btnStat,btnStatAg,btnStatInt,btnEdit+" "+btnTrash]).node().id = valor.sid;
+            else
+                table.row.add([valor.agent,valor.folio,valor.nuc,valor.cname,valor.servname,valor.mnt,btnStat,btnStatAg,btnStatInt,btnEdit]).node().id = valor.sid;
+        }
     });
     table.draw(false);
 }
@@ -258,7 +279,7 @@ function opcionesEstatus(id)
 {
     idupdate=id;
     var route = baseUrl + '/GetInfoStatus/'+ id;
-
+    console.log(route);
     jQuery.ajax({
         url:route,
         type:'get',
@@ -409,4 +430,167 @@ function showAmount(select, div, txt)
         document.getElementById(div).style.display = "none";
     }
     $(txt).val(0);
+}
+
+idStatus = 0;
+function opcionesEstatusInt(id)
+{
+    idStatus=id;
+    var route = baseUrl+'/GetInfoStatus/'+idStatus;
+    console.log(route);
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result){
+            $("#selectStatusInt").val(result.data.intern_status);
+            fillStatusDates(result.data.pick_status,"Pick");
+            fillStatusDates(result.data.limit_status,"Limit");
+            fillStatusDates(result.data.agent_status,"Agent");
+            fillStatusDates(result.data.office_status,"Office");
+            fillStatusDates(result.data.finestra_status,"Finestra");
+            $("#myModalStatusInt").modal('show');
+        }
+    })
+}
+
+function fillStatusDates(date,status)
+{
+    if(date == null)
+    {
+        if(status != "Limit")
+            $("#selectStatus"+status).val(1);
+        document.getElementById("divDate"+status).style.display = "none";
+    }
+    else
+    {
+        if(status != "Limit")
+            $("#selectStatus"+status).val(2);
+        document.getElementById("divDate"+status).style.display = "";
+    }
+    $("#auth"+status).val(date);
+}
+
+function changeLimit()
+{
+    var date = $("#authPick").val();
+    date = date.split('-');
+    var dateplus = new Date(date[0], date[1]-1, date[2], 0, 0, 0);
+
+    dateplus = addWorkDays(dateplus, 10);
+
+    var day = dateplus.toLocaleString("default", { day: "2-digit" });
+    var year = dateplus.toLocaleString("default", { year: "numeric" });
+    var month = dateplus.toLocaleString("default", { month: "2-digit" });
+
+    $("#authLimit").val(year + "-" + month + "-" + day);
+}
+
+function save()
+{
+    var route = baseUrl+"/updateStatusInt";
+    var intern_status = $("#selectStatusInt").val();
+    var pick_status = $("#authPick").val();
+    var limit_status = $("#authLimit").val();
+    var agent_status = $("#authAgent").val();
+    var office_status = $("#authOffice").val();
+    var finestra_status = $("#authFinestra").val();
+
+    var data = {
+        'id':idStatus,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'intern_status':intern_status,
+        'pick_status':pick_status,
+        'limit_status':limit_status,
+        'agent_status':agent_status,
+        'office_status':office_status,
+        'finestra_status':finestra_status
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+            alertify.success(result.message);
+            FillTable(result.services,result.profile,result.permission);
+            $("#myModalStatusInt").modal('hide');
+        }
+    })
+}
+
+function showDate(div)
+{
+    if ($("#selectStatus"+div).val() == 2)
+    {
+        document.getElementById("divDate"+div).style.display = "";
+        if(div == "Pick")
+        {
+            document.getElementById("divDateLimit").style.display = "";
+        }
+    }
+    else
+    {
+        document.getElementById("divDate"+div).style.display = "none";
+        $("#auth"+div).val(null);
+        if(div == "Pick")
+        {
+            document.getElementById("divDateLimit").style.display = "none";
+            $("#authLimit").val(null);
+        }
+    }
+}
+
+function opcionesEstatusAgente(id)
+{
+    idStatus=id;
+
+    var route = baseUrl+'/GetInfoStatus/'+idStatus;
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result){
+            $("#selectStatus1").val(result.data.intern_status);
+            fillStatusDatesAgent(result.data.pick_status,"Pick1");
+            fillStatusDatesAgent(result.data.limit_status,"Limit1");
+            fillStatusDatesAgent(result.data.agent_status,"Agent1");
+            fillStatusDatesAgent(result.data.office_status,"Office1");
+            $("#myModalStatusAgent").modal('show');
+        }
+    })
+}
+
+function fillStatusDatesAgent(date,status)
+{
+    if(date == null)
+    {
+        $("#auth"+status).val("PENDIENTE");
+        if(status == "Pick1")
+        {
+            document.getElementById("divLimit").style.display = "none";
+        }
+    }
+    else
+    {
+        $("#auth"+status).val(date);
+        if(status == "Pick1")
+        {
+            document.getElementById("divLimit").style.display = "";
+        }
+    }
+}
+
+function addWorkDays(startDate, days)
+{
+    var daysToAdd = parseInt(days);
+    i=0;
+    while (i<daysToAdd)
+    {
+        startDate.setTime(startDate.getTime()+24*60*60*1000); // añadimos 1 día
+        if (startDate.getDay() != 6 && startDate.getDay() != 0)
+            i++;
+    }
+    return startDate;
 }

@@ -91,6 +91,199 @@
         </div>
     </div>
     {{-- fin modal| --}}
+    {{-- modal| --}}
+    <div id="myModalStatusInt" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title" id="gridModalLabek">Estatus</h4>
+                    <button type="button" class="close" onclick="cerrarModal('#myModalStatusInt')" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="container-fluid bd-example-row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="" style="font-weight: bold;">Estatus:</label>
+                                        <select name="selectStatusInt" id="selectStatusInt" class="form-select">
+                                            <option hidden selected value="">Selecciona una opción</option>
+                                            @foreach ($cmbStatusInt as $id => $status)
+                                                <option value='{{ $id }}'>{{ $status }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="" style="font-weight: bold;">Recogido:</label>
+                                        <select name="selectStatusPick" id="selectStatusPick" class="form-select" onchange="showDate('Pick')">
+                                            <option hidden selected value="0">Selecciona una opción</option>
+                                            <option value="1">PENDIENTE</option>
+                                            <option value="2">FECHA</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="divDatePick">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Fecha</label>
+                                        <input type="date" id="authPick" name="authPick" class="form-control" onchange="changeLimit()">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="divDateLimit">
+                                <div class="col-md-12" >
+                                    <div class="form-group">
+                                        <label for="">Fecha Límite</label>
+                                        <input type="date" id="authLimit" name="authLimit" class="form-control" style="border: 1px solid red">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="" style="font-weight: bold;">Entregado a Agente:</label>
+                                        <select name="selectStatusAgent" id="selectStatusAgent" class="form-select" onchange="showDate('Agent')">
+                                            <option hidden selected value="0">Selecciona una opción</option>
+                                            <option value="1">PENDIENTE</option>
+                                            <option value="2">FECHA</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="divDateAgent">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Fecha</label>
+                                        <input type="date" id="authAgent" name="authAgent" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="" style="font-weight: bold;">Oficina:</label>
+                                        <select name="selectStatusOffice" id="selectStatusOffice" class="form-select" onchange="showDate('Office')">
+                                            <option hidden selected value="0">Selecciona una opción</option>
+                                            <option value="1">PENDIENTE</option>
+                                            <option value="2">FECHA</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="divDateOffice">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Fecha</label>
+                                        <input type="date" id="authOffice" name="authOffice" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="" style="font-weight: bold;">Entregado a Finestra:</label>
+                                        <select name="selectStatusFinestra" id="selectStatusFinestra" class="form-select" onchange="showDate('Finestra')">
+                                            <option hidden selected value="0">Selecciona una opción</option>
+                                            <option value="1">PENDIENTE</option>
+                                            <option value="2">FECHA</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="divDateFinestra">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Fecha</label>
+                                        <input type="date" id="authFinestra" name="authFinestra" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secundary" onclick="cerrarModal('#myModalStatusInt')">Cancelar</button>
+                    <button type="button" onclick="save()" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- fin modal| --}}
+    {{-- modal| --}}
+    <div id="myModalStatusAgent" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title" id="gridModalLabek">Estatus</h4>
+                    <button type="button" class="close" onclick="cerrarModal('#myModalStatusAgent')" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="container-fluid bd-example-row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Estatus:</label>
+                                        <select name="selectStatus1" id="selectStatus1" class="form-select" disabled>
+                                            <option hidden selected value="">Selecciona una opción</option>
+                                            @foreach ($cmbStatusInt as $id => $status)
+                                                <option value='{{ $id }}'>{{ $status }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Pendiente de entrega</label>
+                                        <input type="text" disabled id="authPick1" name="authPick1" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="divLimit">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Fecha Límite</label>
+                                        <input type="text" disabled id="authLimit1" name="authLimit1" class="form-control" style="border: 1px solid red;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Entregado</label>
+                                        <input type="text" disabled id="authAgent1" name="authAgent1" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Recibido</label>
+                                        <input type="text" disabled id="authOffice1" name="authOffice1" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secundary" onclick="cerrarModal('#myModalStatusAgent')">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- fin modal| --}}
     @include('process.services.servicesEdit')
     @include('searchnuc')
     {{-- Inicia pantalla de inicio --}}
@@ -118,12 +311,16 @@
             <thead>
                 <tr>
                     <th class="text-center">Agente</th>
+                    <th class="text-center">Folio</th>
                     <th class="text-center">Contrato</th>
+                    <th class="text-center">Cliente</th>
                     <th class="text-center">Servicio</th>
                     <th class="text-center">Monto</th>
-                    <th class="text-center">Tipo</th>
-                    <th class="text-center">Entregado</th>
                     <th class="text-center">Estatus</th>
+                    <th class="text-center">Documentos</th>
+                    @if ($profile != 12)
+                        <th class="text-center">Interno</th>
+                    @endif
                     <th class="text-center">Opciones</th>
                 </tr>
             </thead>
@@ -131,14 +328,26 @@
                 @foreach ($services as $service)
                     <tr id="{{$service->sid}}">
                         <td>{{$service->agent}}</td>
-                        <td>{{$service->nuc}} - {{$service->cname}}</td>
+                        <td>{{$service->folio}}</td>
+                        <td>{{$service->nuc}}</td>
+                        <td>{{$service->cname}}</td>
                         <td>{{$service->servname}}</td>
                         <td>{{$service->mnt}}</td>
-                        <td>{{$service->type}}</td>
-                        <td>{{$service->delivered}}</td>
                         <td>
                             <button class="btn btn-info" style="color: #{{$service->font_color}}; background-color: #{{$service->color}}; border-color: #{{$service->border_color}}" onclick="opcionesEstatus({{$service->sid}})">{{$service->name}}</button>
                         </td>
+                        <td>
+                            <button class="btn btn-info" style="color: #{{$service->intFont}}; background-color: #{{$service->intColor}}; border-color: #{{$service->intBorder}}" onclick="opcionesEstatusAgente({{$service->sid}})">{{$service->intName}}</button>
+                        </td>
+                        @if ($profile != 12)
+                            <td>
+                                @if($service->intId == 6 && $service->finestra_status == null)
+                                    <button class="btn btn-info" style="color: #ffffff; background-color: #e98c46; border-color: #e98c46" onclick="opcionesEstatusInt({{$service->sid}})">Pend. Finestra</button>
+                                @else
+                                    <button class="btn btn-info" style="color: #{{$service->intFont}}; background-color: #{{$service->intColor}}; border-color: #{{$service->intBorder}}" onclick="opcionesEstatusInt({{$service->sid}})">{{$service->intName}}</button>
+                                @endif
+                            </td>
+                        @endif
                         <td>
                             <button href="#|" class="btn btn-warning" onclick="editarApertura({{$service->sid}})" ><i class="fas fa-edit"></i></button>
                             @if ($perm_btn['erase']==1)
