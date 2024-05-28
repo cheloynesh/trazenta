@@ -172,3 +172,15 @@ Route::resource('reports/moneyflow/moneyflow', 'MoneyFlowController');
 Route::get('reports/moneyflow/moneyflow/GetInfo/{id}','MoneyFlowController@GetInfo')->name('moneyflow.GetInfo');
 Route::get('reports/moneyflow/moneyflow/GetInfoFilters/{id}','MoneyFlowController@GetInfoFilters')->name('moneyflow.GetInfoFilters');
 Route::get('reports/moneyflow/moneyflow/ExportBreakdown/{id}/{month}/{quarter}/{year}/{fund}/{type}','MoneyFlowController@ExportBreakdown');
+
+// --------------------------------------------------------Comisiones------------------------------------------------------------
+Route::resource('comitions/comition/comition', 'ComitionController');
+Route::get('comitions/comition/comition/GetInfo/{id}/{invoice}/{contpp}/{contpa}/{lpnopay}','ComitionController@GetInfo')->name('comition.GetInfo');
+Route::post('comitions/comition/comition/setStatDate','ComitionController@setStatDate')->name('comition.setStatDate');
+Route::post('comitions/comition/comition/setNullDate','ComitionController@setNullDate')->name('comition.setNullDate');
+Route::post('comitions/comition/comition/setStatDateMoves','ComitionController@setStatDateMoves')->name('comition.setStatDateMoves');
+Route::post('comitions/comition/comition/setNullDateMoves','ComitionController@setNullDateMoves')->name('comition.setNullDateMoves');
+Route::post('comitions/comition/comition/setStatDateLP','ComitionController@setStatDateLP')->name('comition.setStatDateLP');
+Route::post('comitions/comition/comition/setNullDateLP','ComitionController@setNullDateLP')->name('comition.setNullDateLP');
+Route::post('comitions/comition/comition/setStatDateMultLP','ComitionController@setStatDateMultLP')->name('comition.setStatDateMultLP');
+Route::post('comitions/comition/comition/UpdateRegime','ComitionController@UpdateRegime')->name('comition.UpdateRegime');

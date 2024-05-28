@@ -415,15 +415,15 @@ class MonthFundsController extends Controller
                 $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>$diff->m]);
         }
 
-        $nucs = DB::table('SixMonth_fund')->select('end_date','id')
-            ->where('end_date','<',$date2)
-            ->where('active_stat','!=',0)
-            ->whereNull('SixMonth_fund.deleted_at')->get();
+        // $nucs = DB::table('SixMonth_fund')->select('end_date','id')
+        //     ->where('end_date','<',$date2)
+        //     ->where('active_stat','!=',0)
+        //     ->whereNull('SixMonth_fund.deleted_at')->get();
 
-        foreach($nucs as $nuc)
-        {
-            $nuc = SixMonth_fund::where('id',$nuc->id)->update(['active_stat'=>0]);
-        }
+        // foreach($nucs as $nuc)
+        // {
+        //     $nuc = SixMonth_fund::where('id',$nuc->id)->update(['active_stat'=>0]);
+        // }
 
         $nucs = DB::table('Nuc')->select('Nuc.id as nucid')
             ->join('Month_fund','fk_nuc',"=",'Nuc.id')

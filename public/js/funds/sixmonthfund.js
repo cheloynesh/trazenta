@@ -164,50 +164,67 @@ function eliminarNuc(id)
 }
 function importexc()
 {
-    $("#waitModal").modal('show');
-    var formData = new FormData();
-    var files = $('input[type=file]');
-    for (var i = 0; i < files.length; i++) {
-        if (files[i].value == "" || files[i].value == null)
-        {
-            // console.log(files.length);
-            // return false;
-        }
-        else
-        {
-            formData.append(files[i].name, files[i].files[0]);
-        }
-    }
-    // console.log("entre");
-    var formSerializeArray = $("#Form").serializeArray();
-    for (var i = 0; i < formSerializeArray.length; i++) {
-        formData.append(formSerializeArray[i].name, formSerializeArray[i].value)
-    }
+    // $("#waitModal").modal('show');
+    // var formData = new FormData();
+    // var files = $('input[type=file]');
+    // for (var i = 0; i < files.length; i++) {
+    //     if (files[i].value == "" || files[i].value == null)
+    //     {
+    //         // console.log(files.length);
+    //         // return false;
+    //     }
+    //     else
+    //     {
+    //         formData.append(files[i].name, files[i].files[0]);
+    //     }
+    // }
+    // // console.log("entre");
+    // var formSerializeArray = $("#Form").serializeArray();
+    // for (var i = 0; i < formSerializeArray.length; i++) {
+    //     formData.append(formSerializeArray[i].name, formSerializeArray[i].value)
+    // }
 
-    formData.append('_token', $("meta[name='csrf-token']").attr("content"));
+    // formData.append('_token', $("meta[name='csrf-token']").attr("content"));
 
+    // var route = baseUrl + '/import';
+
+    // jQuery.ajax({
+    //     url:route,
+    //     type:'post',
+    //     data:formData,
+    //     contentType: false,
+    //     processData: false,
+    //     cache: false,
+    //     success:function(result)
+    //     {
+    //         alertify.success(result.message);
+    //         console.log(result);
+    //         notFnd = result.notFnd.filter((item,index)=>{return result.notFnd.indexOf(item) === index;})
+    //         alert("Movimientos importados: " + result.importados + "\nDatos repetidos: " + result.repetidos + "\nNucs no encontrados: " + notFnd.length + "\n" + notFnd.join("\n"));
+    //         $("#waitModal").modal('hide');
+
+    //     },
+    //     error:function(result,error,errorTrown)
+    //     {
+    //         alertify.error(errorTrown);
+    //         $("#waitModal").modal('hide');
+    //     }
+    // })
     var route = baseUrl + '/import';
-
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content")
+    }
     jQuery.ajax({
         url:route,
+        data: data,
         type:'post',
-        data:formData,
-        contentType: false,
-        processData: false,
-        cache: false,
-        success:function(result)
-        {
+        dataType:'json',
+        success:function(result){
             alertify.success(result.message);
-            console.log(result);
-            notFnd = result.notFnd.filter((item,index)=>{return result.notFnd.indexOf(item) === index;})
-            alert("Movimientos importados: " + result.importados + "\nDatos repetidos: " + result.repetidos + "\nNucs no encontrados: " + notFnd.length + "\n" + notFnd.join("\n"));
-            $("#waitModal").modal('hide');
-
         },
         error:function(result,error,errorTrown)
         {
             alertify.error(errorTrown);
-            $("#waitModal").modal('hide');
         }
     })
 }
@@ -236,6 +253,7 @@ function editarNuc(id)
             $("#selectPaymentformSixMonth").val(result.data.fk_payment_form);
             $("#selectInsurance").val(result.data.fk_insurance);
             $("#selectRenew").val(result.data.renew_stat);
+            $("#selectActive").val(result.data.active_stat);
             $("#sixMonthNucModal").modal('show');
         }
     })
@@ -259,6 +277,7 @@ function actualizarNuc()
     var fk_client = $("#selectClient").val();
     var fk_insurance = $("#selectInsurance").val();
     var renew_stat = $("#selectRenew").val();
+    var active_stat = $("#selectActive").val();
 
     var route = "sixmonthfunds/"+editNuc;
     var data = {
@@ -275,6 +294,7 @@ function actualizarNuc()
         'fk_payment_form':fk_payment_form,
         'fk_insurance':fk_insurance,
         'renew_stat':renew_stat,
+        'active_stat':active_stat,
         'active':active
     };
     jQuery.ajax({

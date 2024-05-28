@@ -214,6 +214,18 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Estatus:</label>
+                                            <select name="selectActive" id="selectActive" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                <option value=0>INACTIVO</option>
+                                                <option value=1>ACTIVO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

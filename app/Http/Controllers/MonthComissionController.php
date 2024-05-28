@@ -551,7 +551,17 @@ class MonthComissionController extends Controller
         $status->save();
 
         $users = $this->ReturnData();
-        return response()->json(['status'=>true, "message"=>"Fecha aplicada", "users" => $users]);
+
+        date_default_timezone_set('America/Mexico_City');
+        $date = new DateTime();
+        $date->setDate($date->format('Y'), $date->format('m'), 1);
+        $date->modify('-1 months');
+        $date1 = new DateTime();
+        $date2 = new DateTime();
+        $date1->modify('-1 months');
+        $coms = DB::select('call comition(?,?,?,?,?)',[$date->format('Y-m-d'),intval($date1->format('m')),intval($date1->format('Y')),intval($date2->format('m')),intval($date2->format('Y'))]);
+
+        return response()->json(['status'=>true, "message"=>"Fecha aplicada", "users" => $users, "coms" => $coms]);
     }
 
     public function setNullDate(Request $request)
@@ -568,6 +578,16 @@ class MonthComissionController extends Controller
         $status->save();
 
         $users = $this->ReturnData();
-        return response()->json(['status'=>true, "message"=>"Fecha cancelada", "users" => $users]);
+
+        date_default_timezone_set('America/Mexico_City');
+        $date = new DateTime();
+        $date->setDate($date->format('Y'), $date->format('m'), 1);
+        $date->modify('-1 months');
+        $date1 = new DateTime();
+        $date2 = new DateTime();
+        $date1->modify('-1 months');
+        $coms = DB::select('call comition(?,?,?,?,?)',[$date->format('Y-m-d'),intval($date1->format('m')),intval($date1->format('Y')),intval($date2->format('m')),intval($date2->format('Y'))]);
+
+        return response()->json(['status'=>true, "message"=>"Fecha cancelada", "users" => $users, "coms" => $coms]);
     }
 }

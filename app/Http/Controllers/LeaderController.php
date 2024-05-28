@@ -10,6 +10,7 @@ use App\Regime;
 use Codedge\Fpdf\Fpdf\Fpdf;
 use App\Controllers\PdfClass;
 use DB;
+use DateTime;
 
 
 class LeaderController extends Controller
@@ -418,7 +419,7 @@ class LeaderController extends Controller
         // condicion para determinar fecha de corte
 
         $nuc = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(users.firstname, "")) AS usname'),
-            DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")) AS clname'),'nuc','pay_date',"SixMonth_fund.amount","currency","fk_insurance","users.id as uid")
+            DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")) AS clname'),'nuc','pay_date','deposit_date',"SixMonth_fund.amount","currency","fk_insurance","users.id as uid")
             ->join('SixMonth_fund',"SixMonth_fund.fk_agent","=","users.id")
             ->join('Client',"SixMonth_fund.fk_client","=","Client.id")
             ->join('Coupon','fk_nuc','SixMonth_fund.id')
@@ -426,6 +427,11 @@ class LeaderController extends Controller
             ->whereNull('SixMonth_fund.deleted_at')
             ->whereNull('Coupon.deleted_at')
             ->where('SixMonth_fund.id',$id)->first();
+
+        date_default_timezone_set('America/Mexico_City');
+
+        $date1 = new DateTime($nuc->deposit_date);
+        $date2 = new DateTime("2023-04-01");
 
         if($nuc->currency == "MXN")
         {
@@ -440,27 +446,36 @@ class LeaderController extends Controller
         {
             if($nuc->fk_insurance == 4 || $nuc->fk_insurance == 2)
             {
-                if($year == 1) $gross_amount = 2400 * $div_amount;
-                else $gross_amount = 3500 * $div_amount;
+                if($year == 1) $gross_amount = 21000 * $div_amount;
+                else $gross_amount = 12500 * $div_amount;
             }
             else
             {
-                if($year == 1) $gross_amount = 1500 * $div_amount;
-                else $gross_amount = 3000 * $div_amount;
+                if($year == 1) $gross_amount = 17000 * $div_amount;
+                else $gross_amount = 8500 * $div_amount;
             }
         }
         else
         {
-            if($nuc->fk_insurance == 4 || $nuc->fk_insurance == 2)
+            // if($nuc->fk_insurance == 4 || $nuc->fk_insurance == 2)
+            // {
+            if($date1 < $date2)
             {
+                // dd("entre");
                 if($year == 1) $gross_amount = 2400 * $div_amount;
                 else $gross_amount = 3500 * $div_amount;
             }
             else
             {
                 if($year == 1) $gross_amount = 1500 * $div_amount;
-                else $gross_amount = 2600 * $div_amount;
+                else $gross_amount = 2500 * $div_amount;
             }
+        //     }
+        //     else
+        //     {
+        //         if($year == 1) $gross_amount = 1500 * $div_amount;
+        //         else $gross_amount = 2500 * $div_amount;
+        //     }
         }
 
         $values = array('gross_amount'=>$gross_amount, 'usname'=>$nuc->usname, 'clname'=>$nuc->clname, 'nuc'=>$nuc->nuc,

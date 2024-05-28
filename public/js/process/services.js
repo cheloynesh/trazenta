@@ -446,7 +446,6 @@ function opcionesEstatusInt(id)
             $("#selectStatusInt").val(result.data.intern_status);
             fillStatusDates(result.data.pick_status,"Pick");
             fillStatusDates(result.data.limit_status,"Limit");
-            fillStatusDates(result.data.agent_status,"Agent");
             fillStatusDates(result.data.office_status,"Office");
             fillStatusDates(result.data.finestra_status,"Finestra");
             $("#myModalStatusInt").modal('show');
@@ -492,7 +491,6 @@ function save()
     var intern_status = $("#selectStatusInt").val();
     var pick_status = $("#authPick").val();
     var limit_status = $("#authLimit").val();
-    var agent_status = $("#authAgent").val();
     var office_status = $("#authOffice").val();
     var finestra_status = $("#authFinestra").val();
 
@@ -502,7 +500,6 @@ function save()
         'intern_status':intern_status,
         'pick_status':pick_status,
         'limit_status':limit_status,
-        'agent_status':agent_status,
         'office_status':office_status,
         'finestra_status':finestra_status
     };
@@ -555,7 +552,6 @@ function opcionesEstatusAgente(id)
             $("#selectStatus1").val(result.data.intern_status);
             fillStatusDatesAgent(result.data.pick_status,"Pick1");
             fillStatusDatesAgent(result.data.limit_status,"Limit1");
-            fillStatusDatesAgent(result.data.agent_status,"Agent1");
             fillStatusDatesAgent(result.data.office_status,"Office1");
             $("#myModalStatusAgent").modal('show');
         }

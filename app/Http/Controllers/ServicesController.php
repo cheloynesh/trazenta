@@ -169,7 +169,6 @@ class ServicesController extends Controller
         $status->intern_status = $request->intern_status;
         $status->pick_status = $request->pick_status;
         $status->limit_status = $request->limit_status;
-        $status->agent_status = $request->agent_status;
         $status->office_status = $request->office_status;
         $status->finestra_status = $request->finestra_status;
         $status->save();

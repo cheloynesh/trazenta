@@ -120,7 +120,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="" style="font-weight: bold;">Recogido:</label>
+                                        <label for="" style="font-weight: bold;">Inicio de trámite:</label>
                                         <select name="selectStatusPick" id="selectStatusPick" class="form-select" onchange="showDate('Pick')">
                                             <option hidden selected value="0">Selecciona una opción</option>
                                             <option value="1">PENDIENTE</option>
@@ -142,26 +142,6 @@
                                     <div class="form-group">
                                         <label for="">Fecha Límite</label>
                                         <input type="date" id="authLimit" name="authLimit" class="form-control" style="border: 1px solid red">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="" style="font-weight: bold;">Entregado a Agente:</label>
-                                        <select name="selectStatusAgent" id="selectStatusAgent" class="form-select" onchange="showDate('Agent')">
-                                            <option hidden selected value="0">Selecciona una opción</option>
-                                            <option value="1">PENDIENTE</option>
-                                            <option value="2">FECHA</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row" id="divDateAgent">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="">Fecha</label>
-                                        <input type="date" id="authAgent" name="authAgent" class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -245,7 +225,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="">Pendiente de entrega</label>
+                                        <label for="">Inicio de trámite</label>
                                         <input type="text" disabled id="authPick1" name="authPick1" class="form-control">
                                     </div>
                                 </div>
@@ -255,14 +235,6 @@
                                     <div class="form-group">
                                         <label for="">Fecha Límite</label>
                                         <input type="text" disabled id="authLimit1" name="authLimit1" class="form-control" style="border: 1px solid red;">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="">Entregado</label>
-                                        <input type="text" disabled id="authAgent1" name="authAgent1" class="form-control">
                                     </div>
                                 </div>
                             </div>
