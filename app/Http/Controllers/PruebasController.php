@@ -6,13 +6,15 @@ use Illuminate\Http\Request;
 use App\Prueba;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\MovesImport;
+use App\Paymentform;
 
 class PruebasController extends Controller
 {
     public function index(){
         $profiles = Prueba::get();
         $prof = Prueba::pluck('name','id');
-        return view('admin.pruebas.prueba', compact('profiles','prof'));
+        $paymentForms = Paymentform::pluck('name','id');
+        return view('admin.pruebas.prueba', compact('profiles','prof','paymentForms'));
     }
 
     //--------------------------------------------- excel -----------------------------------------------------

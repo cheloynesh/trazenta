@@ -112,40 +112,73 @@
             </div>
         </div>
         {{-- fin modal| --}}
-        {{-- modal| --}}
+        {{-- Inicia pantalla de inicio --}}
         <div id="myModal2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
 
                     <div class="modal-header">
-                        <h4 class="modal-title" id="gridModalLabek">Estatus</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="gridModalLabek">Movimientos</h4>
+                        <button type="button" class="close" aria-label="Close" onclick="cancelarMovimiento()"><span aria-hidden="true">&times;</span></button>
                     </div>
 
                     <div class="modal-body">
                         <div class="container-fluid bd-example-row">
-                            <div class="col-md-12">
-                                <div class="row" id="divDate">
-                                    <div class="col-md-12">
+                            <div class="col-lg-12">
+                                {{-- <div class="row align-items-center"> --}}
+                                <div class="row align-items-end">
+                                    <div class="col-lg-3">
                                         <div class="form-group">
-                                            <label for="">Pendiente de entrega</label>
-                                            <input type="date" id="auth" name="auth" class="form-control">
+                                            <label for="">Monto</label>
+                                            <input type="text" id="amount" name="amount" placeholder="Ingresa el monto" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="">Conducto de Apertura:</label>
+                                            <select name="selectCharge" id="selectCharge" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($charges as $id => $charge)
+                                                    <option value='{{ $id }}'>{{ $charge }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="">Fecha de aplicación</label>
+                                            <input type="date" id="initial_date" name="initial_date" class="form-control" placeholder="Fecha de aplicación">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <div class="d-grid gap-2 col-12 mx-auto">
+                                                <button type="button" class="btn btn-primary" onclick="guardarMovimiento()">Agregar</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row" id="divDate">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="">Entregado</label>
-                                            <input type="date" id="auth" name="auth" class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row" id="divDate">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="">Recibido</label>
-                                            <input type="date" id="auth" name="auth" class="form-control">
+                                <br>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
+                                            <table class="table table-striped table-hover text-center" id="tbProf1">
+                                                <thead>
+                                                    <th class="text-center">Monto</th>
+                                                    <th class="text-center">Forma de pago</th>
+                                                    <th class="text-center">Opciones</th>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>$200,000.00</td>
+                                                        <td>TRANSFERENCIA</td>
+                                                        <td>
+                                                            <button href="#|" class="btn btn-warning" onclick="editarApertura()" ><i class="fas fa-edit"></i></button>
+                                                            <button href="#|" class="btn btn-danger" onclick="eliminarApertura()"><i class="fa fa-trash"></i></button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
@@ -153,16 +186,21 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
-                        <button type="button" onclick="save()" class="btn btn-primary">Guardar</button>
+                        <button type="button" class="btn btn-secundary" onclick="cancelarMovimiento()">Cancelar</button>
+                        <button type="button" onclick="excel_nuc()" class="btn btn-primary">Exportar Excel</button>
+                        {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
                     </div>
                 </div>
             </div>
         </div>
-        {{-- fin modal| --}}
-        {{-- Inicia pantalla de inicio --}}
 
         <br><br>
+
+        <div class="col-md-12">
+            <div class="form-group">
+                    <button type="button" class="btn btn-primary" onclick="nuevo()" title="Nuevo Servicio"><i class="fas fa-plus"></i></button>
+            </div>
+        </div>
 
         <div>
             Columnas: <a class="toggle-vis" data-column="4">Recogido</a> - <a class="toggle-vis" data-column="5">Entregado a agente</a> - <a class="toggle-vis" data-column="6">Oficina</a> - <a class="toggle-vis" data-column="7">Entregado a finestra</a>

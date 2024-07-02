@@ -15,6 +15,7 @@ use App\Application;
 use App\Charge;
 use App\SixMonth_fund;
 use App\Insurance;
+use App\Charge_Moves;
 use App\Exports\ExportFund;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\MovesImport;
@@ -58,7 +59,7 @@ class SixMonthFundController extends Controller
         }
         else
         {
-            return view('funds.sixmonthfund.sixmonthfund', compact('nucs','perm_btn','cmbStatus','clients','paymentForms','applications','insurances','charges','agents'));
+            return view('funds.sixmonthfund.sixmonthfund', compact('profile','nucs','perm_btn','cmbStatus','clients','paymentForms','applications','insurances','charges','agents'));
         }
     }
 
@@ -80,6 +81,7 @@ class SixMonthFundController extends Controller
     public function GetInfo($id)
     {
         $nuc = Coupon::where('fk_nuc',$id)->whereNull('deleted_at')->get();
+
         return response()->json(['status'=>true, "data"=>$nuc]);
     }
     public function destroy($id,Request $request)
@@ -159,7 +161,7 @@ class SixMonthFundController extends Controller
             }
         }
     }
-    public function import(Request $request)
+    public function import($id)
     {
         set_time_limit(1000);
         // $file = $request->file('excl');
@@ -276,6 +278,30 @@ class SixMonthFundController extends Controller
 
 
         // return response()->json(['status'=>true, 'message'=>"Datos Subidos", 'repetidos' => $cont, 'notFnd' => $arrayNotFound, 'importados' => $goodCont]);
+
+        // -------------------------------------------actualizacion de conductos----------------------------------
+        // $nucs = Nuc::get();
+        // foreach($nucs as $nuc)
+        // {
+        //     $moves = MonthFund::where("fk_nuc",$nuc->id)->where("type","Apertura")->get();
+
+        //     foreach($moves as $move)
+        //     {
+        //         $nucEdit = MonthFund::where('id',$move->id)->update(['fk_charge'=>$nuc->fk_charge]);
+        //     }
+        // }
+
+        $nucs = SixMonth_fund::get();
+        foreach($nucs as $nuc)
+        {
+            $chargeMove = new Charge_moves;
+            $chargeMove->amount = $nuc->amount;
+            $chargeMove->apply_date = $nuc->deposit_date;
+            $chargeMove->fk_fund = $nuc->id;
+            $chargeMove->fk_charge = $nuc->fk_charge;
+            $chargeMove->save();
+        }
+        dd("terminado");
     }
     public function transformDate($value)
     {
@@ -284,7 +310,15 @@ class SixMonthFundController extends Controller
     public function GetNuc($id)
     {
         $nuc = SixMonth_fund::where('id',$id)->first();
-        return response()->json(["status"=>true, "data"=>$nuc]);
+
+        $chargeMoves = DB::table('Charge_Moves')->select("*")
+            ->join('Charge','Charge_Moves.fk_charge','Charge.id')
+            ->where('fk_fund',$id)
+            ->whereNull("Charge_Moves.deleted_at")->get();
+
+        $profile = User::findProfile();
+
+        return response()->json(["status"=>true, "data"=>$nuc, "chargeMoves"=>$chargeMoves, "profile" => $profile]);
     }
     public function update(Request $request, $id)
     {
@@ -375,6 +409,25 @@ class SixMonthFundController extends Controller
             $coupon->pay_date = $date1;
             $coupon->fk_nuc = $request->id;
             $coupon->save();
+        }
+
+        $charges = Charge_Moves::where("fk_fund",$request->id)->get();
+        foreach($charges as $charge)
+        {
+            $charge->delete();
+        }
+
+        if($request->charge_moves != null)
+        {
+            foreach($request->charge_moves as $charge)
+            {
+                $chargeMove = new Charge_moves;
+                $chargeMove->amount = $charge["amount"];
+                $chargeMove->apply_date = $charge['apply_date'];
+                $chargeMove->fk_fund = $request->id;
+                $chargeMove->fk_charge = $charge['fk_charge'];
+                $chargeMove->save();
+            }
         }
 
         $profile = User::findProfile();

@@ -16,6 +16,7 @@ use App\Charge;
 use App\Opening;
 use App\SixMonth_fund;
 use App\Coupon;
+use App\Charge_Moves;
 use Carbon\Carbon;
 use DB;
 use DateTime;
@@ -94,15 +95,22 @@ class OpeningController extends Controller
         {
             $insurances = Insurance::where('fund_type','LP')->get();
             $opening = DB::table('Opening')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS cname'),
-                'Opening.fk_agent','fk_application','fk_payment_form','Opening.fk_insurance','nuc','currency','deposit_date','amount','Client.id as clid','Opening.id as opid','fund_type','fk_charge','yield','yield_usd')
+                'Opening.fk_agent','fk_application','fk_payment_form','Opening.fk_insurance','nuc','fk_nuc','currency','deposit_date','amount','Client.id as clid','Opening.id as opid','fund_type','fk_charge','yield','yield_usd')
                 ->join('Client','Opening.fk_client','=','Client.id')
                 ->join('Insurance','Opening.fk_insurance','=','Insurance.id')
                 ->join('SixMonth_fund','Opening.fk_nuc','=','SixMonth_fund.id')
                 ->where('Opening.id',$id)->first();
+            $chargeMoves = DB::table('Charge_Moves')->select("*")
+                ->join('Charge','Charge_Moves.fk_charge','Charge.id')
+                ->where('fk_fund',$opening->fk_nuc)
+                ->whereNull("Charge_Moves.deleted_at")->get();
+            // dd($chargeMoves);
         }
 
+        $profile = User::findProfile();
+
         // dd($opening,$insurances);
-        return response()->json(['status'=>true, "data"=>$opening, "insurances"=>$insurances]);
+        return response()->json(['status'=>true, "data"=>$opening, "insurances"=>$insurances, "chargeMoves"=>$chargeMoves, "profile" => $profile]);
     }
 
     public function GetinfoFund($id)
@@ -232,6 +240,20 @@ class OpeningController extends Controller
             $coupon->pay_date = $date1;
             $coupon->fk_nuc = $nuc->id;
             $coupon->save();
+
+            if($request->charge_moves != null)
+            {
+                foreach($request->charge_moves as $charge)
+                {
+                    $chargeMove = new Charge_moves;
+                    $chargeMove->amount = $charge["amount"];
+                    $chargeMove->apply_date = $charge['apply_date'];
+                    $chargeMove->fk_fund = $nuc->id;
+                    $chargeMove->fk_charge = $charge['fk_charge'];
+                    $chargeMove->save();
+                }
+
+            }
         }
 
         $opening = new Opening;
@@ -368,6 +390,25 @@ class OpeningController extends Controller
                 $coupon->pay_date = $date1;
                 $coupon->fk_nuc = $opening->fk_nuc;
                 $coupon->save();
+            }
+
+            $charges = Charge_Moves::where("fk_fund",$opening->fk_nuc)->get();
+            foreach($charges as $charge)
+            {
+                $charge->delete();
+            }
+
+            if($request->charge_moves != null)
+            {
+                foreach($request->charge_moves as $charge)
+                {
+                    $chargeMove = new Charge_moves;
+                    $chargeMove->amount = $charge["amount"];
+                    $chargeMove->apply_date = $charge['apply_date'];
+                    $chargeMove->fk_fund = $opening->fk_nuc;
+                    $chargeMove->fk_charge = $charge['fk_charge'];
+                    $chargeMove->save();
+                }
             }
         }
 

@@ -12,6 +12,7 @@ use App\Status;
 use App\Insurance;
 use App\Exports\ExportBreakdown;
 use Maatwebsite\Excel\Facades\Excel;
+use DateTime;
 use DB;
 
 class MoneyFlowController extends Controller
@@ -21,8 +22,10 @@ class MoneyFlowController extends Controller
         $perm_btn =Permission::permBtns($profile,34);
         $perm = Permission::permView($profile,34);
         $insurances = Insurance::orderBy('name')->pluck('name','id');
+        date_default_timezone_set('America/Mexico_City');
+        $date = new DateTime();
 
-        $moneyflow = DB::select('call moneyflow(?,?,?,?)',[2023,'%','%','%']);
+        $moneyflow = DB::select('call moneyflow(?,?,?,?)',[$date->format('Y'),'%','%','%']);
         if($perm==0)
         {
             return redirect()->route('home');

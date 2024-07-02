@@ -103,6 +103,8 @@ Route::post('funds/monthfund/monthfunds/updateFund','MonthFundsController@update
 Route::post('funds/monthfund/monthfunds/deleteFund','MonthFundsController@deleteFund');
 Route::get('funds/monthfund/monthfunds/updateFundNet/{id}', 'MonthFundsController@updateFundNet')->name('monthfunds.updateFundNet');
 Route::get('funds/monthfund/monthfunds/GetCP/{id}', 'MonthFundsController@GetCP')->name('monthfunds.GetCP');
+Route::get('funds/monthfund/monthfunds/GetCharge/{id}', 'MonthFundsController@GetCharge')->name('monthfunds.GetCharge');
+Route::post('funds/monthfund/monthfunds/updateCharge', 'MonthFundsController@updateCharge')->name('monthfunds.updateCharge');
 // Route::get('funds/monthfund/monthfunds/GetNuc/{id}','MonthFundsController@GetNuc')->name('monthfunds.GetNuc');
 
 // -------------------------------------------------- Asignación de clientes--------------------------------------------
@@ -137,7 +139,7 @@ Route::post('funds/fstmonthcomission/fstmonthcomission/setNullDate','FstMonthCom
 //---------------------------------------------------Fondo de 6 meses ----------------------------------------------------------
 Route::resource('funds/sixmonthfund/sixmonthfunds', 'SixMonthFundController');
 Route::get('funds/sixmonthfund/sixmonthfunds/GetInfo/{id}','SixMonthFundController@GetInfo')->name('sixmonthfunds.GetInfo');
-Route::post('funds/sixmonthfund/sixmonthfunds/import','SixMonthFundController@import');
+Route::get('funds/sixmonthfund/sixmonthfunds/import/{id}','SixMonthFundController@import')->name('sixmonthfunds.import');
 Route::get('funds/sixmonthfund/sixmonthfunds/GetNuc/{id}','SixMonthFundController@GetNuc')->name('sixmonthfunds.GetNuc');
 Route::get('funds/sixmonthfund/sixmonthfunds/GetLP/{id}', 'SixMonthFundController@GetLP')->name('sixmonthfunds.GetLP');
 

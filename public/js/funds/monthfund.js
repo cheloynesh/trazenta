@@ -161,8 +161,13 @@ function nuevoMovimiento(id)
                     button = valor.auth;
                 }
                 btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fas fa-trash"></i></button>';
-                table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
-                    valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
+                btnEdit = '<button href="#|" class="btn btn-warning" onclick="editarConducto('+valor.id+')" ><i class="fas fa-edit"></i></button>';
+                if(valor.type == "Apertura")
+                    table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
+                        valor.currency,formatter.format(valor.amount),valor.type,btnEdit + " " + btnTrash]).node().id = valor.id;
+                else
+                    table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
+                        valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
             });
             table.draw(false);
             $('#selectType').empty();
@@ -389,7 +394,7 @@ function editarNuc(id)
             $("#selectAgent").val(result.data.fk_agent);
             $("#selectAppli").val(result.data.fk_application);
             $("#selectPaymentform").val(result.data.fk_payment_form);
-            $("#selectCharge").val(result.data.fk_charge);
+            // $("#selectCharge").val(result.data.fk_charge);
             $("#selectInsurance").val(result.data.fk_insurance);
             $("#selectActiveStat").val(result.data.active_stat);
             $("#editModal").modal('show');
@@ -409,7 +414,7 @@ function actualizarNuc()
     var fk_agent = $("#selectAgent").val();
     var fk_application = $("#selectAppli").val();
     var fk_payment_form = $("#selectPaymentform").val();
-    var fk_charge = $("#selectCharge").val();
+    // var fk_charge = $("#selectCharge").val();
     var fk_insurance = $("#selectInsurance").val();
     var active_stat = $("#selectActiveStat").val();
     var route = "monthfunds/"+editNuc;
@@ -419,7 +424,7 @@ function actualizarNuc()
         'nuc':nuc,
         'fk_application':fk_application,
         'fk_payment_form':fk_payment_form,
-        'fk_charge':fk_charge,
+        // 'fk_charge':fk_charge,
         'fk_client':fk_client,
         'fk_agent':fk_agent,
         'fk_insurance':fk_insurance,
@@ -652,6 +657,47 @@ function chkActive()
         success:function(result)
         {
             FillTable(result.nucs,result.profile,result.permission);
+        }
+    })
+}
+
+chargeId = 0;
+function editarConducto(id)
+{
+    chargeId = id;
+    var route = baseUrl + '/GetCharge/'+id;
+    // alert(route);
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            $("#selectCharge1").val(result.charge);
+            $("#myModalEditCharge").modal("show");
+        }
+    })
+}
+
+function actualizarConducto()
+{
+    var charge = $("#selectCharge1").val();
+    var route = baseUrl+"/updateCharge";
+
+    var data = {
+        'id':chargeId,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'charge':charge
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+            alertify.success(result.message);
+            $("#myModalEditCharge").modal("hide");
         }
     })
 }

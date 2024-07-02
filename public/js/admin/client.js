@@ -31,6 +31,36 @@ $(document).ready( function () {
     });
 } );
 
+$(document).ready( function () {
+    $('#tbProf1').DataTable({
+        language : {
+            "sProcessing":     "Procesando...",
+            "sLengthMenu":     "Mostrar _MENU_ registros",
+            "sZeroRecords":    "No se encontraron resultados",
+            "sEmptyTable":     "Ningún dato disponible en esta tabla",
+            "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+            "sInfoPostFix":    "",
+            "sSearch":         "Buscar:",
+            "sUrl":            "",
+            "sInfoThousands":  ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
+            },
+            "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        }
+    });
+} );
+
+charge_moves = [];
 
 // persona física
 function guardarCliente()
@@ -290,6 +320,10 @@ idnucSixMonth = 0;
 function nuevoNucSixMonth(id)
 {
     idnucSixMonth=id;
+    var table = $('#tbProf1').DataTable();
+    table.clear();
+    table.draw(false);
+    charge_moves = [];
     $("#sixMonthNucModal").modal('show');
 }
 function cerrarNucSixMonth()
@@ -318,9 +352,10 @@ function guardarNucSixMonth()
         'fk_client':idnucSixMonth,
         'fk_application':fk_application,
         'fk_payment_form':fk_payment_form,
-        'fk_charge':fk_charge,
+        // 'fk_charge':fk_charge,
         'fk_insurance':fk_insurance,
         'fk_agent':fk_agent,
+        'charge_moves':charge_moves
     };
     console.log(data);
     jQuery.ajax({
@@ -335,4 +370,99 @@ function guardarNucSixMonth()
             window.location.reload(true);
         }
     })
+}
+
+function OpenCharge()
+{
+    $("#myModal2").modal("show");
+}
+
+function cancelar(modal)
+{
+    $(modal).modal("hide");
+}
+
+function refreshTable(charges)
+{
+    var table = $('#tbProf1').DataTable();
+    table.clear();
+    charges.forEach( function(valor, indice, array) {
+        btnEdit = '<button href="#|" class="btn btn-warning" onclick="editarConducto('+valor.id+')" ><i class="fas fa-edit"></i></button>';
+        btnTrash = '<button href="#|" class="btn btn-danger" onclick="eliminarConducto('+valor.id+')"><i class="fa fa-trash"></i></button>';
+        table.row.add([parseFloat(valor.amount).toLocaleString('en-US'),valor.chargeName,valor.apply_date,btnEdit+" "+btnTrash]);
+    });
+    console.log(charges);
+    table.draw(false);
+}
+
+function guardarConducto()
+{
+    var amount = $("#camount").val().replace(/[^0-9.]/g, '');
+    var fk_charge = $("#selectChargeS").val();
+    var chargeName = $("#selectChargeS option:selected").text();
+    var apply_date = $("#apply_date").val();
+
+    if(amount == null || amount=="" || apply_date==null || fk_charge==0)
+    {
+        alert("Los campos no deben de quedar vacios.");
+        return false;
+    }
+    else
+    {
+        // $("#code").val("");
+        charge_moves.push({
+            'id': charge_moves.length+1,
+            'amount':amount,
+            'fk_charge':fk_charge,
+            'chargeName':chargeName,
+            'apply_date':apply_date
+        });
+        refreshTable(charge_moves);
+    }
+}
+
+function eliminarConducto(id)
+{
+    var index = 0;
+    for(var i = 0; i<charge_moves.length; ++i)
+    {
+        if(charge_moves[i].id == id)
+        {
+            index=i;
+        }
+    }
+    charge_moves.splice(index,1);
+    refreshTable(charge_moves);
+}
+
+chargeId = 0;
+function editarConducto(id)
+{
+    for(var i = 0; i<charge_moves.length; ++i)
+    {
+        if(charge_moves[i].id == id)
+        {
+            chargeId = id;
+            $("#camount1").val(parseFloat(charge_moves[i].amount).toLocaleString('en-US'));
+            $("#selectCharge1").val(charge_moves[i].fk_charge);
+            $("#apply_date1").val(charge_moves[i].apply_date);
+            $("#myModalEditCharge").modal("show");
+        }
+    }
+}
+
+function actualizarConducto()
+{
+    for(var i = 0; i<charge_moves.length; ++i)
+    {
+        if(charge_moves[i].id == chargeId)
+        {
+            charge_moves[i].amount = $("#camount1").val().replace(/[^0-9.]/g, '');
+            charge_moves[i].fk_charge = $("#selectCharge1").val();
+            charge_moves[i].chargeName = $("#selectCharge1 option:selected").text();
+            charge_moves[i].apply_date = $("#apply_date1").val();
+            refreshTable(charge_moves);
+            $("#myModalEditCharge").modal("hide");
+        }
+    }
 }

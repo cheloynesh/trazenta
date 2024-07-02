@@ -12,6 +12,7 @@ use App\SixMonth_fund;
 use App\Paymentform;
 use App\Application;
 use App\Insurance;
+use App\Charge_Moves;
 use App\Charge;
 use DB;
 use DateTime;
@@ -197,6 +198,21 @@ class ClientsController extends Controller
         $coupon->pay_date = $date1;
         $coupon->fk_nuc = $nuc->id;
         $coupon->save();
+
+        if($request->charge_moves != null)
+        {
+            foreach($request->charge_moves as $charge)
+            {
+                $chargeMove = new Charge_moves;
+                $chargeMove->amount = $charge["amount"];
+                $chargeMove->apply_date = $charge['apply_date'];
+                $chargeMove->fk_fund = $nuc->id;
+                $chargeMove->fk_charge = $charge['fk_charge'];
+                $chargeMove->save();
+            }
+
+        }
+
         return response()->json(["status"=>true, "message"=>"Fondo creado"]);
         // $date1 = new DateTime("2023-11-01");
         // $date2 = new DateTime("2024-01-01");

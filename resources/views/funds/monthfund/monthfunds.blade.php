@@ -208,7 +208,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="">Conducto de Pago:</label>
@@ -220,7 +220,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
@@ -246,6 +246,45 @@
             </div>
         </div>
         {{-- termina modal --}}
+        {{-- modal editar conducto de cobro --}}
+    <div id="myModalEditCharge" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title" id="gridModalLabek">Editar Conducto</h4>
+                    <button type="button" class="close" aria-label="Close" onclick="cancelar('#myModalEditCharge')"><span aria-hidden="true">&times;</span></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="container-fluid bd-example-row">
+                        <div class="col-lg-12">
+                            {{-- <div class="row align-items-center"> --}}
+                            <div class="row align-items-end">
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label for="">Conducto de Apertura:</label>
+                                        <select name="selectCharge1" id="selectCharge1" class="form-select">
+                                            <option hidden selected value=0>Selecciona una opción</option>
+                                            @foreach ($charges as $id => $charge)
+                                                <option value='{{ $id }}'>{{ $charge }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secundary" onclick="cancelar('#myModalEditCharge')">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="actualizarConducto()">Actualizar</button>
+                    {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- fin modal --}}
         {{-- modal espera --}}
         <div id="waitModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">

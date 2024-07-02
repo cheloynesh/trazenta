@@ -75,10 +75,40 @@ $(document).ready( function () {
     });
 } );
 
+$(document).ready( function () {
+    $('#tbProf1').DataTable({
+        language : {
+            "sProcessing":     "Procesando...",
+            "sLengthMenu":     "Mostrar _MENU_ registros",
+            "sZeroRecords":    "No se encontraron resultados",
+            "sEmptyTable":     "Ningún dato disponible en esta tabla",
+            "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+            "sInfoPostFix":    "",
+            "sSearch":         "Buscar:",
+            "sUrl":            "",
+            "sInfoThousands":  ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
+            },
+            "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        }
+    });
+} );
+
 idClient = 0;
 fund_type = "";
 yieldr = 0;
 yield_usd = 0;
+charge_moves = [];
 
 function FillTable(data,profile,permission)
 {
@@ -126,6 +156,10 @@ function nuevaApertura()
     document.getElementById("divCP").style.display = "none";
     document.getElementById("divLP").style.display = "none";
     $("#client_edit").val("");
+    var table = $('#tbProf1').DataTable();
+    table.clear();
+    table.draw(false);
+    charge_moves = [];
     $("#myModal").modal('show');
 }
 
@@ -144,7 +178,7 @@ function guardarApertura()
     var fk_currency = $("#selectCurrency").val();
     var fk_application = $("#selectAppli").val();
     var fk_payment_form = $("#selectPaymentform").val();
-    var fk_charge = $("#selectCharge").val();
+    // var fk_charge = $("#selectCharge").val();
     var domicile = $("#address").val();
     var nuc = $("#nuc").val();
     var amount = $("#amount").val().replace(/[^0-9.]/g, '');
@@ -174,7 +208,7 @@ function guardarApertura()
         'selectCurrency':fk_currency,
         'fk_application':fk_application,
         'fk_payment_form':fk_payment_form,
-        'fk_charge':fk_charge,
+        // 'fk_charge':fk_charge,
         'domicile':domicile,
         'amount':amount,
         'nuc':nuc,
@@ -182,7 +216,8 @@ function guardarApertura()
         'fund_type':fund_type,
         'estatus':reinvest,
         'yield':yieldr,
-        'yield_usd':yield_usd
+        'yield_usd':yield_usd,
+        'charge_moves':charge_moves
     };
     jQuery.ajax({
         url:route,
@@ -244,6 +279,21 @@ function editarApertura(id)
                 $("#initial_date1").val(result.data.deposit_date);
                 cp.style.display = "none";
                 lp.style.display = "";
+
+                charge_moves = [];
+                result.chargeMoves.forEach( function(valor, indice, array) {
+                    charge_moves.push({
+                        'id': charge_moves.length+1,
+                        'amount':valor.amount,
+                        'fk_charge':valor.fk_charge,
+                        'chargeName':valor.name,
+                        'apply_date':valor.apply_date
+                    });
+                });
+                if(result.profile != 12)
+                    refreshTable(charge_moves);
+                else
+                    refreshTableAgent(charge_moves);
             }
             fund_type = result.data.fund_type;
             yieldr = result.data.yieldr;
@@ -272,7 +322,7 @@ function actualizarApertura()
     var fk_currency = $("#selectCurrency1").val();
     var fk_application = $("#selectAppli1").val();
     var fk_payment_form = $("#selectPaymentform1").val();
-    var fk_charge = $("#selectCharge1").val();
+    // var fk_charge = $("#selectCharge1").val();
     var domicile = $("#address1").val();
     var nuc = $("#nuc1").val();
     var amount = $("#amount1").val().replace(/[^0-9.]/g, '');
@@ -297,7 +347,7 @@ function actualizarApertura()
         'currency':fk_currency,
         'fk_application':fk_application,
         'fk_payment_form':fk_payment_form,
-        'fk_charge':fk_charge,
+        // 'fk_charge':fk_charge,
         'domicile':domicile,
         'amount':amount,
         'nuc':nuc,
@@ -305,7 +355,8 @@ function actualizarApertura()
         'fund_type':fund_type,
         'estatus':reinvest,
         'yield':yieldr,
-        'yield_usd':yield_usd
+        'yield_usd':yield_usd,
+        'charge_moves':charge_moves
     };
     jQuery.ajax({
         url:route,
@@ -599,4 +650,110 @@ function fundchange(flag)
 function cerrarApertura()
 {
     $("#myModal").modal("hide");
+}
+
+function OpenCharge()
+{
+    $("#myModal2").modal("show");
+}
+
+function cancelar(modal)
+{
+    $(modal).modal("hide");
+}
+
+function refreshTable(charges)
+{
+    var table = $('#tbProf1').DataTable();
+    table.clear();
+    charges.forEach( function(valor, indice, array) {
+        btnEdit = '<button href="#|" class="btn btn-warning" onclick="editarConducto('+valor.id+')" ><i class="fas fa-edit"></i></button>';
+        btnTrash = '<button href="#|" class="btn btn-danger" onclick="eliminarConducto('+valor.id+')"><i class="fa fa-trash"></i></button>';
+        table.row.add([parseFloat(valor.amount).toLocaleString('en-US'),valor.chargeName,valor.apply_date,btnEdit+" "+btnTrash]);
+    });
+    console.log(charges);
+    table.draw(false);
+}
+
+function refreshTableAgent(charges)
+{
+    var table = $('#tbProf1').DataTable();
+    table.clear();
+    charges.forEach( function(valor, indice, array) {
+        table.row.add([parseFloat(valor.amount).toLocaleString('en-US'),valor.chargeName,valor.apply_date]);
+    });
+    console.log(charges);
+    table.draw(false);
+}
+
+function guardarConducto()
+{
+    var amount = $("#camount").val().replace(/[^0-9.]/g, '');
+    var fk_charge = $("#selectCharge").val();
+    var chargeName = $("#selectCharge option:selected").text();
+    var apply_date = $("#apply_date").val();
+
+    if(amount == null || amount=="" || apply_date==null || fk_charge==0)
+    {
+        alert("Los campos no deben de quedar vacios.");
+        return false;
+    }
+    else
+    {
+        // $("#code").val("");
+        charge_moves.push({
+            'id': charge_moves.length+1,
+            'amount':amount,
+            'fk_charge':fk_charge,
+            'chargeName':chargeName,
+            'apply_date':apply_date
+        });
+        refreshTable(charge_moves);
+    }
+}
+
+function eliminarConducto(id)
+{
+    var index = 0;
+    for(var i = 0; i<charge_moves.length; ++i)
+    {
+        if(charge_moves[i].id == id)
+        {
+            index=i;
+        }
+    }
+    charge_moves.splice(index,1);
+    refreshTable(charge_moves);
+}
+
+chargeId = 0;
+function editarConducto(id)
+{
+    for(var i = 0; i<charge_moves.length; ++i)
+    {
+        if(charge_moves[i].id == id)
+        {
+            chargeId = id;
+            $("#camount1").val(parseFloat(charge_moves[i].amount).toLocaleString('en-US'));
+            $("#selectCharge1").val(charge_moves[i].fk_charge);
+            $("#apply_date1").val(charge_moves[i].apply_date);
+            $("#myModalEditCharge").modal("show");
+        }
+    }
+}
+
+function actualizarConducto()
+{
+    for(var i = 0; i<charge_moves.length; ++i)
+    {
+        if(charge_moves[i].id == chargeId)
+        {
+            charge_moves[i].amount = $("#camount1").val().replace(/[^0-9.]/g, '');
+            charge_moves[i].fk_charge = $("#selectCharge1").val();
+            charge_moves[i].chargeName = $("#selectCharge1 option:selected").text();
+            charge_moves[i].apply_date = $("#apply_date1").val();
+            refreshTable(charge_moves);
+            $("#myModalEditCharge").modal("hide");
+        }
+    }
 }

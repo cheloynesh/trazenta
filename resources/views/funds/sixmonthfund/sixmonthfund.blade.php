@@ -191,13 +191,9 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="">Conducto de Apertura:</label>
-                                            <select name="selectCharge" id="selectCharge" class="form-select">
-                                                <option hidden selected value="">Selecciona una opción</option>
-                                                @foreach ($charges as $id => $charge)
-                                                    <option value='{{ $id }}'>{{ $charge }}</option>
-                                                @endforeach
-                                            </select>
+                                            <div class="d-grid gap-2 col-12 mx-auto">
+                                                <button type="button" class="btn btn-primary" onclick="OpenCharge()">Abrir conductos de cobro</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -239,6 +235,141 @@
             </div>
         </div>
         {{-- fin modal| --}}
+        {{-- modal conducto de cobro --}}
+        <div id="myModalC" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Conductos de Cobro</h4>
+                        <button type="button" class="close" aria-label="Close" onclick="cancelar('#myModalC')"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-lg-12">
+                                {{-- <div class="row align-items-center"> --}}
+                                @if ($profile != 12)
+                                    <div class="row align-items-end">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label for="">Monto</label>
+                                                <input type="text" id="camount" name="camount" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label for="">Conducto de Apertura:</label>
+                                                <select name="selectChargeS" id="selectChargeS" class="form-select">
+                                                    <option hidden selected value=0>Selecciona una opción</option>
+                                                    @foreach ($charges as $id => $charge)
+                                                        <option value='{{ $id }}'>{{ $charge }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label for="">Fecha de aplicación</label>
+                                                <input type="date" id="apply_date" name="apply_date" class="form-control" placeholder="Fecha de aplicación">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <div class="d-grid gap-2 col-12 mx-auto">
+                                                    <button type="button" class="btn btn-primary" onclick="guardarConducto()">Agregar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                                <br>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
+                                            <table class="table table-striped table-hover text-center" id="tbProf2">
+                                                <thead>
+                                                    <th class="text-center">Monto</th>
+                                                    <th class="text-center">Conducto</th>
+                                                    <th class="text-center">Fecha</th>
+                                                    @if ($profile != 12)
+                                                        <th class="text-center">Opciones</th>
+                                                    @endif
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick="cancelar('#myModalC')">Cerrar</button>
+                        {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- fin modal --}}
+        {{-- modal editar conducto de cobro --}}
+        <div id="myModalEditCharge" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Editar Conducto</h4>
+                        <button type="button" class="close" aria-label="Close" onclick="cancelar('#myModalEditCharge')"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-lg-12">
+                                {{-- <div class="row align-items-center"> --}}
+                                <div class="row align-items-end">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="">Monto</label>
+                                            <input type="text" id="camount1" name="camount1" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="">Conducto de Apertura:</label>
+                                            <select name="selectCharge1" id="selectCharge1" class="form-select">
+                                                <option hidden selected value=0>Selecciona una opción</option>
+                                                @foreach ($charges as $id => $charge)
+                                                    <option value='{{ $id }}'>{{ $charge }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="">Fecha de aplicación</label>
+                                            <input type="date" id="apply_date1" name="apply_date1" class="form-control" placeholder="Fecha de aplicación">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <div class="d-grid gap-2 col-12 mx-auto">
+                                                <button type="button" class="btn btn-primary" onclick="actualizarConducto()">Actualizar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick="cancelar('#myModalEditCharge')">Cerrar</button>
+                        {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- fin modal --}}
     @include('funds.status.status')
         {{-- Inicia pantalla de inicio --}}
         <br>

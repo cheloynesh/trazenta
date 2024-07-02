@@ -163,7 +163,8 @@ class MonthFundsController extends Controller
     }
     public function update(Request $request, $id)
     {
-        $nuc = Nuc::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_agent'=>$request->fk_agent,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance,'active_stat'=>$request->active_stat]);
+        // $nuc = Nuc::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_agent'=>$request->fk_agent,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance,'active_stat'=>$request->active_stat]);
+        $nuc = Nuc::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_agent'=>$request->fk_agent,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_insurance'=>$request->fk_insurance,'active_stat'=>$request->active_stat]);
 
         $profile = User::findProfile();
         $perm_btn =Permission::permBtns($profile,31);
@@ -399,6 +400,7 @@ class MonthFundsController extends Controller
             ->where('type','=',"Apertura")
             ->where('month_flag','<',8)
             ->whereNull('Nuc.deleted_at')->get();
+        // dd($nucs);
 
         date_default_timezone_set('America/Mexico_City');
         $date2 = new DateTime();
@@ -409,6 +411,7 @@ class MonthFundsController extends Controller
         {
             $date1 = new DateTime($nuc->apply_date);
             $diff = $date1->diff($date2);
+            if($nuc->id = 279) dd($diff);
             if($diff->m >= 8 || $diff->y >= 1)
                 $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>8]);
             else
@@ -457,5 +460,22 @@ class MonthFundsController extends Controller
         $nucs = $this->ReturnData($profile,$active);
 
         return response()->json(['status'=>true, "nucs" => $nucs, "profile" => $profile, "permission" => $perm_btn]);
+    }
+
+    public function GetCharge($id)
+    {
+        $charge =  MonthFund::where('id',$id)->first();
+
+        return response()->json(['status'=>true, "charge" => $charge->fk_charge]);
+    }
+
+    public function updateCharge(Request $request)
+    {
+        $charge = MonthFund::where('id',$request->id)->first();
+        // dd($status);
+        $charge->fk_charge = $request->charge;
+        $charge->save();
+
+        return response()->json(['status'=>true, "message"=>"Conducto Actualizado"]);
     }
 }

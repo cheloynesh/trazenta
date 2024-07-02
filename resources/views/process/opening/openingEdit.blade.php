@@ -130,12 +130,11 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="">Conducto de Apertura:</label>
-                                    <select name="selectCharge1" id="selectCharge1" class="form-select">
-                                        <option hidden selected value="">Selecciona una opción</option>
-                                        @foreach ($charges as $id => $charge)
-                                            <option value='{{ $id }}'>{{ $charge }}</option>
-                                        @endforeach
+                                    <label for="">Moneda</label>
+                                    <select name="selectCurrency1" id="selectCurrency1" class="form-select">
+                                        <option hidden selected>Selecciona una opción</option>
+                                        <option value="MXN">MXN</option>
+                                        <option value="USD">USD</option>
                                     </select>
                                 </div>
                             </div>
@@ -159,19 +158,9 @@
                                     <input type="text" id="nuc1" name="nuc1" value="PENDIENTE" class="form-control">
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="">Moneda</label>
-                                    <select name="selectCurrency1" id="selectCurrency1" class="form-select">
-                                        <option hidden selected>Selecciona una opción</option>
-                                        <option value="MXN">MXN</option>
-                                        <option value="USD">USD</option>
-                                    </select>
-                                </div>
-                            </div>
                         </div>
 
-                        <div class="row" id="divLP1" style = "display: none;">
+                        <div class="row align-items-end" id="divLP1" style = "display: none;">
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Monto:</label>
@@ -182,6 +171,13 @@
                                 <div class="form-group">
                                     <label for="">Fecha de aplicación</label>
                                     <input type="date" id="initial_date1" name="initial_date1" class="form-control" placeholder="Fecha de aplicación">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="d-grid gap-2 col-12 mx-auto">
+                                        <button type="button" class="btn btn-primary" onclick="OpenCharge()">Abrir conductos de cobro</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
