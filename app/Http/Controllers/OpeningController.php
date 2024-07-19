@@ -80,6 +80,7 @@ class OpeningController extends Controller
         // dd($id);
         $opening = Opening::where('id',$id)->first();
         $insurance = Insurance::where('id',$opening->fk_insurance)->first();
+        $chargeMoves = null;
 
         if($insurance->fund_type == "CP")
         {

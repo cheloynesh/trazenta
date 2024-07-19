@@ -176,7 +176,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <div class="d-grid gap-2 col-12 mx-auto">
-                                        <button type="button" class="btn btn-primary" onclick="OpenCharge()">Abrir conductos de cobro</button>
+                                        <button type="button" class="btn btn-primary" onclick="OpenCharge()">Abrir conductos de apertura</button>
                                     </div>
                                 </div>
                             </div>

@@ -280,16 +280,16 @@ class SixMonthFundController extends Controller
         // return response()->json(['status'=>true, 'message'=>"Datos Subidos", 'repetidos' => $cont, 'notFnd' => $arrayNotFound, 'importados' => $goodCont]);
 
         // -------------------------------------------actualizacion de conductos----------------------------------
-        // $nucs = Nuc::get();
-        // foreach($nucs as $nuc)
-        // {
-        //     $moves = MonthFund::where("fk_nuc",$nuc->id)->where("type","Apertura")->get();
+        $nucs = Nuc::get();
+        foreach($nucs as $nuc)
+        {
+            $moves = MonthFund::where("fk_nuc",$nuc->id)->where("type","Apertura")->get();
 
-        //     foreach($moves as $move)
-        //     {
-        //         $nucEdit = MonthFund::where('id',$move->id)->update(['fk_charge'=>$nuc->fk_charge]);
-        //     }
-        // }
+            foreach($moves as $move)
+            {
+                $nucEdit = MonthFund::where('id',$move->id)->update(['fk_charge'=>$nuc->fk_charge]);
+            }
+        }
 
         $nucs = SixMonth_fund::get();
         foreach($nucs as $nuc)

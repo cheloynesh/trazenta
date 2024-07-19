@@ -192,7 +192,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <div class="d-grid gap-2 col-12 mx-auto">
-                                                <button type="button" class="btn btn-primary" onclick="OpenCharge()">Abrir conductos de cobro</button>
+                                                <button type="button" class="btn btn-primary" onclick="OpenCharge()">Abrir conductos de apertura</button>
                                             </div>
                                         </div>
                                     </div>
@@ -241,7 +241,7 @@
                 <div class="modal-content">
 
                     <div class="modal-header">
-                        <h4 class="modal-title" id="gridModalLabek">Conductos de Cobro</h4>
+                        <h4 class="modal-title" id="gridModalLabek">Conductos de Apertura</h4>
                         <button type="button" class="close" aria-label="Close" onclick="cancelar('#myModalC')"><span aria-hidden="true">&times;</span></button>
                     </div>
 
