@@ -203,4 +203,5 @@ Route::post('comitions/delayComition/delayComition/UpdateRegime','DelayComitionC
 Route::get('comitions/delayComition/delayComition/GetPDFAuth/{id}/{type}/{authType}','DelayComitionController@GetPDFAuth')->name('delaycomition.GetPDFAuth');
 
 // --------------------------------------------------------Historial Comisiones------------------------------------------------------------
-Route::resource('comitions/delayComition/delayComition', 'DelayComitionController');
+Route::resource('comitions/history/history', 'PaymentHistoryController');
+Route::get('comitions/history/history/GetInfo/{id}/{invoice}/{contpp}/{contpa}/{lpnopay}','PaymentHistoryController@GetInfo')->name('historycomition.GetInfo');

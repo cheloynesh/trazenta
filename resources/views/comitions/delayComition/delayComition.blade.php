@@ -471,7 +471,7 @@
             </div>
         </div>
         {{-- termina modal --}}
-        {{-- modal auth --}}
+        {{-- modal ver pdf y quitar fecha --}}
         <div id="viewPdfModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">

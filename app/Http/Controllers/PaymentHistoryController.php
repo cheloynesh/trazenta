@@ -18,5 +18,61 @@ use DB;
 
 class PaymentHistoryController extends Controller
 {
-    //
+    public function index(){
+        $profile = User::findProfile();
+        date_default_timezone_set('America/Mexico_City');
+        $date = new DateTime();
+        $date->setDate($date->format('Y'), $date->format('m'), 1);
+        $date->modify('-1 months');
+        $date2 = new DateTime();
+        $date2->setDate($date2->format('Y'), $date2->format('m'), 1);
+        // dd($date2,$date1,$date);
+        $users = DB::select('call historyComition()');
+        // dd($users);
+        // dd($users);
+        $perm = Permission::permView($profile,41);
+        $perm_btn =Permission::permBtns($profile,41);
+        // dd($perm_btn);
+        $regimes = Regime::pluck('name','id');
+        // dd($clients);
+        if($perm==0)
+        {
+            return redirect()->route('home');
+        }
+        else
+        {
+            return view('comitions.history.history', compact('users','perm_btn','regimes'));
+        }
+    }
+
+    public function GetInfo($id,$invoice,$contpp,$contpa,$lpnopay)
+    {
+        $regime = DB::table('users')->select('fk_regime','dlls')->where('id',$id)->first();
+        // dd($id);
+        $rec = 0;
+        $pp = 0;
+        $pa = 0;
+        $lp = 0;
+
+        if(intval($invoice) != 0)
+        {
+            $rec = DB::select('call historyCurr(?)',[$id]);
+        }
+
+        if(intval($contpp) != 0)
+        {
+            $pp = DB::select('call historyFst(?)',[$id]);
+        }
+
+        if(intval($contpa != 0))
+        {
+            $pa = DB::select('call historyInc(?)',[$id]);
+        }
+
+        if(intval($lpnopay != 0))
+        {
+            $lp = DB::select('call historyLP(?)',[$id]);
+        }
+        return response()->json(['status'=>true, "regime"=>$regime, "rec"=>$rec, "pp"=>$pp, "pa"=>$pa, "lp"=>$lp]);
+    }
 }
