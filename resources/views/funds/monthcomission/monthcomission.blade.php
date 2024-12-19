@@ -29,7 +29,7 @@
                                     <div class="col-lg-3">
                                         <div class="form-group">
                                             <label for="">Mes</label>
-                                            <input type="month" id="month" name="month" class="form-control">
+                                            <input type="month" id="month" name="month" value="<?=date('Y-m')?>" class="form-control">
                                         </div>
                                     </div>
                                     <div class="col-lg-3">
@@ -161,6 +161,14 @@
                                         <div class="form-group">
                                             <label for="">Fecha</label>
                                             <input type="date" id="auth" name="auth" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="doc_row" style="display: none">
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label for="">Adjuntar comprobante</label>
+                                            <input type="file" name="pay_doc" id="pay_doc" accept="application/pdf" class="form-control">
                                         </div>
                                     </div>
                                 </div>

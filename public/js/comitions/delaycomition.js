@@ -4,6 +4,7 @@ var baseUrl = getUrl .protocol + "//" + getUrl.host + getUrl.pathname;
 var baseUrlRec = getUrl .protocol + "//" + getUrl.host + "/funds/monthlycomission/monthcomission";
 var baseUrlPP = getUrl .protocol + "//" + getUrl.host + "/funds/fstmonthcomission/fstmonthcomission";
 var baseUrlLP = getUrl .protocol + "//" + getUrl.host + "/funds/sixmonthlycomission/sixmonthcomission";
+var baseUrlCoimition = getUrl .protocol + "//" + getUrl.host + "/comitions/comition/comition";
 
 
 $(document).ready( function () {
@@ -159,11 +160,61 @@ var formatter = new Intl.NumberFormat('en-US', {
 var idUser = 0;
 var authType = 0;
 var idsLP = [];
-var docname = "";
+var recMonth = 0;
+var recYear = 0;
+
+function fillTableComition(result)
+{
+    var table = $('#tbProf').DataTable();
+    var btnInvoice = '';
+    var btnPay = '';
+    var btn = '';
+
+    table.clear();
+    result.coms.forEach( function(valor, indice, array) {
+
+        btn = '<a href="#|" class="btn btn-primary" onclick="abrirComision('+valor.uid+','+valor.rec_delay+','+valor.contpp+','+valor.contpa+','+valor.lpnopay+')" >Cálculo</a>';
+
+        table.row.add([valor.aname,valor.rec_delay,valor.contpp,valor.contpa,valor.lpnopay,btn]).node().id = valor.uid;
+    });
+    table.draw(false);
+}
+
+function abrirComision(id,invoice,contpp,contpa,lpnopay)
+{
+    idUser = id;
+    var route = baseUrl + '/GetInfo/'+ idUser + "/" + invoice + "/" + contpp + "/" + contpa + "/" + lpnopay;
+    flagComition = 0;
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            document.getElementById("cardRec").style.display = "none";
+            document.getElementById("cardNC").style.display = "none";
+            document.getElementById("cardAd").style.display = "none";
+            document.getElementById("cardLP").style.display = "none";
+            if(invoice != 0) document.getElementById("cardRec").style.display = "block";
+            if(contpp != 0) document.getElementById("cardNC").style.display = "block";
+            if(contpa != 0) document.getElementById("cardAd").style.display = "block";
+            if(lpnopay != 0) document.getElementById("cardLP").style.display = "block";
+            $("#selectRegime").val(result.regime.fk_regime);
+            // alert(result.regime)
+            fillTables(result,invoice,contpp,contpa,lpnopay);
+            $("#myModal").modal('show');
+        }
+    })
+}
+
+function cancelar(modal)
+{
+    $(modal).modal('hide');
+}
 
 function fillTables(result,invoice,contpp,contpa,lpnopay)
 {
-    if(invoice != "NA")
+    if(invoice != 0)
     {
         fillTableRec(result);
     }
@@ -187,10 +238,22 @@ function fillTables(result,invoice,contpp,contpa,lpnopay)
 function fillTableRec(result)
 {
     var table = $('#tbRec').DataTable();
+    var months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     table.clear();
     result.rec.forEach( function(valor, indice, array) {
-        btn = '<button type="button" class="btn btn-success"'+'onclick="abrirResumen('+valor.idNuc+')"><i class="fas fa-calculator"></i></button>';
-        table.row.add([valor.nuc,valor.client_name,btn]).node().id = valor.idNuc;
+        if(valor.invoice_date == null)
+            btnInvoice = '<button href="#|" class="btn btn-danger" onclick="setStatDate('+valor.id+',1,1)" >Pendiente</button>'
+        else
+            btnInvoice = '<button href="#|" class="btn btn-success" onclick="seePDF('+valor.id+',1,1)">'+valor.invoice_date+'</button>'
+
+        if(valor.pay_date == null)
+            btnPay = '<button href="#|" class="btn btn-danger" onclick="setStatDate('+valor.id+',2,1)" >Sin Pago</button>'
+        else
+            btnPay = '<button href="#|" class="btn btn-success" onclick="seePDF('+valor.id+',2,1)">'+valor.pay_date+'</button>'
+
+        btn = '<button type="button" class="btn btn-primary"'+'onclick="pdfRec(' + valor.uid + ',' + valor.curr_month + ',' + valor.curr_year + ')">PDF</button>';
+
+        table.row.add([months[parseInt(valor.curr_month)-1]+" "+valor.curr_year,btnInvoice,btnPay,btn]).node().id = valor.id;
     });
     table.draw(false);
     $("#dlls_com").val(result.regime.dlls);
@@ -208,12 +271,12 @@ function fillTablePP(result)
         if(valor.fst_invoice == null)
             btnInvoice = '<button href="#|" class="btn btn-danger" onclick="setStatDate('+valor.idNuc+',1,2)" >Pendiente</button>'
         else
-            btnInvoice = '<button href="#|" class="btn btn-success" onclick="setNullDate('+valor.idNuc+',1,2)">'+valor.fst_invoice+'</button>'
+            btnInvoice = '<button href="#|" class="btn btn-success" onclick="seePDF('+valor.idNuc+',1,2)">'+valor.fst_invoice+'</button>'
 
         if(valor.fst_pay == null)
             btnPay = '<button href="#|" class="btn btn-danger" onclick="setStatDate('+valor.idNuc+',2,2)" >Sin Pago</button>'
         else
-            btnPay = '<button href="#|" class="btn btn-success" onclick="setNullDate('+valor.idNuc+',2,2)">'+valor.fst_pay+'</button>'
+            btnPay = '<button href="#|" class="btn btn-success" onclick="seePDF('+valor.idNuc+',2,2)">'+valor.fst_pay+'</button>'
 
         btn = '<button type="button" class="btn btn-primary"'+'onclick="pdfPP('+valor.idNuc+')">PDF</button>';
 
@@ -234,12 +297,12 @@ function fillTablePA(result)
         if(valor.mov_invoice == null)
             btnInvoice = '<button href="#|" class="btn btn-danger" onclick="setStatDate('+valor.idM+',1,3)" >Pendiente</button>'
         else
-            btnInvoice = '<button href="#|" class="btn btn-success" onclick="setNullDate('+valor.idM+',1,3)">'+valor.mov_invoice+'</button>'
+            btnInvoice = '<button href="#|" class="btn btn-success" onclick="seePDF('+valor.idM+',1,3)">'+valor.mov_invoice+'</button>'
 
         if(valor.mov_pay == null)
             btnPay = '<button href="#|" class="btn btn-danger" onclick="setStatDate('+valor.idM+',2,3)" >Sin Pago</button>'
         else
-            btnPay = '<button href="#|" class="btn btn-success" onclick="setNullDate('+valor.idM+',2,3)">'+valor.mov_pay+'</button>'
+            btnPay = '<button href="#|" class="btn btn-success" onclick="seePDF('+valor.idM+',2,3)">'+valor.mov_pay+'</button>'
 
         btn = '<button type="button" class="btn btn-primary"'+'onclick="pdfPA('+valor.idM+')">PDF</button>';
 
@@ -260,81 +323,18 @@ function fillTableLP(result)
         if(valor.lp_invoice == null)
             btnInvoice = '<button href="#|" class="btn btn-danger" onclick="setStatDate('+valor.idNuc+',1,4)" >Pendiente</button>'
         else
-            btnInvoice = '<button href="#|" class="btn btn-success" onclick="setNullDate('+valor.idNuc+',1,4)">'+valor.lp_invoice+'</button>'
+            btnInvoice = '<button href="#|" class="btn btn-success" onclick="seePDF('+valor.idNuc+',1,4)">'+valor.lp_invoice+'</button>'
 
         if(valor.lp_pay == null)
             btnPay = '<button href="#|" class="btn btn-danger" onclick="setStatDate('+valor.idNuc+',2,4)" >Sin Pago</button>'
         else
-            btnPay = '<button href="#|" class="btn btn-success" onclick="setNullDate('+valor.idNuc+',2,4)">'+valor.lp_pay+'</button>'
+            btnPay = '<button href="#|" class="btn btn-success" onclick="seePDF('+valor.idNuc+',2,4)">'+valor.lp_pay+'</button>'
 
         table.row.add([valor.nuc,valor.client_name,valor.apertura,btnInvoice,btnPay]).node().id = valor.idNuc;
         idsLP.push(valor.idNuc);
     });
     table.draw(false);
     $("#comitionAll").val("13,500.00");
-}
-
-function fillTableComition(result)
-{
-    var table = $('#tbProf').DataTable();
-    var btnInvoice = '';
-    var btnPay = '';
-    var btn = '';
-
-    table.clear();
-    result.coms.forEach( function(valor, indice, array) {
-        if(valor.invoice_flag == null)
-            btnInvoice = '<button href="#|" class="btn btn-danger" onclick="setStatDate('+valor.uid+',1,1)" >Pendiente</button>'
-        else if (valor.invoice_flag == "NA")
-            btnInvoice = '<a>N/A</a>'
-        else
-            btnInvoice = '<button href="#|" class="btn btn-success" onclick="setNullDate('+valor.uid+',1,1)">'+valor.invoice_flag+'</button>'
-
-        if(valor.pay_flag == null)
-            btnPay = '<button href="#|" class="btn btn-danger" onclick="setStatDate('+valor.uid+',2,1)" >Sin Pago</button>'
-        else if (valor.pay_flag == "NA")
-            btnPay = '<a>N/A</a>'
-        else
-            btnPay = '<button href="#|" class="btn btn-success" onclick="setNullDate('+valor.uid+',2,1)">'+valor.pay_flag+'</button>'
-
-        btn = '<a href="#|" class="btn btn-primary" onclick="abrirComision('+valor.uid+',`'+valor.invoice_flag+'`,'+valor.contpp+','+valor.contpa+','+valor.lpnopay+')" >Cálculo</a>';
-
-        table.row.add([valor.aname,btnInvoice,btnPay,valor.contpp,valor.contpa,valor.lpnopay,btn]).node().id = valor.uid;
-    });
-    table.draw(false);
-}
-
-function abrirComision(id,invoice,contpp,contpa,lpnopay)
-{
-    idUser = id;
-    if(invoice == "") invoice = "pend";
-    var route = baseUrl + '/GetInfo/'+ idUser + "/" + invoice + "/" + contpp + "/" + contpa + "/" + lpnopay;
-    flagComition = 0;
-    jQuery.ajax({
-        url:route,
-        type:'get',
-        dataType:'json',
-        success:function(result)
-        {
-            document.getElementById("cardRec").style.display = "none";
-            document.getElementById("cardNC").style.display = "none";
-            document.getElementById("cardAd").style.display = "none";
-            document.getElementById("cardLP").style.display = "none";
-            if(invoice != "NA") document.getElementById("cardRec").style.display = "block";
-            if(contpp != 0) document.getElementById("cardNC").style.display = "block";
-            if(contpa != 0) document.getElementById("cardAd").style.display = "block";
-            if(lpnopay != 0) document.getElementById("cardLP").style.display = "block";
-            $("#selectRegime").val(result.regime.fk_regime);
-            // alert(result.regime)
-            fillTables(result,invoice,contpp,contpa,lpnopay);
-            $("#myModal").modal('show');
-        }
-    })
-}
-
-function cancelar(modal)
-{
-    $(modal).modal('hide');
 }
 
 function updateRegime()
@@ -369,22 +369,71 @@ function setStatDate(id, type,authT)
     flagtype = type;
     authType = authT;
     if(type == 1) document.getElementById("doc_row").style.display = "none";
-    else document.getElementById("doc_row").style.display = "block";
+    else
+    {
+        document.getElementById("doc_row").style.display = "block";
+
+        if(authT == 1)
+        {
+            var route = baseUrl + '/GetPDFAuth/' + id + '/' + type + '/' + authT;
+
+            jQuery.ajax({
+                url:route,
+                type:'get',
+                dataType:'json',
+                success:function(result)
+                {
+                    recMonth = result.mov.curr_month;
+                    recYear = result.mov.curr_year;
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
+                }
+            })
+        }
+    }
     $("#authModal").modal('show');
 }
 
-function setNullDate(id, type, authT)
+function seePDF(id, type, authT)
 {
-    if(authT == 1) var route = baseUrlRec + '/setNullDate';
-    if(authT == 2) var route = baseUrl + '/setNullDate';
-    if(authT == 3) var route = baseUrl + '/setNullDateMoves';
-    if(authT == 4) var route = baseUrl + '/setNullDateLP';
+    userid = id;
+    flagtype = type;
+    authType = authT;
+    var route = baseUrl + '/GetPDFAuth/' + id + '/' + type + '/' + authT;
+
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            document.getElementById("viewPDF").href = getUrl.protocol + "//" + getUrl.host + result.route + result.doc;
+
+            $("#viewPdfModal").modal('show');
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
+}
+
+function setNullDate()
+{
+    if(authType == 1) var route = baseUrl + '/setNullDateRec';
+    if(authType == 2) var route = baseUrl + '/setNullDate';
+    if(authType == 3) var route = baseUrl + '/setNullDateMoves';
+    if(authType == 4) var route = baseUrl + '/setNullDateLP';
     console.log(route);
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
-        "id":id,
+        "id":userid,
         "idUser":idUser,
-        'flagtype':type,
+        'flagtype':flagtype,
+        'recMonth':recMonth,
+        'recYear':recYear,
     }
     alertify.confirm("Cancelar fecha","¿Desea remover la fecha?",
         function(){
@@ -395,10 +444,11 @@ function setNullDate(id, type, authT)
                 dataType:'json',
                 success:function(result){
                     alertify.success(result.message);
-                    if(authT == 1) fillTableComition(result);
-                    if(authT == 2) fillTablePP(result);
-                    if(authT == 3) fillTablePA(result);
-                    if(authT == 4) fillTableLP(result);
+                    if(authType == 1) fillTableRec(result);
+                    if(authType == 2) fillTablePP(result);
+                    if(authType == 3) fillTablePA(result);
+                    if(authType == 4) fillTableLP(result);
+                    $("#viewPdfModal").modal('hide');
                 },
                 error:function(result,error,errorTrown)
                 {
@@ -430,7 +480,7 @@ function guardarAuth()
         formData.append(formSerializeArray[i].name, formSerializeArray[i].value)
     }
 
-    if(authType == 1) var route = baseUrlRec + '/setStatDate';
+    if(authType == 1) var route = baseUrl + '/setStatDateRec';
     if(authType == 2) var route = baseUrl + '/setStatDate';
     if(authType == 3) var route = baseUrl + '/setStatDateMoves';
     if(authType == 4) var route = baseUrl + '/setStatDateLP';
@@ -448,9 +498,16 @@ function guardarAuth()
     formData.append('flagtype', flagtype);
     formData.append('idUser', idUser);
     formData.append('date', date);
-    formData.append('year', year);
-    formData.append('month', month);
-    // formData.append('docname', docname);
+    if(authType != 1)
+    {
+        formData.append('year', year);
+        formData.append('month', month);
+    }
+    else
+    {
+        formData.append('year', recYear);
+        formData.append('month', recMonth);
+    }
 
     jQuery.ajax({
         url:route,
@@ -461,8 +518,9 @@ function guardarAuth()
         cache: false,
         success:function(result)
         {
+            // console.log("entre");
             alertify.success(result.message);
-            if(authType == 1) fillTableComition(result);
+            if(authType == 1) fillTableRec(result);
             if(authType == 2) fillTablePP(result);
             if(authType == 3) fillTablePA(result);
             if(authType == 4 || authType == 5) fillTableLP(result);
@@ -473,104 +531,6 @@ function guardarAuth()
             alertify.error(errorTrown);
         }
     })
-}
-
-// ------------------------------------------------------------------------------------------------------------------- RECURRENTE
-function abrirResumen(nucid)
-{
-    var TC = $("#change").val();
-    var date = $("#month").val();
-    var dlls = $("#dlls_com").val();
-    var regime = $("#selectRegime").val();
-
-    date = date.split("-");
-    var year = date[0];
-    var month = date[1];
-
-    if(date == null || date == "" && TC == null || TC == "")
-    {
-        alert("Ningun campo debe quedar vacio");
-        return false;
-    }else
-    {
-        var data = {
-        "_token": $("meta[name='csrf-token']").attr("content"),
-            'TC':TC,
-            'id':nucid,
-            'year':year,
-            'month':month,
-            'regime':regime,
-            'dlls':dlls
-        }
-
-        var route = baseUrlRec+'/GetInfoComition';
-        jQuery.ajax({
-            url:route,
-            data:data,
-            type:'post',
-            dataType:'json',
-            success:function(result){
-                // alert(result.regime);
-                $("#balance_rec").val(result.b_amount);
-                $("#b_amount_rec").val(result.gross_amount);
-                $("#iva_rec").val(result.iva_amount);
-                $("#ret_isr_rec").val(result.ret_isr);
-                $("#ret_iva_rec").val(result.ret_iva);
-                $("#n_amount_rec").val(result.n_amount);
-
-                // obtenerSaldo(idNuc);
-                $("#myModalCalcRec").modal('show');
-            }
-        });
-    }
-}
-
-function pdfRec()
-{
-    var TC = $("#change").val();
-    var dlls = $("#dlls_com").val();
-    var date = $("#month").val();
-    var regime = $("#selectRegime").val();
-
-    if(TC == "" || date == "") alert ("Ningun campo debe quedar vacio");
-    else
-    {
-        date = date.split("-");
-        var year = date[0];
-        var month = date[1];
-
-        var route = baseUrlRec + '/ExportPDF/'+ idUser + "/" + month + "/" + year + "/"+ TC + "/" + regime + "/" + dlls;
-
-        $.ajaxSetup({
-            headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
-        });
-
-        var form = $('<form></form>');
-
-        form.attr("method", "get");
-        form.attr("action", route);
-        form.attr('_token',$("meta[name='csrf-token']").attr("content"));
-        $.each(function(key, value) {
-            var field = $('<input></input>');
-            field.attr("type", "hidden");
-            field.attr("name", key);
-            field.attr("value", value);
-            form.append(field);
-        });
-        var field = $('<input></input>');
-        field.attr("type", "hidden");
-        field.attr("name", "_token");
-        field.attr("value", $("meta[name='csrf-token']").attr("content"));
-        form.append(field);
-        $(document.body).append(form);
-        form.submit();
-
-        userid = idUser;
-        authType = 1;
-        flagtype = 1;
-        document.getElementById("doc_row").style.display = "none";
-        $("#authModal").modal('show');
-    }
 }
 
 // ------------------------------------------------------------------------------------------------------------------- PRIMER PAGO
@@ -615,7 +575,6 @@ function pdfPP(id)
         flagtype = 1;
         document.getElementById("doc_row").style.display = "none";
         $("#authModal").modal('show');
-        // docname = 'FST_'+ id + "_" + month + "_" + year + ".pdf";
     }
 }
 
@@ -661,7 +620,6 @@ function pdfPA(id)
         flagtype = 1;
         document.getElementById("doc_row").style.display = "none";
         $("#authModal").modal('show');
-        // docname = 'INC_'+ id + "_" + month + "_" + year + ".pdf";
     }
 }
 
@@ -759,6 +717,51 @@ function pdfLP()
         flagtype = 1;
         document.getElementById("doc_row").style.display = "none";
         $("#authModal").modal('show');
-        // docname = 'LP_'+ ids + "_" + month + "_" + year + ".pdf";
+    }
+}
+
+// ------------------------------------------------------------------------------------------------------------------- RECURRENTE
+function pdfRec(idUser, month, year)
+{
+    var TC = $("#change").val();
+    var dlls = $("#dlls_com").val();
+    var regime = $("#selectRegime").val();
+    recMonth = month;
+    recYear = year;
+
+    if(TC == "") alert ("Ningun campo debe quedar vacio");
+    else
+    {
+        var route = baseUrlRec + '/ExportPDF/'+ idUser + "/" + month + "/" + year + "/"+ TC + "/" + regime + "/" + dlls;
+
+        $.ajaxSetup({
+            headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
+        });
+
+        var form = $('<form></form>');
+
+        form.attr("method", "get");
+        form.attr("action", route);
+        form.attr('_token',$("meta[name='csrf-token']").attr("content"));
+        $.each(function(key, value) {
+            var field = $('<input></input>');
+            field.attr("type", "hidden");
+            field.attr("name", key);
+            field.attr("value", value);
+            form.append(field);
+        });
+        var field = $('<input></input>');
+        field.attr("type", "hidden");
+        field.attr("name", "_token");
+        field.attr("value", $("meta[name='csrf-token']").attr("content"));
+        form.append(field);
+        $(document.body).append(form);
+        form.submit();
+
+        userid = idUser;
+        authType = 1;
+        flagtype = 1;
+        document.getElementById("doc_row").style.display = "none";
+        $("#authModal").modal('show');
     }
 }

@@ -130,7 +130,7 @@ Route::post('funds/monthlycomission/monthcomission/setNullDate','MonthComissionC
 Route::resource('funds/fstmonthcomission/fstmonthcomission', 'FstMonthComissionController');
 Route::get('funds/fstmonthcomission/fstmonthcomission/GetInfo/{id}','FstMonthComissionController@GetInfo')->name('fstmonthcomission.GetInfo');
 Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDF/{id}/{month}/{year}/{TC}/{regime}','FstMonthComissionController@ExportPDF');
-Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDFAll/{id}/{tc}','FstMonthComissionController@ExportPDFAll');
+Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDFAll/{id}/{tc}/{month}/{year}','FstMonthComissionController@ExportPDFAll');
 Route::post('funds/fstmonthcomission/fstmonthcomission/GetInfoComition','FstMonthComissionController@GetInfoComition')->name('fstmonthcomission.GetInfoComition');
 Route::get('funds/fstmonthcomission/fstmonthcomission/GetInfoAugments/{id}','FstMonthComissionController@GetInfoAugments')->name('fstmonthcomission.GetInfoAugments');
 Route::post('funds/fstmonthcomission/fstmonthcomission/setStatDate','FstMonthComissionController@setStatDate')->name('fstmonthcomission.setStatDate');
@@ -186,3 +186,21 @@ Route::post('comitions/comition/comition/setStatDateLP','ComitionController@setS
 Route::post('comitions/comition/comition/setNullDateLP','ComitionController@setNullDateLP')->name('comition.setNullDateLP');
 Route::post('comitions/comition/comition/setStatDateMultLP','ComitionController@setStatDateMultLP')->name('comition.setStatDateMultLP');
 Route::post('comitions/comition/comition/UpdateRegime','ComitionController@UpdateRegime')->name('comition.UpdateRegime');
+
+// --------------------------------------------------------Comisiones Atrasadas------------------------------------------------------------
+Route::resource('comitions/delayComition/delayComition', 'DelayComitionController');
+Route::get('comitions/delayComition/delayComition/GetInfo/{id}/{invoice}/{contpp}/{contpa}/{lpnopay}','DelayComitionController@GetInfo')->name('delaycomition.GetInfo');
+Route::post('comitions/delayComition/delayComition/setStatDateRec','DelayComitionController@setStatDateRec')->name('delaycomition.setStatDateRec');
+Route::post('comitions/delayComition/delayComition/setNullDateRec','DelayComitionController@setNullDateRec')->name('delaycomition.setNullDateRec');
+Route::post('comitions/delayComition/delayComition/setStatDate','DelayComitionController@setStatDate')->name('delaycomition.setStatDate');
+Route::post('comitions/delayComition/delayComition/setNullDate','DelayComitionController@setNullDate')->name('delaycomition.setNullDate');
+Route::post('comitions/delayComition/delayComition/setStatDateMoves','DelayComitionController@setStatDateMoves')->name('delaycomition.setStatDateMoves');
+Route::post('comitions/delayComition/delayComition/setNullDateMoves','DelayComitionController@setNullDateMoves')->name('delaycomition.setNullDateMoves');
+Route::post('comitions/delayComition/delayComition/setStatDateLP','DelayComitionController@setStatDateLP')->name('delaycomition.setStatDateLP');
+Route::post('comitions/delayComition/delayComition/setNullDateLP','DelayComitionController@setNullDateLP')->name('delaycomition.setNullDateLP');
+Route::post('comitions/delayComition/delayComition/setStatDateMultLP','DelayComitionController@setStatDateMultLP')->name('delaycomition.setStatDateMultLP');
+Route::post('comitions/delayComition/delayComition/UpdateRegime','DelayComitionController@UpdateRegime')->name('delaycomition.UpdateRegime');
+Route::get('comitions/delayComition/delayComition/GetPDFAuth/{id}/{type}/{authType}','DelayComitionController@GetPDFAuth')->name('delaycomition.GetPDFAuth');
+
+// --------------------------------------------------------Historial Comisiones------------------------------------------------------------
+Route::resource('comitions/delayComition/delayComition', 'DelayComitionController');

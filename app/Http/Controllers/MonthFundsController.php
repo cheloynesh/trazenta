@@ -205,7 +205,7 @@ class MonthFundsController extends Controller
             else
                 $moves[6] = null;
             // dd($moves);
-            $movimientos = DB::table('Month_fund')->select("new_balance", "amount", "apply_date", "fk_nuc")->join('Nuc',"Nuc.id","=","fk_nuc")->where('nuc',$moves[1])->orderby("apply_date","DESC")->orderby("Month_fund.id","DESC")->whereNull('Month_fund.deleted_at')->first();
+            $movimientos = DB::table('Month_fund')->select("new_balance", "amount", "apply_date", "fk_nuc", "movementid")->join('Nuc',"Nuc.id","=","fk_nuc")->where('nuc',$moves[1])->orderby("apply_date","DESC")->orderby("Month_fund.id","DESC")->whereNull('Month_fund.deleted_at')->first();
             // dd($movimientos,$moves);
             if ($movimientos != null)
             {
@@ -411,7 +411,7 @@ class MonthFundsController extends Controller
         {
             $date1 = new DateTime($nuc->apply_date);
             $diff = $date1->diff($date2);
-            if($nuc->id = 279) dd($diff);
+
             if($diff->m >= 8 || $diff->y >= 1)
                 $nc = Nuc::where('id',$nuc->id)->update(['month_flag'=>8]);
             else

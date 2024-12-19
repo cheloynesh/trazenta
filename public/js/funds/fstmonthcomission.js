@@ -220,7 +220,10 @@ function calcularAll(id)
 {
     var TC = $("#change").val();
     var date = $("#month").val();
-    var route = baseUrl + '/ExportPDFAll/'+ id + '/' + $("#change").val();
+    date = date.split("-");
+    var year = date[0];
+    var month = date[1];
+    var route = baseUrl + '/ExportPDFAll/'+ id + '/' + $("#change").val() + '/' + month  + '/' + year;
     // alert(route);
     if(TC == "" || date == "") alert ("Los campos de Tipo de cambio y Fecha no deben quedar vacíos");
     else

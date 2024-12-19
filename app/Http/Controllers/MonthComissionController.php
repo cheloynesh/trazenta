@@ -10,6 +10,7 @@ use App\MonthlyComission;
 use App\Nuc;
 use App\Status;
 use App\Regime;
+use App\Payment_History;
 use DateTime;
 use DB;
 
@@ -267,6 +268,7 @@ class MonthComissionController extends Controller
             }
         </style>
         ');
+        $pdf->save(public_path("comition_files/rec_invoice/").'REC_'.$id."_".$month."_".$year.'.pdf');
         return $pdf->download($months[intval($month)]."_".$year."_".$userName->name.'.pdf');
     }
 
@@ -539,15 +541,43 @@ class MonthComissionController extends Controller
 
     public function setStatDate(Request $request)
     {
+        $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
+
         $status = User::where('id',$request->id)->first();
+        $userName = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))->where('id',$request->id)->first();
+        $history = Payment_History::where('fk_agent',$request->id)->where('curr_month',$request->month)->where('curr_year',$request->year)->first();
+        if($history == null)
+        {
+            $history = new Payment_History;
+            $history->fk_agent = $request->id;
+            $history->curr_month = $request->month;
+            $history->curr_year = $request->year;
+            date_default_timezone_set('America/Mexico_City');
+            $currdate = new DateTime();
+            $currdate->setDate($request->year, $request->month, 1);
+            $history->curr_date = $currdate;
+        }
         if(intval($request->flagtype) == "1")
         {
             $status->invoice_flag = $request->date;
+            $history->invoice_date = $request->date;
+            $history->invoice_doc = 'REC_'.$request->id."_".$request->month."_".$request->year.'.pdf';
         }
         else
         {
             $status->pay_flag = $request->date;
+            $history->pay_date = $request->date;
+            if($request->hasFile("pay_doc"))
+            {
+                $imagen = $request->file("pay_doc");
+                $nombreimagen = 'REC_'.$request->id."_".$request->month."_".$request->year.'.pdf';
+                $ruta = public_path("comition_files/rec_pay/");
+                $history->pay_doc = $nombreimagen;
+
+                copy($imagen->getRealPath(),$ruta.$nombreimagen);
+            }
         }
+        $history->save();
         $status->save();
 
         $users = $this->ReturnData();
@@ -555,12 +585,13 @@ class MonthComissionController extends Controller
         date_default_timezone_set('America/Mexico_City');
         $date = new DateTime();
         $date->setDate($date->format('Y'), $date->format('m'), 1);
+
         $date->modify('-1 months');
         $date1 = new DateTime();
         $date2 = new DateTime();
         $date1->modify('-1 months');
         $coms = DB::select('call comition(?,?,?,?,?)',[$date->format('Y-m-d'),intval($date1->format('m')),intval($date1->format('Y')),intval($date2->format('m')),intval($date2->format('Y'))]);
-
+        // dd($coms);
         return response()->json(['status'=>true, "message"=>"Fecha aplicada", "users" => $users, "coms" => $coms]);
     }
 

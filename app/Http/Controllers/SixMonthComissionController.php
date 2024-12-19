@@ -261,6 +261,7 @@ class SixMonthComissionController extends Controller
         $ret_isr = 0;
         $ret_iva = 0;
         $n_amount = 0;
+        $idnames = $id;
         $ids = explode("-",$id);
         $validNames = array();
         $obligs = "";
@@ -437,6 +438,7 @@ class SixMonthComissionController extends Controller
             }
         </style>
         ');
+        $pdf->save(public_path("comition_files/lp_invoice/").'LP_'.$idnames."_".$month."_".$year.".pdf");
         return $pdf->download($months[intval($month)]."_".$year."_".$nucs[0]->usrName.'_LP.pdf');
     }
 

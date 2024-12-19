@@ -66,7 +66,7 @@ class FstMonthComissionController extends Controller
         // setlocale(LC_TIME, 'es_ES.UTF-8');
         // $monthName = date('F', mktime(0, 0, 0, $month, 10));
         $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
-        $clients = DB::table('Client')->select(DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS name'),"Nuc.fk_agent")
+        $clients = DB::table('Client')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS name'),"Nuc.fk_agent")
             ->join('Nuc',"fk_client","=","Client.id")
             ->where("month_flag","<","8")
             ->groupBy("name")
@@ -240,10 +240,11 @@ class FstMonthComissionController extends Controller
             }
         </style>
         ');
+        $pdf->save(public_path("comition_files/fst_invoice/").'FST_'.$id."_".$month."_".$year.".pdf");
         return $pdf->download($months[intval($month)]."_".$year."_".$userName->name.'.pdf');
     }
 
-    public function ExportPDFAll($id,$TC)
+    public function ExportPDFAll($id,$TC,$month,$year)
     {
         // dd($id,$TC);
         $b_amount = 0;
@@ -436,6 +437,7 @@ class FstMonthComissionController extends Controller
             }
         </style>
         ');
+        $pdf->save(public_path("comition_files/mov_invoice/").'INC_'.$id."_".$month."_".$year.".pdf");
         return $pdf->download($months[intval($date2->format('m'))]."_".$date2->format('Y')."_".$userName->name.'.pdf');
     }
 

@@ -12,10 +12,11 @@ use App\Status;
 use App\Regime;
 use App\MonthFund;
 use App\SixMonth_fund;
+use App\Payment_History;
 use DateTime;
 use DB;
 
-class ComitionController extends Controller
+class DelayComitionController extends Controller
 {
     public function index(){
         $profile = User::findProfile();
@@ -23,15 +24,14 @@ class ComitionController extends Controller
         $date = new DateTime();
         $date->setDate($date->format('Y'), $date->format('m'), 1);
         $date->modify('-1 months');
-        $date1 = new DateTime();
         $date2 = new DateTime();
-        $date1->modify('-1 months');
+        $date2->setDate($date2->format('Y'), $date2->format('m'), 1);
         // dd($date2,$date1,$date);
-        $users = DB::select('call comition(?,?,?,?,?)',[$date->format('Y-m-d'),intval($date->format('m')),intval($date->format('Y')),intval($date2->format('m')),intval($date2->format('Y'))]);
+        $users = DB::select('call delayComition(?,?)',[$date2->format('Y-m-d'), $date->format('Y-m-d')]);
         // dd($users);
         // dd($users);
-        $perm = Permission::permView($profile,40);
-        $perm_btn =Permission::permBtns($profile,40);
+        $perm = Permission::permView($profile,41);
+        $perm_btn =Permission::permBtns($profile,41);
         // dd($perm_btn);
         $regimes = Regime::pluck('name','id');
         // dd($clients);
@@ -41,14 +41,8 @@ class ComitionController extends Controller
         }
         else
         {
-            return view('comitions.comition.comition', compact('users','perm_btn','regimes'));
+            return view('comitions.delayComition.delayComition', compact('users','perm_btn','regimes'));
         }
-    }
-
-    public function UpdateRegime(Request $request)
-    {
-        $client = User::where('id',$request->id)->update(['fk_regime'=>$request->regime]);
-        return response()->json(['status'=>true, 'message'=>"Régimen Actualizado"]);
     }
 
     public function GetInfo($id,$invoice,$contpp,$contpa,$lpnopay)
@@ -60,13 +54,12 @@ class ComitionController extends Controller
         $pa = 0;
         $lp = 0;
 
-        if($invoice != "NA")
+        if(intval($invoice) != 0)
         {
             date_default_timezone_set('America/Mexico_City');
             $date = new DateTime();
             $date->setDate($date->format('Y'), $date->format('m'), 1);
-            $date->modify('-1 months');
-            $rec = DB::select('call clientesCP(?,?)',[$date->format('Y-m-d'),$id]);
+            $rec = DB::select('call delayCurr(?,?)',[$date->format('Y-m-d'),$id]);
         }
 
         if(intval($contpp) != 0)
@@ -75,7 +68,7 @@ class ComitionController extends Controller
             $date2 = new DateTime();
             $date2->setDate($date2->format('Y'), $date2->format('m'), 1);
             $date2->modify('-1 months');
-            $pp = DB::select('call fstGeneralComitions(?,?,?)',[$id,intval($date2->format('m')),intval($date2->format('Y'))]);
+            $pp = DB::select('call delayFst(?,?)',[$date2->format('Y-m-d'),$id]);
         }
 
         if(intval($contpa != 0))
@@ -84,16 +77,149 @@ class ComitionController extends Controller
             $date2 = new DateTime();
             $date2->setDate($date2->format('Y'), $date2->format('m'), 1);
             $date2->modify('-1 months');
-            $pa = DB::select('call incGeneralComitions(?,?,?)',[$id,intval($date2->format('m')),intval($date2->format('Y'))]);
+            $pa = DB::select('call delayInc(?)',[$id]);
         }
 
         if(intval($lpnopay != 0))
         {
             date_default_timezone_set('America/Mexico_City');
             $date2 = new DateTime();
-            $lp = DB::select('call lpGeneralComitions(?,?,?)',[$id,intval($date2->format('m')),intval($date2->format('Y'))]);
+            $date2->setDate($date2->format('Y'), $date2->format('m'), 1);
+            $lp = DB::select('call delayLP(?,?)',[$date2->format('Y-m-d'),$id]);
         }
         return response()->json(['status'=>true, "regime"=>$regime, "rec"=>$rec, "pp"=>$pp, "pa"=>$pa, "lp"=>$lp]);
+    }
+
+    public function GetPDFAuth($id,$type,$authT)
+    {
+        // dd($id,$type,$authT);
+        if(intval($authT) == 1)
+        {
+            $mov = Payment_History::where('id',$id)->first();
+            if($type == 1)
+            {
+                $doc = $mov->invoice_doc;
+                $route = "/comition_files/rec_invoice/";
+            }
+            else if($type == 2)
+            {
+                $doc = $mov->pay_doc;
+                $route = "/comition_files/rec_pay/";
+            }
+        }
+        else if($authT == 2)
+        {
+            $mov = Nuc::where('id',$id)->first();
+            if($type == 1)
+            {
+                $doc = $mov->fst_invoice_doc;
+                $route = "/comition_files/fst_invoice/";
+            }
+            else if($type == 2)
+            {
+                $doc = $mov->fst_pay_doc;
+                $route = "/comition_files/fst_pay/";
+            }
+        }
+        else if($authT == 3)
+        {
+            $mov = MonthFund::where('id',$id)->first();
+            if($type == 1)
+            {
+                $doc = $mov->mov_invoice_doc;
+                $route = "/comition_files/mov_invoice/";
+            }
+            else if($type == 2)
+            {
+                $doc = $mov->mov_pay_doc;
+                $route = "/comition_files/mov_pay/";
+            }
+        }
+        else if($authT == 4)
+        {
+            $mov = SixMonth_fund::where('id',$id)->first();
+            if($type == 1)
+            {
+                $doc = $mov->lp_invoice_doc;
+                $route = "/comition_files/lp_invoice/";
+            }
+            else if($type == 2)
+            {
+                $doc = $mov->lp_pay_doc;
+                $route = "/comition_files/lp_pay/";
+            }
+        }
+        return response()->json(['status'=>true, "doc"=>$doc, "route"=>$route, "mov"=>$mov]);
+    }
+
+    public function setStatDateRec(Request $request)
+    {
+        // dd($request->all());
+        $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
+
+        $history = Payment_History::where('fk_agent',$request->idUser)->where('curr_month',$request->month)->where('curr_year',$request->year)->first();
+        if($history == null)
+        {
+            $history = new Payment_History;
+            $history->fk_agent = $request->id;
+            $history->curr_month = $request->month;
+            $history->curr_year = $request->year;
+            date_default_timezone_set('America/Mexico_City');
+            $currdate = new DateTime();
+            $currdate->setDate($request->year, $request->month, 1);
+            $history->curr_date = $currdate;
+        }
+        if(intval($request->flagtype) == "1")
+        {
+            $history->invoice_date = $request->date;
+            $history->invoice_doc = 'REC_'.$request->id."_".$request->month."_".$request->year.'.pdf';
+        }
+        else
+        {
+            $history->pay_date = $request->date;
+            if($request->hasFile("pay_doc"))
+            {
+                $imagen = $request->file("pay_doc");
+                $nombreimagen = 'REC_'.$request->id."_".$request->month."_".$request->year.'.pdf';
+                $ruta = public_path("comition_files/rec_pay/");
+                $history->pay_doc = $nombreimagen;
+
+                copy($imagen->getRealPath(),$ruta.$nombreimagen);
+            }
+        }
+        $history->save();
+
+        date_default_timezone_set('America/Mexico_City');
+        $date = new DateTime();
+        $date->setDate($date->format('Y'), $date->format('m'), 1);
+        $rec = DB::select('call delayCurr(?,?)',[$date->format('Y-m-d'),$history->fk_agent]);
+        $regime = DB::table('users')->select('fk_regime','dlls')->where('id',$history->fk_agent)->first();
+
+        return response()->json(['status'=>true, "message"=>"Fecha aplicada", "rec" => $rec, "regime"=>$regime]);
+    }
+
+    public function setNullDateRec(Request $request)
+    {
+        $history = Payment_History::where('id',$request->id)->first();
+        if(intval($request->flagtype) == "1")
+        {
+            $history->invoice_date = null;
+            $history->invoice_doc = null;
+        }
+        else
+        {
+            $history->pay_date = null;
+            $history->pay_doc = null;
+        }
+        $history->save();
+
+        date_default_timezone_set('America/Mexico_City');
+        $date = new DateTime();
+        $date->setDate($date->format('Y'), $date->format('m'), 1);
+        $rec = DB::select('call delayCurr(?,?)',[$date->format('Y-m-d'),$history->fk_agent]);
+        $regime = DB::table('users')->select('fk_regime','dlls')->where('id',$history->fk_agent)->first();
+
+        return response()->json(['status'=>true, "message"=>"Fecha aplicada", "rec" => $rec, "regime"=>$regime]);
     }
 
     public function setStatDate(Request $request)
@@ -101,7 +227,6 @@ class ComitionController extends Controller
         $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
 
         $status = Nuc::where('id',$request->id)->first();
-        $userName = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))->where('id',$status->fk_agent)->first();
         if(intval($request->flagtype) == "1")
         {
             $status->fst_invoice = $request->date;
@@ -124,8 +249,9 @@ class ComitionController extends Controller
 
         date_default_timezone_set('America/Mexico_City');
         $date2 = new DateTime();
+        $date2->setDate($date2->format('Y'), $date2->format('m'), 1);
         $date2->modify('-1 months');
-        $pp = DB::select('call fstGeneralComitions(?,?,?)',[$request->idUser,intval($date2->format('m')),intval($date2->format('Y'))]);
+        $pp = DB::select('call delayFst(?,?)',[$date2->format('Y-m-d'),$request->idUser]);
         return response()->json(['status'=>true, "message"=>"Fecha aplicada", "pp" => $pp]);
     }
 
@@ -146,8 +272,9 @@ class ComitionController extends Controller
 
         date_default_timezone_set('America/Mexico_City');
         $date2 = new DateTime();
+        $date2->setDate($date2->format('Y'), $date2->format('m'), 1);
         $date2->modify('-1 months');
-        $pp = DB::select('call fstGeneralComitions(?,?,?)',[$request->idUser,intval($date2->format('m')),intval($date2->format('Y'))]);
+        $pp = DB::select('call delayFst(?,?)',[$date2->format('Y-m-d'),$request->idUser]);
         return response()->json(['status'=>true, "message"=>"Fecha cancelada", "pp" => $pp]);
     }
 
@@ -158,7 +285,6 @@ class ComitionController extends Controller
         $status = MonthFund::where('id',$request->id)->first();
         $date2 = new DateTime($status->apply_date);
         $nuc = Nuc::where('id',$status->fk_nuc)->first();
-        $userName = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))->where('id',$nuc->fk_agent)->first();
         if(intval($request->flagtype) == "1")
         {
             $status->mov_invoice = $request->date;
@@ -181,8 +307,9 @@ class ComitionController extends Controller
 
         date_default_timezone_set('America/Mexico_City');
         $date2 = new DateTime();
+        $date2->setDate($date2->format('Y'), $date2->format('m'), 1);
         $date2->modify('-1 months');
-        $pa = DB::select('call incGeneralComitions(?,?,?)',[$request->idUser,intval($date2->format('m')),intval($date2->format('Y'))]);
+        $pa = DB::select('call delayInc(?)',[$request->idUser]);
         return response()->json(['status'=>true, "message"=>"Fecha aplicada", "pa" => $pa]);
     }
 
@@ -201,10 +328,7 @@ class ComitionController extends Controller
         }
         $status->save();
 
-        date_default_timezone_set('America/Mexico_City');
-        $date2 = new DateTime();
-        $date2->modify('-1 months');
-        $pa = DB::select('call incGeneralComitions(?,?,?)',[$request->idUser,intval($date2->format('m')),intval($date2->format('Y'))]);
+
         return response()->json(['status'=>true, "message"=>"Fecha cancelada", "pa" => $pa]);
     }
 
@@ -213,7 +337,6 @@ class ComitionController extends Controller
         $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
 
         $status = SixMonth_fund::where('id',$request->id)->first();
-        $userName = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))->where('id',$status->fk_agent)->first();
         if(intval($request->flagtype) == "1")
         {
             $status->lp_invoice = $request->date;
@@ -237,7 +360,8 @@ class ComitionController extends Controller
 
         date_default_timezone_set('America/Mexico_City');
         $date2 = new DateTime();
-        $lp = DB::select('call lpGeneralComitions(?,?,?)',[$request->idUser,intval($date2->format('m')),intval($date2->format('Y'))]);
+        $date2->setDate($date2->format('Y'), $date2->format('m'), 1);
+        $lp = DB::select('call delayLP(?,?)',[$date2->format('Y-m-d'),$request->idUser]);
         return response()->json(['status'=>true, "message"=>"Fecha aplicada", "lp" => $lp]);
     }
 
@@ -258,7 +382,8 @@ class ComitionController extends Controller
 
         date_default_timezone_set('America/Mexico_City');
         $date2 = new DateTime();
-        $lp = DB::select('call lpGeneralComitions(?,?,?)',[$request->idUser,intval($date2->format('m')),intval($date2->format('Y'))]);
+        $date2->setDate($date2->format('Y'), $date2->format('m'), 1);
+        $lp = DB::select('call delayLP(?,?)',[$date2->format('Y-m-d'),$request->idUser]);
         return response()->json(['status'=>true, "message"=>"Fecha cancelada", "lp" => $lp]);
     }
 
@@ -266,7 +391,8 @@ class ComitionController extends Controller
     {
         date_default_timezone_set('America/Mexico_City');
         $date2 = new DateTime();
-        $lp = DB::select('call lpGeneralComitions(?,?,?)',[$request->idUser,intval($date2->format('m')),intval($date2->format('Y'))]);
+        $date2->setDate($date2->format('Y'), $date2->format('m'), 1);
+        $lp = DB::select('call delayLP(?,?)',[$date2->format('Y-m-d'),$request->idUser]);
         $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
 
         $docname = "";
@@ -286,7 +412,10 @@ class ComitionController extends Controller
             $status->save();
         }
 
-        $lp = DB::select('call lpGeneralComitions(?,?,?)',[$request->idUser,intval($date2->format('m')),intval($date2->format('Y'))]);
+        date_default_timezone_set('America/Mexico_City');
+        $date2 = new DateTime();
+        $date2->setDate($date2->format('Y'), $date2->format('m'), 1);
+        $lp = DB::select('call delayLP(?,?)',[$date2->format('Y-m-d'),$request->idUser]);
         return response()->json(['status'=>true, "message"=>"Fecha aplicada", "lp" => $lp]);
     }
 }

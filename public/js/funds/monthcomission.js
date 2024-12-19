@@ -305,6 +305,8 @@ function setStatDate(id, type)
 {
     userid = id;
     flagtype = type;
+    if(type == 1) document.getElementById("doc_row").style.display = "none";
+    else document.getElementById("doc_row").style.display = "block";
     $("#authModal").modal('show');
 }
 
@@ -340,11 +342,19 @@ function guardarAuth()
 {
     var route = baseUrl + '/setStatDate';
     var date = $("#auth").val();
+    var dateSet = $("#month").val();
+
+    dateSet = dateSet.split("-");
+    var year = dateSet[0];
+    var month = dateSet[1];
+
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
         "id":userid,
         'flagtype':flagtype,
-        'date':date
+        'date':date,
+        'year':year,
+        'month':month,
     }
     jQuery.ajax({
         url:route,
