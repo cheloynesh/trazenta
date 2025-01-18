@@ -546,5 +546,5 @@
 <script src="{{URL::asset('js/currencyformat.js')}}" ></script>
 @endsection
 @push('head')
-    <script src="{{URL::asset('js/comitions/delayComition.js')}}"></script>
+    <script src="{{URL::asset('js/comitions/delaycomition.js')}}"></script>
 @endpush
