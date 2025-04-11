@@ -440,6 +440,16 @@ class MonthFundsController extends Controller
         }
         return response()->json(['status'=>true, 'message'=>"Datos Actualizados"]);
     }
+    public function updateusersNet()
+    {
+        $users = User::get();
+
+        foreach($users as $user)
+        {
+            $user = User::where('id',$user->id)->update(['invoice_flag'=>null,'pay_flag'=>null]);
+        }
+        return response()->json(['status'=>true, 'message'=>"Datos Actualizados"]);
+    }
     public function deleteFund(Request $request)
     {
         $fund = Nuc::find($request->id);

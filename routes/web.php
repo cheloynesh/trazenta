@@ -102,6 +102,7 @@ Route::post('funds/monthfund/monthfunds/import','MonthFundsController@import');
 Route::post('funds/monthfund/monthfunds/updateFund','MonthFundsController@updateFund');
 Route::post('funds/monthfund/monthfunds/deleteFund','MonthFundsController@deleteFund');
 Route::get('funds/monthfund/monthfunds/updateFundNet/{id}', 'MonthFundsController@updateFundNet')->name('monthfunds.updateFundNet');
+Route::get('funds/monthfund/monthfunds/updateusersNet/{id}', 'MonthFundsController@updateusersNet')->name('monthfunds.updateusersNet');
 Route::get('funds/monthfund/monthfunds/GetCP/{id}', 'MonthFundsController@GetCP')->name('monthfunds.GetCP');
 Route::get('funds/monthfund/monthfunds/GetCharge/{id}', 'MonthFundsController@GetCharge')->name('monthfunds.GetCharge');
 Route::post('funds/monthfund/monthfunds/updateCharge', 'MonthFundsController@updateCharge')->name('monthfunds.updateCharge');
@@ -205,3 +206,6 @@ Route::get('comitions/delayComition/delayComition/GetPDFAuth/{id}/{type}/{authTy
 // --------------------------------------------------------Historial Comisiones------------------------------------------------------------
 Route::resource('comitions/history/history', 'PaymentHistoryController');
 Route::get('comitions/history/history/GetInfo/{id}/{invoice}/{contpp}/{contpa}/{lpnopay}','PaymentHistoryController@GetInfo')->name('historycomition.GetInfo');
+
+// mails
+Route::get('/mailtest','MailController@MailSender')->name('mailing.MailSender');

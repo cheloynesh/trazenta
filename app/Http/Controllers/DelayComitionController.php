@@ -154,6 +154,7 @@ class DelayComitionController extends Controller
 
     public function setStatDateRec(Request $request)
     {
+        // dd(sprintf('%02d', $request->month));
         // dd($request->all());
         $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
 
@@ -161,7 +162,7 @@ class DelayComitionController extends Controller
         if($history == null)
         {
             $history = new Payment_History;
-            $history->fk_agent = $request->id;
+            $history->fk_agent = $request->idUser;
             $history->curr_month = $request->month;
             $history->curr_year = $request->year;
             date_default_timezone_set('America/Mexico_City');
@@ -172,7 +173,7 @@ class DelayComitionController extends Controller
         if(intval($request->flagtype) == "1")
         {
             $history->invoice_date = $request->date;
-            $history->invoice_doc = 'REC_'.$request->id."_".$request->month."_".$request->year.'.pdf';
+            $history->invoice_doc = 'REC_'.$request->idUser."_".sprintf('%02d', $request->month)."_".$request->year.'.pdf';
         }
         else
         {
@@ -180,7 +181,7 @@ class DelayComitionController extends Controller
             if($request->hasFile("pay_doc"))
             {
                 $imagen = $request->file("pay_doc");
-                $nombreimagen = 'REC_'.$request->id."_".$request->month."_".$request->year.'.pdf';
+                $nombreimagen = 'REC_'.$request->idUser."_".sprintf('%02d', $request->month)."_".$request->year.'.pdf';
                 $ruta = public_path("comition_files/rec_pay/");
                 $history->pay_doc = $nombreimagen;
 

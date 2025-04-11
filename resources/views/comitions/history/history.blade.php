@@ -34,7 +34,7 @@
                                                             <table class="table table-striped table-hover text-center" id="tbRec">
                                                                 <thead>
                                                                     <th class="text-center">Agente</th>
-                                                                    <th class="text-center">Enviado</th>
+                                                                    <th class="text-center">Recibo</th>
                                                                     <th class="text-center">Pago</th>
                                                                 </thead>
                                                             </table>
@@ -89,7 +89,7 @@
                                                                     <th class="text-center">Nuc</th>
                                                                     <th class="text-center">Cliente</th>
                                                                     <th class="text-center">Apertura</th>
-                                                                    <th class="text-center">Enviado</th>
+                                                                    <th class="text-center">Recibo</th>
                                                                     <th class="text-center">Pago</th>
                                                                 </thead>
                                                             </table>
@@ -148,7 +148,7 @@
                                                                     <th class="text-center">Saldo actual</th>
                                                                     <th class="text-center">Moneda</th>
                                                                     <th class="text-center">Monto</th>
-                                                                    <th class="text-center">Enviado</th>
+                                                                    <th class="text-center">Recibo</th>
                                                                     <th class="text-center">Pago</th>
                                                                 </thead>
                                                             </table>
@@ -208,7 +208,7 @@
                                                                     <th class="text-center">Obligación</th>
                                                                     <th class="text-center">Cliente</th>
                                                                     <th class="text-center">Fecha</th>
-                                                                    <th class="text-center">Enviado</th>
+                                                                    <th class="text-center">Recibo</th>
                                                                     <th class="text-center">Pago</th>
                                                                 </thead>
                                                             </table>

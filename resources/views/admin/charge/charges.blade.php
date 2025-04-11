@@ -3,7 +3,7 @@
     <title>Conductos | Trazenta</title>
 </head>
 @section('content')
-    <div class="text-center"><h1>Catálogo de Conductos de Cobro</h1></div>
+    <div class="text-center"><h1>Catálogo de Conductos de Apertura</h1></div>
     <div style="max-width: 1200px; margin: auto;">
         {{-- modal| --}}
         <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
@@ -11,7 +11,7 @@
                 <div class="modal-content">
 
                     <div class="modal-header">
-                        <h4 class="modal-title" id="gridModalLabek">Registro de Cálculos de Cobro</h4>
+                        <h4 class="modal-title" id="gridModalLabek">Registro de Cálculos de Apertura</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
 
@@ -48,6 +48,7 @@
           <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
             <table class="table table-striped table-hover text-center" id="tbProf">
                 <thead>
+                    <th class="text-center">ID</th>
                     <th class="text-center">Nombre</th>
                     @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                         <th class="text-center">Opciones</th>
@@ -57,6 +58,7 @@
                 <tbody>
                     @foreach ($charges as $charge)
                         <tr id="{{$charge->id}}">
+                            <td>{{$charge->id}}</td>
                             <td>{{$charge->name}}</td>
                             @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                                 <td>

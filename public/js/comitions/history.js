@@ -225,8 +225,11 @@ function fillTableRec(result)
 
     table.clear();
     result.rec.forEach( function(valor, indice, array) {
-        btnInvoice = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/rec_invoice/" + valor.invoice_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+valor.invoice_date+'</a>';
-        btnPay = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/rec_pay/" + valor.pay_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+valor.invoice_date+'</a>';
+        if(result.profile != 12)
+            btnInvoice = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/rec_invoice/" + valor.invoice_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+valor.invoice_date+'</a>';
+        else
+            btnInvoice = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/rec_invoice/" + valor.invoice_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+"Enviado"+'</a>';
+        btnPay = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/rec_pay/" + valor.pay_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+valor.pay_date+'</a>';
 
         table.row.add([months[parseInt(valor.curr_month)-1]+" "+valor.curr_year,btnInvoice,btnPay]).node().id = valor.id;
     });
@@ -241,7 +244,10 @@ function fillTablePP(result)
 
     table.clear();
     result.pp.forEach( function(valor, indice, array) {
-        btnInvoice = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/fst_invoice/" + valor.fst_invoice_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+valor.fst_invoice+'</a>';
+        if(result.profile != 12)
+            btnInvoice = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/fst_invoice/" + valor.fst_invoice_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+valor.fst_invoice+'</a>';
+        else
+            btnInvoice = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/fst_invoice/" + valor.fst_invoice_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+"Enviado"+'</a>';
         btnPay = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/fst_pay/" + valor.fst_pay_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+valor.fst_pay+'</a>';
 
         table.row.add([valor.nuc,valor.client_name,valor.apertura,btnInvoice,btnPay]).node().id = valor.idNuc;
@@ -258,7 +264,10 @@ function fillTablePA(result)
 
     table.clear();
     result.pa.forEach( function(valor, indice, array) {
-        btnInvoice = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/mov_invoice/" + valor.mov_invoice_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+valor.mov_invoice+'</a>';
+        if(result.profile != 12)
+            btnInvoice = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/mov_invoice/" + valor.mov_invoice_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+valor.mov_invoice+'</a>';
+        else
+            btnInvoice = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/mov_invoice/" + valor.mov_invoice_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+"Enviado"+'</a>';
         btnPay = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/mov_pay/" + valor.mov_pay_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+valor.mov_pay+'</a>';
 
         table.row.add([valor.nuc,valor.client_name,valor.apertura,valor.prev_balance,valor.new_balance,valor.currency,valor.amount,btnInvoice,btnPay]).node().id = valor.idM;
@@ -275,7 +284,10 @@ function fillTableLP(result)
 
     table.clear();
     result.lp.forEach( function(valor, indice, array) {
-        btnInvoice = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/lp_invoice/" + valor.lp_invoice_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+valor.lp_invoice+'</a>';
+        if(result.profile != 12)
+            btnInvoice = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/lp_invoice/" + valor.lp_invoice_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+valor.lp_invoice+'</a>';
+        else
+            btnInvoice = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/lp_invoice/" + valor.lp_invoice_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+"Enviado"+'</a>';
         btnPay = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/lp_pay/" + valor.lp_pay_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+valor.lp_pay+'</a>';
 
         table.row.add([valor.nuc,valor.client_name,valor.apertura,btnInvoice,btnPay]).node().id = valor.idNuc;
