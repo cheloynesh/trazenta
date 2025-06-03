@@ -444,32 +444,14 @@ class LeaderController extends Controller
 
         if($leaderId == $nuc->uid)
         {
-            if($nuc->fk_insurance == 4 || $nuc->fk_insurance == 2)
-            {
-                if($year == 1) $gross_amount = 21000 * $div_amount;
-                else $gross_amount = 12500 * $div_amount;
-            }
-            else
-            {
-                if($year == 1) $gross_amount = 17000 * $div_amount;
-                else $gross_amount = 8500 * $div_amount;
-            }
+            if($year == 1) $gross_amount = 17000 * $div_amount;
+            else $gross_amount = 8500 * $div_amount;
         }
         else
         {
-            // if($nuc->fk_insurance == 4 || $nuc->fk_insurance == 2)
-            // {
-            if($date1 < $date2)
-            {
-                // dd("entre");
-                if($year == 1) $gross_amount = 2400 * $div_amount;
-                else $gross_amount = 3500 * $div_amount;
-            }
-            else
-            {
-                if($year == 1) $gross_amount = 1500 * $div_amount;
-                else $gross_amount = 2500 * $div_amount;
-            }
+
+            if($year == 1) $gross_amount = 1500 * $div_amount;
+            else $gross_amount = 2500 * $div_amount;
         //     }
         //     else
         //     {

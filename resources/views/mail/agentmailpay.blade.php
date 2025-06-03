@@ -98,9 +98,8 @@
         <h1>Estimado {{$name}}</h1>
         <div class="content">
             <p>Esperamos que este mensaje le encuentre bien.</p>
-            <p>Adjunto a este correo encontrará los recibos correspondientes a sus comisiones del período {{$mnth}} - {{$year}}. Le agradeceremos que nos envíe su factura correspondiente a la brevedad, para proceder con el pago en tiempo y forma.</p>
-            <p>Por favor, no dude en contactarnos si requiere alguna aclaración o tiene alguna duda respecto a los montos o el proceso.</p>
-            <p>Quedamos atentos a su confirmación.</p>
+            <p>Adjunto le compartimos los comprobantes de pago correspondientes a las facturas de sus comisiones pagadas del periodo {{$mnth}} - {{$year}}.</p>
+            <p>Quedamos atentos a su confirmación de recepción y disponibles para cualquier consulta adicional.</p>
         </div>
         <p>Saludos,</p>
         <div class="footer">

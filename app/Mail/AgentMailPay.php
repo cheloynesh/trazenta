@@ -13,7 +13,7 @@ use App\Permission;
 use DateTime;
 use DB;
 
-class AgentMail extends Mailable
+class AgentMailPay extends Mailable
 {
     use Queueable, SerializesModels;
     public $id;
@@ -45,50 +45,50 @@ class AgentMail extends Mailable
         $year = $auxmnth[0];
         $month = $auxmnth[1];
 
-        $user = DB::select('call mailAgent(?,?)',[$id,$this->date]);
+        $user = DB::select('call mailAgentPay(?,?)',[$id,$this->date]);
 
         $name = $user[0]->aname;
-        $this->subject('Comisiones Trazenta')->view('mail.agentmail', compact('name','year','mnth'));
+        $this->subject('Comisiones Trazenta')->view('mail.agentmailpay', compact('name','year','mnth'));
 
         if(intval($user[0]->contrec) != 0)
         {
-            $rec = DB::select('call mailCurr(?,?,?)',[$id,$month,$year]);
+            $rec = DB::select('call previewRecPay(?,?)',[$id,$this->date]);
             foreach($rec as $rc)
             {
-                $this->attach(public_path("comition_files/rec_invoice/".$rc->invoice_doc));
+                $this->attach(public_path("comition_files/rec_pay/".$rc->pay_doc));
             }
         }
 
         if(intval($user[0]->contpp) != 0)
         {
-            $pp = DB::select('call mailFst(?,?,?)',[$id,$month,$year]);
+            $pp = DB::select('call previewFstPay(?,?)',[$id,$this->date]);
             foreach($pp as $pps)
             {
-                $this->attach(public_path("comition_files/fst_invoice/".$pps->fst_invoice_doc));
+                $this->attach(public_path("comition_files/fst_pay/".$pps->fst_pay_doc));
             }
         }
 
         if(intval($user[0]->contpa != 0))
         {
-            $pa = DB::select('call mailInc(?,?,?)',[$id,$month,$year]);
+            $pa = DB::select('call previewAdPay(?,?)',[$id,$this->date]);
             foreach($pa as $pas)
             {
-                $this->attach(public_path("comition_files/mov_invoice/".$pas->mov_invoice_doc));
+                $this->attach(public_path("comition_files/mov_pay/".$pas->mov_pay_doc));
             }
         }
 
         if(intval($user[0]->lpnopay != 0))
         {
-            $lp = DB::select('call mailLP(?,?,?)',[$id,$month,$year]);
+            $lp = DB::select('call previewLpPay(?,?)',[$id,$this->date]);
             foreach($lp as $lps)
             {
-                $this->attach(public_path("comition_files/lp_invoice/".$lps->lp_invoice_doc));
+                $this->attach(public_path("comition_files/lp_pay/".$lps->lp_pay_doc));
             }
         }
 
         // dd($user,$rec,$pp,$lp);
 
         return $this;
-        // return $this->subject('Correo informativo ELAN')->attach(public_path("comition_files/fst_pay/FST_309_12_2024.pdf"))->view('mail.agentmail', compact('today'));
+        // return $this->subject('Correo informativo ELAN')->attach(public_path("comition_files/fst_pay/FST_309_12_2024.pdf"))->view('mail.agentmailpay', compact('today'));
     }
 }

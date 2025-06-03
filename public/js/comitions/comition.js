@@ -36,6 +36,35 @@ $(document).ready( function () {
 } );
 
 $(document).ready( function () {
+    $('#tbRecps').DataTable({
+        language : {
+            "sProcessing":     "Procesando...",
+            "sLengthMenu":     "Mostrar _MENU_ registros",
+            "sZeroRecords":    "No se encontraron resultados",
+            "sEmptyTable":     "Ningún dato disponible en esta tabla",
+            "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+            "sInfoPostFix":    "",
+            "sSearch":         "Buscar:",
+            "sUrl":            "",
+            "sInfoThousands":  ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
+            },
+            "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        }
+    });
+} );
+
+$(document).ready( function () {
     $('#tbRec').DataTable({
         language : {
             "sProcessing":     "Procesando...",
@@ -761,4 +790,89 @@ function pdfLP()
         $("#authModal").modal('show');
         // docname = 'LP_'+ ids + "_" + month + "_" + year + ".pdf";
     }
+}
+
+// ------------------------------------------------- Mailing ------------------------------------------------
+mailingtype = 0;
+function abrir(modal,type)
+{
+    var route = baseUrl + '/GetInfoMailing/'+type;
+    mailingtype = type;
+
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+    }
+
+    jQuery.ajax({
+        url:route,
+        data:data,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            var table = $('#tbRecps').DataTable();
+
+            table.clear();
+            result.data.forEach( function(valor, indice, array) {
+                contrec = valor.contrec != 0 ? '<p><a onclick="viewPrev('+ valor.uid +',1,'+ type +')" class="btn btn-success">'+valor.contrec+'</a></p>' : valor.contrec;
+                contpp = valor.contpp != 0 ? '<p><a onclick="viewPrev('+ valor.uid +',2,'+ type +')" class="btn btn-success">'+valor.contpp+'</a></p>' : valor.contpp;
+                contpa = valor.contpa != 0 ? '<p><a onclick="viewPrev('+ valor.uid +',3,'+ type +')" class="btn btn-success">'+valor.contpa+'</a></p>' : valor.contpa;
+                lpnopay = valor.lpnopay != 0 ? '<p><a onclick="viewPrev('+ valor.uid +',4,'+ type +')" class="btn btn-success">'+valor.lpnopay+'</a></p>' : valor.lpnopay;
+                table.row.add([valor.aname,contrec,contpp,contpa,lpnopay]).node().uid = valor.uid;
+            });
+            table.draw(false);
+            $(modal).modal('show');
+        }
+    })
+}
+
+function viewPrev(id, fund, type)
+{
+    var route = baseUrl + '/GetInfoDocs/' + id  + '/' + fund  + '/' + type;
+
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+    }
+
+    jQuery.ajax({
+        url:route,
+        data:data,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            result.data.forEach( function(valor, indice, array) {
+                console.log(getUrl.protocol + "//" + getUrl.host + valor);
+                window.open(getUrl.protocol + "//" + getUrl.host + valor, "_blank");
+            });
+        }
+    })
+}
+
+function sendMail()
+{
+    var route = baseUrl + '/sendMailing';
+
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        "type":mailingtype,
+    }
+
+    alertify.confirm("Enviar correos","¿Desea enviar los correos?",
+        function(){
+            jQuery.ajax({
+                url:route,
+                data: data,
+                type:'post',
+                dataType:'json',
+                success:function(result){
+                    alertify.success(result.message);
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
+                }
+            })
+        },
+        function(){});
 }

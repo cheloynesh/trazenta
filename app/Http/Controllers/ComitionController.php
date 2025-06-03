@@ -12,6 +12,9 @@ use App\Status;
 use App\Regime;
 use App\MonthFund;
 use App\SixMonth_fund;
+use App\Mail\AgentMail;
+use App\Mail\AgentMailPay;
+use Illuminate\Support\Facades\Mail;
 use DateTime;
 use DB;
 
@@ -94,6 +97,57 @@ class ComitionController extends Controller
             $lp = DB::select('call lpGeneralComitions(?,?,?)',[$id,intval($date2->format('m')),intval($date2->format('Y'))]);
         }
         return response()->json(['status'=>true, "regime"=>$regime, "rec"=>$rec, "pp"=>$pp, "pa"=>$pa, "lp"=>$lp]);
+    }
+
+    public function GetInfoMailing($type)
+    {
+        date_default_timezone_set('America/Mexico_City');
+        $date = new DateTime();
+        $date->setDate($date->format('Y'), $date->format('m'), 1);
+        $users = $type == 1 ? DB::select('call previewRecp(?)',[$date->format('Y-m-d')]) : DB::select('call previewPay(?)',[$date->format('Y-m-d')]);
+        // dd($users);
+        return response()->json(['status'=>true, "data"=>$users]);
+    }
+
+    public function GetInfoDocs($id,$fund,$type)
+    {
+        date_default_timezone_set('America/Mexico_City');
+        $date = new DateTime();
+        $date->setDate($date->format('Y'), $date->format('m'), 1);
+        $aux = array();
+        switch($fund)
+        {
+            case 1:
+                $data = $type == 1 ? DB::select('call previewRecRecp(?,?)',[$id,$date->format('Y-m-d')]) : DB::select('call previewRecPay(?,?)',[$id,$date->format('Y-m-d')]);
+                foreach($data as $dat)
+                {
+                    array_push($aux, $type == 1 ? "/comition_files/rec_invoice/".$dat->invoice_doc : "/comition_files/rec_pay/".$dat->pay_doc);
+                }
+                break;
+            case 2:
+                $data = $type == 1 ? DB::select('call previewFstRecp(?,?)',[$id,$date->format('Y-m-d')]) : DB::select('call previewFstPay(?,?)',[$id,$date->format('Y-m-d')]);
+                foreach($data as $dat)
+                {
+                    array_push($aux, $type == 1 ? "/comition_files/fst_invoice/".$dat->fst_invoice_doc : "/comition_files/fst_pay/".$dat->fst_pay_doc);
+                }
+                break;
+            case 3:
+                $data = $type == 1 ? DB::select('call previewAdRecp(?,?)',[$id,$date->format('Y-m-d')]) : DB::select('call previewAdPay(?,?)',[$id,$date->format('Y-m-d')]);
+                foreach($data as $dat)
+                {
+                    array_push($aux, $type == 1 ? "/comition_files/mov_invoice/".$dat->mov_invoice_doc : "/comition_files/mov_pay/".$dat->mov_pay_doc);
+                }
+                break;
+            case 4:
+                $data = $type == 1 ? DB::select('call previewLpRecp(?,?)',[$id,$date->format('Y-m-d')]) : DB::select('call previewLpPay(?,?)',[$id,$date->format('Y-m-d')]);
+                foreach($data as $dat)
+                {
+                    array_push($aux, $type == 1 ? "/comition_files/lp_invoice/".$dat->lp_invoice_doc : "/comition_files/lp_pay/".$dat->lp_pay_doc);
+                }
+                break;
+        }
+        // dd($aux);
+        return response()->json(['status'=>true, "data"=>$aux]);
     }
 
     public function setStatDate(Request $request)
@@ -288,5 +342,30 @@ class ComitionController extends Controller
 
         $lp = DB::select('call lpGeneralComitions(?,?,?)',[$request->idUser,intval($date2->format('m')),intval($date2->format('Y'))]);
         return response()->json(['status'=>true, "message"=>"Fecha aplicada", "lp" => $lp]);
+    }
+
+    public function sendMailing(Request $request)
+    {
+        date_default_timezone_set('America/Mexico_City');
+        $date = new DateTime();
+        $date->setDate($date->format('Y'), $date->format('m'), 1);
+
+        if($request->type == 1)
+        {
+            $users = DB::select('call previewRecp(?)',[$date->format('Y-m-d')]);
+            foreach($users as $usr)
+            {
+                Mail::to('dicarloarceo@gmail.com')->send(new AgentMail($usr->uid,$date->format('Y-m-d')));
+            }
+        }
+        else
+        {
+            $users = DB::select('call previewPay(?)',[$date->format('Y-m-d')]);
+            foreach($users as $usr)
+            {
+                Mail::to('dicarloarceo@gmail.com')->send(new AgentMailPay($usr->uid,$date->format('Y-m-d')));
+            }
+        }
+        return response()->json(['status'=>true, "message"=>"Correos enviados"]);
     }
 }

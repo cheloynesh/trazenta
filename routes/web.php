@@ -187,6 +187,9 @@ Route::post('comitions/comition/comition/setStatDateLP','ComitionController@setS
 Route::post('comitions/comition/comition/setNullDateLP','ComitionController@setNullDateLP')->name('comition.setNullDateLP');
 Route::post('comitions/comition/comition/setStatDateMultLP','ComitionController@setStatDateMultLP')->name('comition.setStatDateMultLP');
 Route::post('comitions/comition/comition/UpdateRegime','ComitionController@UpdateRegime')->name('comition.UpdateRegime');
+Route::get('comitions/comition/comition/GetInfoMailing/{type}','ComitionController@GetInfoMailing')->name('comition.GetInfoMailing');
+Route::get('comitions/comition/comition/GetInfoDocs/{id}/{fund}/{type}','ComitionController@GetInfoDocs')->name('comition.GetInfoDocs');
+Route::post('comitions/comition/comition/sendMailing','ComitionController@sendMailing')->name('comition.sendMailing');
 
 // --------------------------------------------------------Comisiones Atrasadas------------------------------------------------------------
 Route::resource('comitions/delayComition/delayComition', 'DelayComitionController');

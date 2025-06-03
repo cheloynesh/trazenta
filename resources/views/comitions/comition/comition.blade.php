@@ -505,7 +505,51 @@
             </div>
         </div>
         {{-- termina modal --}}
+        {{-- modal mail --}}
+        <div id="recpModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Mandar correos</h4>
+                        <button type="button" class="close" onclick="cancelar('#recpModal')" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-md-12">
+                                <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
+                                    <table class="table table-striped table-hover text-center" style="width: 100%;" id="tbRecps">
+                                        <thead>
+                                            <th class="text-center">Agente</th>
+                                            <th class="text-center">Recurrente</th>
+                                            <th class="text-center">Contratos Nuevos</th>
+                                            <th class="text-center">Pago de Adelantos</th>
+                                            <th class="text-center">Pago de LP</th>
+                                        </thead>
+
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick="cancelar('#recpModal')">Cancelar</button>
+                        <button type="button" onclick="sendMail()" class="btn btn-primary">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- termina modal --}}
         {{-- Inicia pantalla de inicio --}}
+        <div class="bd-example bd-example-padded-bottom">
+            @if ($perm_btn['addition']==1)
+                <button type="button" class="btn btn-primary" onclick="abrir('#recpModal',1)" title="Enviar recibos."><i class="fas fa-receipt"></i> <i class="fas fa-envelope"></i></button>
+                <button type="button" class="btn btn-primary" onclick="abrir('#recpModal',2)" title="Enviar comprobantes."><i class="fas fa-dollar-sign"></i> <i class="fas fa-envelope"></i></button>
+            @endif
+        </div>
         <br><br>
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
             <table class="table table-striped table-hover text-center" style="width: 100%;" id="tbProf">

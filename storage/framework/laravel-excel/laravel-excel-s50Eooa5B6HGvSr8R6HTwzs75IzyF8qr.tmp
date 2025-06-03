@@ -1,0 +1,370 @@
+<table border="0" align="center" class="sortable">
+  <thead>
+  <tr>
+    <th>#</th>
+	<th>Movimiento ID</th>
+	<th>Cliente ID</th>
+	<th>NUC</th>
+	<th>Nombre cliente</th>
+	<th>CUA</th>
+	<th>Nombre asesor</th>
+	<th>Subtipo</th>
+	<th>Monto</th>
+	<th>Fecha creación</th>
+	<th>Autorizado</th>
+	<th>Fecha autorización</th>
+    <th>Fecha aplicación</th>
+    <th>Fecha de pago</th>
+	<th>Contrato</th>
+  </tr>
+  </thead>
+  <tbody>
+<!-- 
+		SELECT  A.movimiento_id, 
+				B.cliente_id,
+				A.nuc, 
+				C.nombre+' '+C.paterno+' '+C.materno AS nombre_cliente, 
+				C.cua, 
+				D.nombre+' '+D.paterno+' '+D.materno AS nombre_asesor,
+				CASE A.subtipo 
+					WHEN 1 THEN 'Apertura' 
+					WHEN 2 THEN 'Abono' 
+					WHEN 3 THEN 'Retiro parcial' 
+					WHEN 4 THEN 'Retiro Total' 
+					WHEN 5 THEN 'Retiro Custodia' 
+					WHEN 6 THEN 'Abono por Ajuste' 
+					WHEN 7 THEN 'Retiro por Ajuste'
+					ELSE 'Reinversion' END AS tipo,
+				A.contraprestacion,
+				A.monto, 
+				convert(varchar,A.creado_en,103) AS creado_en, 
+				convert(varchar,A.fecha_aplicacion,103) AS fecha_aplicacion,
+				convert(varchar,A.fecha_pago,103) AS fecha_pago, 
+				E.nombre AS moneda,
+				F.nombre as moneda_cuenta,
+				A.monto, 
+				CASE A.autorizado WHEN 'S' THEN 'Sí' WHEN 'N' THEN 'No' ELSE '&nbsp;' END AS autorizado,  
+				convert(varchar,A.autorizado_en,103) AS fecha_autorizacion,
+				A.tipo_cambio,
+				A.contrato_id
+		FROM 	cliente_movimiento A,
+				cliente_nuc B,
+				cliente C,
+				usuario	D,
+				cat_moneda E,
+				cat_moneda F,
+				cat_cuenta G
+		WHERE   F.moneda_id			= G.moneda_id
+		AND		G.numero_cuenta 	= SUBSTRING(B.nuc,0,CHARINDEX('-',B.nuc))
+		AND		E.moneda_id 		= A.tipo_moneda
+		AND 	C.cua 				= D.cua 
+		AND 	A.nuc 		 		= B.nuc
+		AND 	B.cliente_id 		= C.cliente_id
+		AND 	C.cua 				!= ''
+		AND 	C.search_nombre 	LIKE '%MARIANA%'
+		AND 	C.estatus 			LIKE '%%'
+		and C.empresa_id = '1'
+		AND 	C.search_nombre 	LIKE '%MARIANA%'
+		
+		AND 	C.search_paterno 	LIKE '%LOMELI%'
+		
+		AND 	B.nuc 				LIKE '750324-225824' 
+		AND C.cua='GDL500E002' 
+		ORDER BY A.movimiento_id -->	<tr class="interlineado2">
+		<td>1</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=Z5lnoXFk" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">563184</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Apertura</td>
+		<td><div align="right">$829,732.28 MXN</div></td>
+		<td><div align="center">03/09/2024</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">04/09/2024</div></td>
+        <td><div align="center">29/08/2024</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">1</div></td>
+	</tr>
+		<tr class="interlineado1">
+		<td>2</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=Z5plpHFp" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">571489</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Reinversion</td>
+		<td><div align="right">$10,899.37 MXN</div></td>
+		<td><div align="center">02/10/2024</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">02/10/2024</div></td>
+        <td><div align="center">02/10/2024</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">2</div></td>
+	</tr>
+		<tr class="interlineado2">
+		<td>3</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=Z5ptoWxn" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">579137</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Abono</td>
+		<td><div align="right">$105,000.00 MXN</div></td>
+		<td><div align="center">29/10/2024</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">29/10/2024</div></td>
+        <td><div align="center">24/10/2024</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">3</div></td>
+	</tr>
+		<tr class="interlineado1">
+		<td>4</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=Z5tmpHBn" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">582477</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Reinversion</td>
+		<td><div align="right">$10,901.35 MXN</div></td>
+		<td><div align="center">01/11/2024</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">01/11/2024</div></td>
+        <td><div align="center">01/11/2024</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">4</div></td>
+	</tr>
+		<tr class="interlineado2">
+		<td>5</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=Z5xlp25n" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">591757</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Reinversion</td>
+		<td><div align="right">$12,064.63 MXN</div></td>
+		<td><div align="center">02/12/2024</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">02/12/2024</div></td>
+        <td><div align="center">02/12/2024</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">5</div></td>
+	</tr>
+		<tr class="interlineado1">
+		<td>6</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=Z5xrpWpi" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">597512</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Abono</td>
+		<td><div align="right">$95,000.00 MXN</div></td>
+		<td><div align="center">23/12/2024</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">24/12/2024</div></td>
+        <td><div align="center">20/12/2024</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">6</div></td>
+	</tr>
+		<tr class="interlineado2">
+		<td>7</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=aJNloGxl" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">601035</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Reinversion</td>
+		<td><div align="right">$12,570.37 MXN</div></td>
+		<td><div align="center">02/01/2025</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">02/01/2025</div></td>
+        <td><div align="center">02/01/2025</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">7</div></td>
+	</tr>
+		<tr class="interlineado1">
+		<td>8</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=aJNqpXBp" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">606579</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Abono</td>
+		<td><div align="right">$37,475.00 MXN</div></td>
+		<td><div align="center">17/01/2025</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">20/01/2025</div></td>
+        <td><div align="center">17/01/2025</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">8</div></td>
+	</tr>
+		<tr class="interlineado2">
+		<td>9</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=aJNtoW9n" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">609167</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Reinversion</td>
+		<td><div align="right">$13,718.30 MXN</div></td>
+		<td><div align="center">04/02/2025</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">04/02/2025</div></td>
+        <td><div align="center">04/02/2025</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">9</div></td>
+	</tr>
+		<tr class="interlineado1">
+		<td>10</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=aJRqpGxm" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">616436</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Abono</td>
+		<td><div align="right">$66,816.00 MXN</div></td>
+		<td><div align="center">17/02/2025</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">18/02/2025</div></td>
+        <td><div align="center">14/02/2025</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">10</div></td>
+	</tr>
+		<tr class="interlineado2">
+		<td>11</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=aJRsqWpl" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">618915</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Reinversion</td>
+		<td><div align="right">$14,579.71 MXN</div></td>
+		<td><div align="center">03/03/2025</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">03/03/2025</div></td>
+        <td><div align="center">03/03/2025</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">11</div></td>
+	</tr>
+		<tr class="interlineado1">
+		<td>12</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=aJVqo25k" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">626354</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Abono</td>
+		<td><div align="right">$51,825.00 MXN</div></td>
+		<td><div align="center">19/03/2025</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">20/03/2025</div></td>
+        <td><div align="center">18/03/2025</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">12</div></td>
+	</tr>
+		<tr class="interlineado2">
+		<td>13</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=aJVronFn" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">627287</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Abono</td>
+		<td><div align="right">$27,811.00 MXN</div></td>
+		<td><div align="center">31/03/2025</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">01/04/2025</div></td>
+        <td><div align="center">31/03/2025</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">14</div></td>
+	</tr>
+		<tr class="interlineado1">
+		<td>14</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=aJZkpXBj" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">630573</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Reinversion</td>
+		<td><div align="right">$15,351.69 MXN</div></td>
+		<td><div align="center">01/04/2025</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">01/04/2025</div></td>
+        <td><div align="center">01/04/2025</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">13</div></td>
+	</tr>
+		<tr class="interlineado2">
+		<td>15</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=aJZlqHFj" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">631883</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Abono</td>
+		<td><div align="right">$40,545.00 MXN</div></td>
+		<td><div align="center">04/04/2025</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">07/04/2025</div></td>
+        <td><div align="center">01/04/2025</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">15</div></td>
+	</tr>
+		<tr class="interlineado1">
+		<td>16</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=aJZmoHBk" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">632074</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Abono</td>
+		<td><div align="right">$1,000,000.00 MXN</div></td>
+		<td><div align="center">07/04/2025</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">08/04/2025</div></td>
+        <td><div align="center">31/03/2025</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">16</div></td>
+	</tr>
+		<tr class="interlineado2">
+		<td>17</td>
+				<td><a href="movimientos_abonos_editar.php?p_movimiento=aJZmoHBm" target="movimiento" onclick="window.open(this.href,'editarAbono','height=650,width=900,status=no,toolbar=no,menubar=no,resizable=yes,location=no,scrollbars=yes'); return false;">632076</a></td></td>
+		<td>17131</td>
+		<td>750324-225824</td>
+		<td>Mariana Lomeli Martinez</td>
+		<td>GDL500E002</td>
+		<td>Luis Alberto Gutiérrez  </td>
+		<td>Abono</td>
+		<td><div align="right">$500,000.00 MXN</div></td>
+		<td><div align="center">07/04/2025</div></td>
+		<td><div align="center">Sí</div></td>
+		<td><div align="center">08/04/2025</div></td>
+        <td><div align="center">04/04/2025</div></td>
+        <td><div align="center"></div></td>
+		<td><div align="center">16</div></td>
+	</tr>
+	  </tbody>
+</table>
+<input type="hidden" name="p_exportar">
+</form>
+</div>
+<br><br><div id="footer"><table width="100%" align="center" cellpadding="0" cellspacing="0">  <tr>    <td height="21" bgcolor="#AB0000" align="right"></td>  </tr></table></div></div>
+<iframe width=174 height=189 name="gToday:normal:agenda.js" id="gToday:normal:agenda.js" src="web-2.0/calendario/ipopeng.htm" scrolling="no" frameborder="0" style="visibility:visible; z-index:999; position:absolute; top:-500px; left:-500px;"></iframe>
+</body>
+</html>

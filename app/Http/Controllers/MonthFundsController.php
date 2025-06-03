@@ -198,12 +198,12 @@ class MonthFundsController extends Controller
         // dd($array);
         foreach ($array[0] as $moves)
         {
-            $moves[4] = $this->transformDate($moves[4]);
             $moves[5] = $this->transformDate($moves[5]);
-            if($moves[6] != null)
-                $moves[6] = $this->transformDate($moves[6]);
+            $moves[6] = $this->transformDate($moves[6]);
+            if($moves[7] != null)
+                $moves[7] = $this->transformDate($moves[7]);
             else
-                $moves[6] = null;
+                $moves[7] = null;
             // dd($moves);
             $movimientos = DB::table('Month_fund')->select("new_balance", "amount", "apply_date", "fk_nuc", "movementid")->join('Nuc',"Nuc.id","=","fk_nuc")->where('nuc',$moves[1])->orderby("apply_date","DESC")->orderby("Month_fund.id","DESC")->whereNull('Month_fund.deleted_at')->first();
             // dd($movimientos,$moves);
@@ -221,11 +221,11 @@ class MonthFundsController extends Controller
                     $prev_balance = floatval($movimientos->new_balance);
                     if($moves[2] == "Abono" || $moves[2] == "Reinversion")
                     {
-                        $new_balance = $moves[3] + $prev_balance;
+                        $new_balance = $moves[4] + $prev_balance;
                     }
                     else if($moves[2] == "Retiro parcial")
                     {
-                        $new_balance = $prev_balance - $moves[3];
+                        $new_balance = $prev_balance - $moves[4];
                         // dd($moves[2]);
                     }
                     else if ($moves[2] == "Retiro Total")
@@ -235,24 +235,26 @@ class MonthFundsController extends Controller
                     }
                     else
                     {
-                        $new_balance = $moves[3] + $prev_balance;
+                        $new_balance = $moves[4] + $prev_balance;
                     }
+                    if($moves[3] == null) $moves[3] = 1;
                     $fund = new MonthFund;
                     $fund->movementid = $moves[0];
                     $fund->fk_nuc = $movimientos->fk_nuc;
                     $fund->type = $moves[2];
-                    $fund->amount = $moves[3];
+                    $fund->amount = $moves[4];
                     $fund->prev_balance = $prev_balance;
                     $fund->new_balance = $new_balance;
-                    $fund->apply_date = $moves[5];
-                    $fund->auth_date = $moves[4];
-                    $fund->pay_date = $moves[6];
+                    $fund->apply_date = $moves[6];
+                    $fund->auth_date = $moves[5];
+                    $fund->pay_date = $moves[7];
+                    $fund->fk_charge = $moves[3];
                     $fund->save();
                     $goodCont++;
 
                     if($request->type == "Apertura")
                     {
-                        $day = explode("-", $moves[5]);
+                        $day = explode("-", $moves[6]);
                         $day = intval($day[2]);
                         $apr = Nuc::where('id', $movimientos->fk_nuc)->first();
                         if($day <= 15)
@@ -277,21 +279,23 @@ class MonthFundsController extends Controller
                 }
                 else
                 {
+                    if($moves[3] == null) $moves[3] = 1;
                     $prev_balance = 0;
-                    $new_balance = $moves[3];
+                    $new_balance = $moves[4];
                     $fund = new MonthFund;
                     $fund->movementid = $moves[0];
                     $fund->fk_nuc = $nuc->id;
                     $fund->type = $moves[2];
-                    $fund->amount = $moves[3];
+                    $fund->amount = $moves[4];
                     $fund->prev_balance = $prev_balance;
                     $fund->new_balance = $new_balance;
-                    $fund->apply_date = $moves[5];
-                    $fund->auth_date = $moves[4];
-                    $fund->pay_date = $moves[6];
+                    $fund->apply_date = $moves[6];
+                    $fund->auth_date = $moves[5];
+                    $fund->pay_date = $moves[7];
+                    $fund->fk_charge = $moves[3];
                     $fund->save();
                     $goodCont++;
-                    $day = explode("-", $moves[5]);
+                    $day = explode("-", $moves[6]);
                     $day = intval($day[2]);
                     // dd($day);
                     $fund->save();
