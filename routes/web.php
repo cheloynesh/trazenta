@@ -143,6 +143,7 @@ Route::get('funds/sixmonthfund/sixmonthfunds/GetInfo/{id}','SixMonthFundControll
 Route::get('funds/sixmonthfund/sixmonthfunds/import/{id}','SixMonthFundController@import')->name('sixmonthfunds.import');
 Route::get('funds/sixmonthfund/sixmonthfunds/GetNuc/{id}','SixMonthFundController@GetNuc')->name('sixmonthfunds.GetNuc');
 Route::get('funds/sixmonthfund/sixmonthfunds/GetLP/{id}', 'SixMonthFundController@GetLP')->name('sixmonthfunds.GetLP');
+Route::get('funds/sixmonthfund/sixmonthfunds/GetinfoFund/{id}','SixMonthFundController@GetinfoFund')->name('sixmonthfunds.GetinfoFund');
 
 //---------------------------------------------------Comisiones fondo 6 meses--------------------------------------------
 Route::resource('funds/sixmonthlycomission/sixmonthcomission', 'SixMonthComissionController');
@@ -171,10 +172,15 @@ Route::post('process/services/services/updateStatusInt', 'ServicesController@upd
 Route::get('process/services/services/GetFunds/{type}','ServicesController@GetFunds')->name('services.GetFunds');
 
 // --------------------------------------------------------Reportes------------------------------------------------------------
+// --------------------------------------------------------Flujo de dinero------------------------------------------------------------
 Route::resource('reports/moneyflow/moneyflow', 'MoneyFlowController');
 Route::get('reports/moneyflow/moneyflow/GetInfo/{id}','MoneyFlowController@GetInfo')->name('moneyflow.GetInfo');
 Route::get('reports/moneyflow/moneyflow/GetInfoFilters/{id}','MoneyFlowController@GetInfoFilters')->name('moneyflow.GetInfoFilters');
 Route::get('reports/moneyflow/moneyflow/ExportBreakdown/{id}/{month}/{quarter}/{year}/{fund}/{type}','MoneyFlowController@ExportBreakdown');
+
+// --------------------------------------------------------Flujo de dinero------------------------------------------------------------
+Route::resource('reports/paidcomition/paidcomition', 'PaidComitionController');
+Route::get('reports/paidcomition/paidcomition/GetInfo/{initial}/{end}','PaidComitionController@GetInfo')->name('paidcomition.GetInfo');
 
 // --------------------------------------------------------Comisiones------------------------------------------------------------
 Route::resource('comitions/comition/comition', 'ComitionController');
@@ -190,6 +196,7 @@ Route::post('comitions/comition/comition/UpdateRegime','ComitionController@Updat
 Route::get('comitions/comition/comition/GetInfoMailing/{type}','ComitionController@GetInfoMailing')->name('comition.GetInfoMailing');
 Route::get('comitions/comition/comition/GetInfoDocs/{id}/{fund}/{type}','ComitionController@GetInfoDocs')->name('comition.GetInfoDocs');
 Route::post('comitions/comition/comition/sendMailing','ComitionController@sendMailing')->name('comition.sendMailing');
+Route::post('comitions/comition/comition/UpdateFstPays','ComitionController@UpdateFstPays')->name('comition.UpdateFstPays');
 
 // --------------------------------------------------------Comisiones Atrasadas------------------------------------------------------------
 Route::resource('comitions/delayComition/delayComition', 'DelayComitionController');
@@ -212,3 +219,13 @@ Route::get('comitions/history/history/GetInfo/{id}/{invoice}/{contpp}/{contpa}/{
 
 // mails
 Route::get('/mailtest','MailController@MailSender')->name('mailing.MailSender');
+
+// --------------------------------------------------------Runs------------------------------------------------------------
+Route::resource('tools/runs/runs', 'RunsController');
+Route::get('tools/runs/runs/GetinfoFund/{type}/{curr}','RunsController@GetinfoFund')->name('runs.GetinfoFund');
+
+// --------------------------------------------------------Comition Calc------------------------------------------------------------
+Route::resource('tools/comitioncalc/comitioncalc', 'ComitioncalcController');
+Route::get('tools/comitioncalc/comitioncalc/GetinfoFund/{id}','ComitioncalcController@GetinfoFund')->name('comcalc.GetinfoFund');
+Route::get('tools/comitioncalc/comitioncalc/GetCPCalc/{id}','ComitioncalcController@GetCPCalc')->name('comcalc.GetCPCalc');
+Route::get('tools/comitioncalc/comitioncalc/GetLPCalc/{id}','ComitioncalcController@GetLPCalc')->name('comcalc.GetLPCalc');

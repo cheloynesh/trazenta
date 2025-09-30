@@ -542,6 +542,7 @@ class MonthComissionController extends Controller
     public function setStatDate(Request $request)
     {
         // dd($request->all());
+        $n_amount = 0;
         $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
 
         $status = User::where('id',$request->id)->first();
@@ -563,6 +564,26 @@ class MonthComissionController extends Controller
             $status->invoice_flag = $request->date;
             $history->invoice_date = $request->date;
             $history->invoice_doc = 'REC_'.$request->id."_".$request->month."_".$request->year.'.pdf';
+            $nucs = DB::table('Nuc')->select("Nuc.id as id")->where("month_flag","=","8")->where('fk_agent',$request->id)->get();
+            if(intval($request->monthaux) == 1)
+            {
+                $monthless = 12;
+                $yearless = $request->yearaux;
+                $yearless -= 1;
+            }
+            else
+            {
+                $monthless = intval($request->monthaux) - 1;
+                $yearless = $request->yearaux;
+            }
+            $reg = Regime::where('id',$request->regime)->first();
+            foreach ($nucs as $nuc)
+            {
+                $value = $this->calculo($nuc->id,$monthless,$yearless,$request->TC,$reg,$request->dlls);
+                $n_amount += $value["n_amount"];
+            }
+            $history->rec_amount = $n_amount;
+            // dd($n_amount);
         }
         else
         {
@@ -586,12 +607,13 @@ class MonthComissionController extends Controller
         date_default_timezone_set('America/Mexico_City');
         $date = new DateTime();
         $date->setDate($date->format('Y'), $date->format('m'), 1);
-
+        $curr_date = new DateTime();;
+        $curr_date->setDate($date->format('Y'), $date->format('m'), 1);
         $date->modify('-1 months');
         $date1 = new DateTime();
         $date2 = new DateTime();
         $date1->modify('-1 months');
-        $coms = DB::select('call comition(?,?,?,?,?)',[$date->format('Y-m-d'),intval($date1->format('m')),intval($date1->format('Y')),intval($date2->format('m')),intval($date2->format('Y'))]);
+        $coms = DB::select('call comition(?,?,?,?,?,?)',[$date->format('Y-m-d'),intval($date1->format('m')),intval($date1->format('Y')),intval($date2->format('m')),intval($date2->format('Y')),$curr_date->format('Y-m-d')]);
         // dd($coms);
         return response()->json(['status'=>true, "message"=>"Fecha aplicada", "users" => $users, "coms" => $coms]);
     }
@@ -614,11 +636,13 @@ class MonthComissionController extends Controller
         date_default_timezone_set('America/Mexico_City');
         $date = new DateTime();
         $date->setDate($date->format('Y'), $date->format('m'), 1);
+        $curr_date = new DateTime();;
+        $curr_date->setDate($date->format('Y'), $date->format('m'), 1);
         $date->modify('-1 months');
         $date1 = new DateTime();
         $date2 = new DateTime();
         $date1->modify('-1 months');
-        $coms = DB::select('call comition(?,?,?,?,?)',[$date->format('Y-m-d'),intval($date1->format('m')),intval($date1->format('Y')),intval($date2->format('m')),intval($date2->format('Y'))]);
+        $coms = DB::select('call comition(?,?,?,?,?,?)',[$date->format('Y-m-d'),intval($date1->format('m')),intval($date1->format('Y')),intval($date2->format('m')),intval($date2->format('Y')),$curr_date->format('Y-m-d')]);
 
         return response()->json(['status'=>true, "message"=>"Fecha cancelada", "users" => $users, "coms" => $coms]);
     }

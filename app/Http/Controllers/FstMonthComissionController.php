@@ -72,13 +72,13 @@ class FstMonthComissionController extends Controller
             ->groupBy("name")
             ->where('Nuc.id',$id)->get();
         $clientNames = "";
-        $userName = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
+        $userName = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'),'fst_month','five_month')
             ->where('users.id',$clients[0]->fk_agent)->whereNull('users.deleted_at')->first();
-
+        // dd($userName);
         $regime = Regime::where('id',$regime)->first();
 
-        $value5 = $this->calculo($id,$month,$year,$TC,10,$regime);
-        $value1 = $this->calculo($id,$month,$year,$TC,35,$regime);
+        $value5 = $this->calculo($id,$month,$year,$TC,$userName->five_month,$regime);
+        $value1 = $this->calculo($id,$month,$year,$TC,$userName->fst_month,$regime);
         // dd($value5,$value1);
         $b_amount += $value5["gross_amount"]*5 + $value1["gross_amount"];
         $IVA += $value5["iva_amount"]*5 + $value1["iva_amount"];
@@ -87,6 +87,10 @@ class FstMonthComissionController extends Controller
         $n_amount += $value5["n_amount"]*5 + $value1["n_amount"];
             // dd($clientNames);
         // dd($b_amount,$IVA,$ret_isr,$ret_iva,$n_amount);
+
+        $pay = Nuc::where('id',$id)->first();
+        $pay->fst_amount = $n_amount;
+        $pay->save();
 
         foreach ($clients as $client)
         {
@@ -280,29 +284,10 @@ class FstMonthComissionController extends Controller
         $ret_isr += $value["ret_isr"]*$diff->m + $value["ret_isr"]*$days;
         $ret_iva += $value["ret_iva"]*$diff->m + $value["ret_iva"]*$days;
         $n_amount += $value["n_amount"]*$diff->m + $value["n_amount"]*$days;
-        // foreach ($nucs as $nuc)
-        // {
-        //     $value = $this->calculo($nuc->id,$month,$year,$TC,10,$regime);
-        //     // dd($value);
-        //     $b_amount += $value["gross_amount"];
-        //     $IVA += $value["iva_amount"];
-        //     $ret_isr += $value["ret_isr"];
-        //     $ret_iva += $value["ret_iva"];
-        //     $n_amount += $value["n_amount"];
-        //     // dd($clientNames);
-        // }
-        // if(intval($month) == 1)
-        // {
-        //     $monthless = 12;
-        //     $yearless = $year;
-        //     $yearless -= 1;
-        // }
-        // else
-        // {
-        //     $monthless = intval($month) - 1;
-        //     $yearless = $year;
-        // }
-        // dd($clientNames);
+
+        $movement->mov_amount = $n_amount;
+        $movement->save();
+
         $pdf = app('dompdf.wrapper');
         $pdf->loadHTML('
         <div class="container">

@@ -195,6 +195,7 @@ class MonthFundsController extends Controller
         $arrayNotFound = array();
         $cont = 0;
         $goodCont = 0;
+        $auxcont = 0;
         // dd($array);
         foreach ($array[0] as $moves)
         {
@@ -209,9 +210,17 @@ class MonthFundsController extends Controller
             // dd($movimientos,$moves);
             if ($movimientos != null)
             {
-                $mov = DB::table('Month_fund')->select("movementid")->where('movementid',$moves[0])->whereNull('Month_fund.deleted_at')->first();
+                // $mov = DB::table('Month_fund')->select("movementid")->where('movementid',$moves[0])->whereNull('Month_fund.deleted_at')->first();
+                $mov = MonthFund::where('movementid',$moves[0])->whereNull('Month_fund.deleted_at')->first();
                 if($mov != null)
                 {
+                    if($moves[3] == null) $moves[3] = 1;
+                    if($mov->fk_charge == 1 && $moves[3] != 1)
+                    {
+                        $mov->fk_charge = $moves[3];
+                        $mov->save();
+                        $auxcont++;
+                    }
                     // dd("repetido");
                     $cont++;
                 }
@@ -318,6 +327,7 @@ class MonthFundsController extends Controller
             }
         }
         // dd($cont,$arrayNotFound);
+        // dd($auxcont);
         return response()->json(['status'=>true, 'message'=>"Datos Subidos", 'repetidos' => $cont, 'notFnd' => $arrayNotFound, 'importados' => $goodCont]);
     }
     public function transformDate($value)

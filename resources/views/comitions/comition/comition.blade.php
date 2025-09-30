@@ -179,6 +179,34 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="card-footer">
+                                        <div class="container-fluid bd-example-row">
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class = "col-lg-4">
+                                                        <div class="form-group">
+                                                            <div class="input-group mb-3">
+                                                                <div class="input-group-prepend">
+                                                                    <div class="input-group-text">Primer mes</div>
+                                                                </div>
+                                                                <input type="text" id="fst_month" name="fst_month" placeholder="Ingresa la cantidad" class="form-control" onchange=updateFstPays()>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class = "col-lg-4">
+                                                        <div class="form-group">
+                                                            <div class="input-group mb-3">
+                                                                <div class="input-group-prepend">
+                                                                    <div class="input-group-text">5 meses</div>
+                                                                </div>
+                                                                <input type="text" id="five_month" name="five_month" placeholder="Ingresa la cantidad" class="form-control" onchange=updateFstPays()>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <br>
                                 {{-- comision de adelantos --}}
@@ -521,6 +549,7 @@
                                 <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
                                     <table class="table table-striped table-hover text-center" style="width: 100%;" id="tbRecps">
                                         <thead>
+                                            <th class="text-center"></th>
                                             <th class="text-center">Agente</th>
                                             <th class="text-center">Recurrente</th>
                                             <th class="text-center">Contratos Nuevos</th>
@@ -538,6 +567,37 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secundary" onclick="cancelar('#recpModal')">Cancelar</button>
                         <button type="button" onclick="sendMail()" class="btn btn-primary">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- termina modal --}}
+        {{-- modal espera --}}
+        <div id="waitModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Envío de correos</h4>
+                        {{-- <button type="button" onclick="cerrarNuc()" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> --}}
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-md-12">
+                                <div class="row" id="waitrow">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <img src="{{ URL::asset('img/SpinnerLittle.gif') }}">
+                                            <label> Se están enviando los correos, por favor espere.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="closeBtn" hidden onclick="cancelar('#waitModal')" class="btn btn-secundary" data-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
             </div>

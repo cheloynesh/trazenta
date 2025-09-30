@@ -138,7 +138,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Moneda</label>
-                                    <select name="selectCurrency" id="selectCurrency" class="form-select">
+                                    <select name="selectCurrency" id="selectCurrency" class="form-select" disabled>
                                         <option hidden selected>Selecciona una opción</option>
                                         <option value="MXN">MXN</option>
                                         <option value="USD">USD</option>

@@ -231,7 +231,7 @@ function fillTableRec(result)
             btnInvoice = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/rec_invoice/" + valor.invoice_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+"Enviado"+'</a>';
         btnPay = '<a href="'+getUrl.protocol + "//" + getUrl.host + "/comition_files/rec_pay/" + valor.pay_doc + '" id="viewPDF" target="_blank" class="btn btn-success">'+valor.pay_date+'</a>';
 
-        table.row.add([months[parseInt(valor.curr_month)-1]+" "+valor.curr_year,btnInvoice,btnPay]).node().id = valor.id;
+        table.row.add([valor.curr_year+"-"+String(valor.curr_month).padStart(2, '0')+" "+months[parseInt(valor.curr_month)-1],btnInvoice,btnPay]).node().id = valor.id;
     });
     table.draw(false);
 }

@@ -60,7 +60,19 @@ $(document).ready( function () {
               "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
               "sSortDescending": ": Activar para ordenar la columna de manera descendente"
             }
-        }
+        },
+        order: [[5, 'asc']],
+        'columnDefs': [
+            {
+               'targets': 0,
+               'checkboxes': {
+                  'selectRow': true
+               }
+            }
+         ],
+         'select': {
+            'style': 'multi'
+         }
     });
 } );
 
@@ -350,7 +362,12 @@ function abrirComision(id,invoice,contpp,contpa,lpnopay)
             document.getElementById("cardAd").style.display = "none";
             document.getElementById("cardLP").style.display = "none";
             if(invoice != "NA") document.getElementById("cardRec").style.display = "block";
-            if(contpp != 0) document.getElementById("cardNC").style.display = "block";
+            if(contpp != 0)
+            {
+                document.getElementById("cardNC").style.display = "block";
+                $("#fst_month").val(result.regime.fst_month);
+                $("#five_month").val(result.regime.five_month);
+            }
             if(contpa != 0) document.getElementById("cardAd").style.display = "block";
             if(lpnopay != 0) document.getElementById("cardLP").style.display = "block";
             $("#selectRegime").val(result.regime.fk_regime);
@@ -391,6 +408,11 @@ function updateRegime()
 // ------------------------------------------------------------------------------------------------------------------- AUTH DATES
 var flagtype = 0;
 var userid = 0;
+var TCAux = 0;
+var dllsAux = 0;
+var monthaux = 0;
+var yearaux = 0;
+var regimeAux = 0;
 
 function setStatDate(id, type,authT)
 {
@@ -479,6 +501,11 @@ function guardarAuth()
     formData.append('date', date);
     formData.append('year', year);
     formData.append('month', month);
+    formData.append('TC', TCAux);
+    formData.append('dlls', dllsAux);
+    formData.append('monthaux', monthaux);
+    formData.append('yearaux', yearaux);
+    formData.append('regime', regimeAux);
     // formData.append('docname', docname);
 
     jQuery.ajax({
@@ -595,6 +622,11 @@ function pdfRec()
         form.submit();
 
         userid = idUser;
+        TCAux = TC;
+        dllsAux = dlls;
+        monthaux = month;
+        yearaux = year;
+        regimeAux = regime;
         authType = 1;
         flagtype = 1;
         document.getElementById("doc_row").style.display = "none";
@@ -818,7 +850,7 @@ function abrir(modal,type)
                 contpp = valor.contpp != 0 ? '<p><a onclick="viewPrev('+ valor.uid +',2,'+ type +')" class="btn btn-success">'+valor.contpp+'</a></p>' : valor.contpp;
                 contpa = valor.contpa != 0 ? '<p><a onclick="viewPrev('+ valor.uid +',3,'+ type +')" class="btn btn-success">'+valor.contpa+'</a></p>' : valor.contpa;
                 lpnopay = valor.lpnopay != 0 ? '<p><a onclick="viewPrev('+ valor.uid +',4,'+ type +')" class="btn btn-success">'+valor.lpnopay+'</a></p>' : valor.lpnopay;
-                table.row.add([valor.aname,contrec,contpp,contpa,lpnopay]).node().uid = valor.uid;
+                table.row.add([valor.uid,valor.aname,contrec,contpp,contpa,lpnopay]).node().uid = valor.uid;
             });
             table.draw(false);
             $(modal).modal('show');
@@ -853,13 +885,24 @@ function sendMail()
 {
     var route = baseUrl + '/sendMailing';
 
+    var table = $('#tbRecps').DataTable();
+    var rows_selected = table.column(0).checkboxes.selected();
+    var ids = [];
+
+    $.each(rows_selected, function(index, rowId){
+        ids.push(rowId);
+    });
+
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
         "type":mailingtype,
+        "ids":ids,
     }
 
     alertify.confirm("Enviar correos","¿Desea enviar los correos?",
         function(){
+            $("#waitModal").modal('show');
+            $("#recpModal").modal('hide');
             jQuery.ajax({
                 url:route,
                 data: data,
@@ -867,12 +910,40 @@ function sendMail()
                 dataType:'json',
                 success:function(result){
                     alertify.success(result.message);
+                    $("#waitModal").modal('hide');
                 },
                 error:function(result,error,errorTrown)
                 {
                     alertify.error(errorTrown);
+                    $("#waitModal").modal('hide');
+                    $("#recpModal").modal('show');
                 }
             })
         },
         function(){});
+}
+
+function updateFstPays()
+{
+    var route = baseUrl + '/UpdateFstPays';
+    console.log(route);
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        "idUser":idUser,
+        'fst_month':$("#fst_month").val(),
+        'five_month':$("#five_month").val(),
+    }
+    jQuery.ajax({
+        url:route,
+        data: data,
+        type:'post',
+        dataType:'json',
+        success:function(result){
+            alertify.success(result.message);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
 }

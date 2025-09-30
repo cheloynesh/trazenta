@@ -485,9 +485,10 @@ function guardarAuth()
     if(authType == 3) var route = baseUrl + '/setStatDateMoves';
     if(authType == 4) var route = baseUrl + '/setStatDateLP';
     if(authType == 5) var route = baseUrl + '/setStatDateMultLP';
-    console.log(route);
+    // console.log(route);
     var date = $("#auth").val();
     var dateSet = $("#month").val();
+    // console.log(date);
 
     dateSet = dateSet.split("-");
     var year = dateSet[0];

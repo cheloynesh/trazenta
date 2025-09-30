@@ -115,6 +115,11 @@ class SixMonthComissionController extends Controller
         $ret_iva += $value["ret_iva"];
         $n_amount += $value["n_amount"];
         // dd($clientNames);
+
+        $pay = SixMonth_fund::where('id',$id)->first();
+        $pay->lp_amount = $n_amount;
+        $pay->save();
+
         // dd($monthless);
         $pdf = app('dompdf.wrapper');
         $pdf->loadHTML('
@@ -301,6 +306,12 @@ class SixMonthComissionController extends Controller
             $ret_isr += $value["ret_isr"];
             $ret_iva += $value["ret_iva"];
             $n_amount += $value["n_amount"];
+        }
+        foreach($ids as $id)
+        {
+            $pay = SixMonth_fund::where('id',$id)->first();
+            $pay->lp_amount = $n_amount;
+            $pay->save();
         }
         // dd($clientNames);
         // dd($nucs[0]->usrName);

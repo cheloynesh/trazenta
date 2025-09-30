@@ -25,12 +25,14 @@ class ComitionController extends Controller
         date_default_timezone_set('America/Mexico_City');
         $date = new DateTime();
         $date->setDate($date->format('Y'), $date->format('m'), 1);
+        $curr_date = new DateTime();;
+        $curr_date->setDate($date->format('Y'), $date->format('m'), 1);
         $date->modify('-1 months');
         $date1 = new DateTime();
         $date2 = new DateTime();
         $date1->modify('-1 months');
         // dd($date2,$date1,$date);
-        $users = DB::select('call comition(?,?,?,?,?)',[$date->format('Y-m-d'),intval($date->format('m')),intval($date->format('Y')),intval($date2->format('m')),intval($date2->format('Y'))]);
+        $users = DB::select('call comition(?,?,?,?,?,?)',[$date->format('Y-m-d'),intval($date->format('m')),intval($date->format('Y')),intval($date2->format('m')),intval($date2->format('Y')),$curr_date->format('Y-m-d')]);
         // dd($users);
         // dd($users);
         $perm = Permission::permView($profile,40);
@@ -56,7 +58,7 @@ class ComitionController extends Controller
 
     public function GetInfo($id,$invoice,$contpp,$contpa,$lpnopay)
     {
-        $regime = DB::table('users')->select('fk_regime','dlls')->where('id',$id)->first();
+        $regime = DB::table('users')->select('fk_regime','dlls','fst_month','five_month')->where('id',$id)->first();
         // dd($id);
         $rec = 0;
         $pp = 0;
@@ -355,7 +357,10 @@ class ComitionController extends Controller
             $users = DB::select('call previewRecp(?)',[$date->format('Y-m-d')]);
             foreach($users as $usr)
             {
-                Mail::to('dicarloarceo@gmail.com')->send(new AgentMail($usr->uid,$date->format('Y-m-d')));
+                Mail::to($usr->email)->bcc('comisiones@trazenta.in')->send(new AgentMail($usr->uid,$date->format('Y-m-d')));
+                // dd("enviado");
+                // Mail::to($usr->email)->bcc('comisiones@trazenta.in')->send(new AgentMail($usr->uid,$date->format('Y-m-d')));
+                // dd($usr);
             }
         }
         else
@@ -363,9 +368,18 @@ class ComitionController extends Controller
             $users = DB::select('call previewPay(?)',[$date->format('Y-m-d')]);
             foreach($users as $usr)
             {
-                Mail::to('dicarloarceo@gmail.com')->send(new AgentMailPay($usr->uid,$date->format('Y-m-d')));
+                // dd($usr->email);
+                Mail::to($usr->email)->bcc('comisiones@trazenta.in')->send(new AgentMailPay($usr->uid,$date->format('Y-m-d')));
             }
         }
         return response()->json(['status'=>true, "message"=>"Correos enviados"]);
+    }
+
+    public function updateFstPays(Request $request)
+    {
+        // dd("entre");
+        $user = User::where('id',$request->idUser)->update(['fst_month'=>$request->fst_month,'five_month'=>$request->five_month]);
+
+        return response()->json(['status'=>true, 'message'=>"Usuario Actualizado"]);
     }
 }

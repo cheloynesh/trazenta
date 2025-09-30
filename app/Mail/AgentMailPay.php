@@ -48,7 +48,7 @@ class AgentMailPay extends Mailable
         $user = DB::select('call mailAgentPay(?,?)',[$id,$this->date]);
 
         $name = $user[0]->aname;
-        $this->subject('Comisiones Trazenta')->view('mail.agentmailpay', compact('name','year','mnth'));
+        $this->subject('Comprobantes de pago comisiones Trazenta')->view('mail.agentmailpay', compact('name','year','mnth'));
 
         if(intval($user[0]->contrec) != 0)
         {

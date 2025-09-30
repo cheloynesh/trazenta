@@ -280,26 +280,76 @@ class SixMonthFundController extends Controller
         // return response()->json(['status'=>true, 'message'=>"Datos Subidos", 'repetidos' => $cont, 'notFnd' => $arrayNotFound, 'importados' => $goodCont]);
 
         // -------------------------------------------actualizacion de conductos----------------------------------
-        $nucs = Nuc::get();
-        foreach($nucs as $nuc)
-        {
-            $moves = MonthFund::where("fk_nuc",$nuc->id)->where("type","Apertura")->get();
+        // $nucs = Nuc::get();
+        // foreach($nucs as $nuc)
+        // {
+        //     $moves = MonthFund::where("fk_nuc",$nuc->id)->where("type","Apertura")->get();
 
-            foreach($moves as $move)
-            {
-                $nucEdit = MonthFund::where('id',$move->id)->update(['fk_charge'=>$nuc->fk_charge]);
-            }
-        }
+        //     foreach($moves as $move)
+        //     {
+        //         $nucEdit = MonthFund::where('id',$move->id)->update(['fk_charge'=>$nuc->fk_charge]);
+        //     }
+        // }
 
         $nucs = SixMonth_fund::get();
         foreach($nucs as $nuc)
         {
-            $chargeMove = new Charge_moves;
-            $chargeMove->amount = $nuc->amount;
-            $chargeMove->apply_date = $nuc->deposit_date;
-            $chargeMove->fk_fund = $nuc->id;
-            $chargeMove->fk_charge = $nuc->fk_charge;
-            $chargeMove->save();
+            $fund = Insurance::where('id',$nuc->fk_insurance)->first();
+            $deposit_date = new DateTime($nuc->deposit_date);
+            $initial_date = new DateTime($deposit_date->format('Y')."-".$deposit_date->format('m')."-01");
+            $initial = clone $initial_date;
+            $initialflag = 0;
+            $initialdiff = 0;
+
+            if(intval($deposit_date->format('d')) <= 10)
+            {
+                $initial_date->modify('+2 month');
+                $initialflag = 0;
+                $initialdiff = $deposit_date->diff($initial)->days;
+            }
+            else
+            {
+                $initial_date->modify('+3 month');
+                $initialflag = 1;
+                $initial->modify('+1 month');
+                $initialdiff = $deposit_date->diff($initial)->days;
+            }
+
+            $end_date = clone $deposit_date;
+            $end_date->modify('+2 year');
+            $coupons = Coupon::where("fk_nuc",$nuc->id)->get();
+            foreach($coupons as $coup)
+            {
+                $coup->delete();
+            }
+
+            $date1 = clone $initial_date;
+            $date2= clone $deposit_date;
+            $number = 1;
+            for($cont = 0; $cont < 22; $cont += 2)
+            {
+                $coupon = new Coupon;
+                $coupon->number = $number;
+                if($cont != 0) $date1->modify('+2 month');
+                $diff = $date1->diff($date2)->days;
+                $coupon->amount = intval($diff) * (($nuc->amount * ($fund->yield/100))/360);
+                $coupon->pay_date = $date1;
+                $coupon->fk_nuc = $nuc->id;
+                $coupon->save();
+                $number++;
+                $date2= clone $date1;
+            }
+            $coupon = new Coupon;
+            $coupon->number = $number;
+            $date1->modify('+2 month');
+            $diff = $date1->diff($date2)->days;
+            $coupon->amount = intval($diff) * (($nuc->amount * ($fund->yield/100))/360);
+            if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($nuc->amount * ($fund->yield/100))/360);
+            else $coupon->amount -= intval($initialdiff) * (($nuc->amount * ($fund->yield/100))/360);
+            // dd($coupon->amount);
+            $coupon->pay_date = $date1;
+            $coupon->fk_nuc = $nuc->id;
+            $coupon->save();
         }
         dd("terminado");
     }
@@ -375,14 +425,7 @@ class SixMonthFundController extends Controller
                 $coupon->number = $number;
                 if($cont != 0) $date1->modify('+2 month');
                 $diff = $date1->diff($date2)->days;
-                if($request->currency == "MXN")
-                {
-                    $coupon->amount = intval($diff) * (($request->amount * ($fund->yield/100))/360);
-                }
-                else
-                {
-                    $coupon->amount = intval($diff) * (($request->amount * ($fund->yield_usd/100))/360);
-                }
+                $coupon->amount = intval($diff) * (($request->amount * ($fund->yield/100))/360);
                 $coupon->pay_date = $date1;
                 $coupon->fk_nuc = $request->id;
                 $coupon->save();
@@ -393,18 +436,9 @@ class SixMonthFundController extends Controller
             $coupon->number = $number;
             $date1->modify('+2 month');
             $diff = $date1->diff($date2)->days;
-            if($request->currency == "MXN")
-            {
-                $coupon->amount = intval($diff) * (($request->amount * ($fund->yield/100))/360);
-                if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($request->amount * ($fund->yield/100))/360);
-                else $coupon->amount -= intval($initialdiff) * (($request->amount * ($fund->yield/100))/360);
-            }
-            else
-            {
-                $coupon->amount = intval($diff) * (($request->amount * ($fund->yield_usd/100))/360);
-                if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($request->amount * ($fund->yield_usd/100))/360);
-                else $coupon->amount -= intval($initialdiff) * (($request->amount * ($fund->yield_usd/100))/360);
-            }
+            $coupon->amount = intval($diff) * (($request->amount * ($fund->yield/100))/360);
+            if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($request->amount * ($fund->yield/100))/360);
+            else $coupon->amount -= intval($initialdiff) * (($request->amount * ($fund->yield/100))/360);
             // dd($coupon->amount);
             $coupon->pay_date = $date1;
             $coupon->fk_nuc = $request->id;
@@ -444,5 +478,12 @@ class SixMonthFundController extends Controller
         $nucs = $this->ReturnData($profile,$active);
         // dd($active);
         return response()->json(['status'=>true, "nucs" => $nucs, "profile" => $profile, "permission" => $perm_btn]);
+    }
+
+    public function GetinfoFund($id)
+    {
+        $opening = Insurance::where('id',$id)->first();
+        // dd($opening);
+        return response()->json(['status'=>true, "data"=>$opening]);
     }
 }

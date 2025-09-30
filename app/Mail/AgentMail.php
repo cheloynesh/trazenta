@@ -48,7 +48,7 @@ class AgentMail extends Mailable
         $user = DB::select('call mailAgent(?,?)',[$id,$this->date]);
 
         $name = $user[0]->aname;
-        $this->subject('Comisiones Trazenta')->view('mail.agentmail', compact('name','year','mnth'));
+        $this->subject('Recibos de comisiones Trazenta')->view('mail.agentmail', compact('name','year','mnth'));
 
         if(intval($user[0]->contrec) != 0)
         {

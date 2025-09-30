@@ -133,7 +133,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="">Moneda:</label>
-                                            <select name="selectCurrencySixMonth" id="selectCurrencySixMonth" class="form-select">
+                                            <select name="selectCurrencySixMonth" id="selectCurrencySixMonth" class="form-select" disabled>
                                                 <option hidden selected>Selecciona una opción</option>
                                                 <option value="MXN">MXN</option>
                                                 <option value="USD">USD</option>
@@ -145,7 +145,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="">Compañía:</label>
-                                            <select name="selectInsurance" id="selectInsurance" class="form-select">
+                                            <select name="selectInsurance" id="selectInsurance" class="form-select" onchange="fundchange()">
                                                 <option hidden selected value="">Selecciona una opción</option>
                                                 @foreach ($insurances as $insurance)
                                                     <option value='{{ $insurance->id }}'>{{ $insurance->name }}</option>

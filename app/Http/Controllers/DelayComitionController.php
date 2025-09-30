@@ -77,7 +77,7 @@ class DelayComitionController extends Controller
             $date2 = new DateTime();
             $date2->setDate($date2->format('Y'), $date2->format('m'), 1);
             $date2->modify('-1 months');
-            $pa = DB::select('call delayInc(?)',[$id]);
+            $pa = DB::select('call delayInc(?,?)',[$id,$date2->format('Y-m-d')]);
         }
 
         if(intval($lpnopay != 0))
@@ -225,6 +225,7 @@ class DelayComitionController extends Controller
 
     public function setStatDate(Request $request)
     {
+        // dd($request->all());
         $months = array (1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
 
         $status = Nuc::where('id',$request->id)->first();
@@ -310,7 +311,7 @@ class DelayComitionController extends Controller
         $date2 = new DateTime();
         $date2->setDate($date2->format('Y'), $date2->format('m'), 1);
         $date2->modify('-1 months');
-        $pa = DB::select('call delayInc(?)',[$request->idUser]);
+        $pa = DB::select('call delayInc(?,?)',[$request->id,$date2->format('Y-m-d')]);
         return response()->json(['status'=>true, "message"=>"Fecha aplicada", "pa" => $pa]);
     }
 

@@ -405,6 +405,7 @@
                 <thead>
                     <th class="text-center">Agente</th>
                     <th class="text-center">NUC</th>
+                    <th class="text-center">Moneda</th>
                     <th class="text-center">Cliente</th>
                     <th class="text-center">Estatus</th>
                     <th class="text-center">Tipo</th>
@@ -416,6 +417,7 @@
                         <tr id="{{$nuc->id}}">
                             <td>{{$nuc->agname}}</td>
                             <td>{{$nuc->nuc}}</td>
+                            <td>{{$nuc->currency}}</td>
                             <td>{{$nuc->name}}</td>
                             @if($nuc->active_stat == 0)
                                 <td style="color: red">INACTIVO</td>

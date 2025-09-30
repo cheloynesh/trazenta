@@ -27,13 +27,60 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="">Tipo de fondo:</label>
                                             <select name="selectType" id="selectType" class="form-select">
                                                 <option selected hidden value="">Selecciona una opción</option>
                                                 <option value="LP">Largo plazo</option>
                                                 <option value="CP">Corto plazo</option>
+                                                <option value="MP">Mediano plazo</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="">Moneda:</label>
+                                            <select name="selectCurr" id="selectCurr" class="form-select">
+                                                <option selected hidden value="">Selecciona una opción</option>
+                                                <option value="MXN">MXN</option>
+                                                <option value="USD">USD</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="">Tasa:</label>
+                                            <div class="input-group mb-3">
+                                                <input type="text" id="yield" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency" class="form-control" placeholder="Tasa">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text" id="basic-addon2">%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="">Activo:</label>
+                                            <select name="selectActive" id="selectActive" class="form-select">
+                                                <option selected hidden value="">Selecciona una opción</option>
+                                                <option value=1>Si</option>
+                                                <option value=0>No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Régimen:</label>
+                                            <select name="selectRegime" id="selectRegime" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($regimes as $id => $regime)
+                                                    <option value='{{ $id }}'>{{ $regime }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -62,6 +109,9 @@
                 <thead>
                     <th class="text-center">Nombre</th>
                     <th class="text-center">Tipo de fondo</th>
+                    <th class="text-center">Moneda</th>
+                    <th class="text-center">Tasa</th>
+                    <th class="text-center">Activo</th>
                     @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                         <th class="text-center">Opciones</th>
                     @endif
@@ -72,6 +122,11 @@
                         <tr id="{{$insurance->id}}">
                             <td>{{$insurance->name}}</td>
                             <td>{{$insurance->fund_type}}</td>
+                            <td>{{$insurance->fund_curr}}</td>
+                            <td>{{$insurance->yield}}</td>
+                            <td>
+                                @if ($insurance->active_fund==1) Si @else No @endif
+                            </td>
                             @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                                 <td>
                                     @if ($perm_btn['modify']==1)

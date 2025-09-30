@@ -11,6 +11,6 @@ class Payment_History extends Model
 
     protected $table = "Payment_History";
     protected $fillable =[
-        'fk_agent','pay_date','invoice_date','pay_doc','invoice_doc'];
+        'fk_agent','pay_date','invoice_date','pay_doc','invoice_doc','rec_amount'];
     protected $dates = ["deleted_at"];
 }

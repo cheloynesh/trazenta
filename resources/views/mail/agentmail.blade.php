@@ -97,8 +97,9 @@
         <img src="{{ $message->embed(public_path().'/img/mail.png')}}" alt="Logo" class="logo">
         <h1>Estimado {{$name}}</h1>
         <div class="content">
-            <p>Esperamos que este mensaje le encuentre bien.</p>
-            <p>Adjunto a este correo encontrará los recibos correspondientes a sus comisiones del período {{$mnth}} - {{$year}}. Le agradeceremos que nos envíe su factura correspondiente a la brevedad, para proceder con el pago en tiempo y forma.</p>
+            <p>Esperamos que te encuentres muy bien.</p>
+            <p>Adjunto a este correo encontrará los recibos correspondientes a sus comisiones del período {{$mnth}} - {{$year}}. Le agradeceremos que nos envíe su(s) factura(s) correspondiente a la brevedad, para proceder con el pago en tiempo y forma.</p>
+            <p>Le recordamos que todos los pagos deben quedar, a mas tardar, al cierre de {{$mnth}} - {{$year}}.</p>
             <p>Por favor, no dude en contactarnos si requiere alguna aclaración o tiene alguna duda respecto a los montos o el proceso.</p>
             <p>Quedamos atentos a su confirmación.</p>
         </div>

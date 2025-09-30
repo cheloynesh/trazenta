@@ -10948,3 +10948,8 @@ a.text-dark:focus {
 
 th { font-size: 1em; }
 td { font-size: .9em; }
+
+#tbProfB th:nth-child(6),
+#tbProfB td:nth-child(6) {
+    border-left: 3px solid #000; /* línea negra divisoria */
+}

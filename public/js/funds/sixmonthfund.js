@@ -482,3 +482,18 @@ function actualizarConducto()
         }
     }
 }
+
+function fundchange()
+{
+    var route;
+    route = baseUrl+'/GetinfoFund/'+$("#selectInsurance").val();
+
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result){
+            $("#selectCurrencySixMonth").val(result.data.fund_curr);
+        }
+    })
+}

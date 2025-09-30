@@ -97,7 +97,7 @@
         <img src="{{ $message->embed(public_path().'/img/mail.png')}}" alt="Logo" class="logo">
         <h1>Estimado {{$name}}</h1>
         <div class="content">
-            <p>Esperamos que este mensaje le encuentre bien.</p>
+            <p>Esperamos que te encuentres muy bien.</p>
             <p>Adjunto le compartimos los comprobantes de pago correspondientes a las facturas de sus comisiones pagadas del periodo {{$mnth}} - {{$year}}.</p>
             <p>Quedamos atentos a su confirmación de recepción y disponibles para cualquier consulta adicional.</p>
         </div>

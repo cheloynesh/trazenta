@@ -296,6 +296,9 @@ function editarApertura(id)
                     refreshTableAgent(charge_moves);
             }
             fund_type = result.data.fund_type;
+
+            $("#selectCurrency1").val(result.data.fund_curr);
+
             yieldr = result.data.yieldr;
             yield_usd = result.data.yield_usd;
 
@@ -640,8 +643,16 @@ function fundchange(flag)
                 cp.style.display = "none";
                 lp.style.display = "";
             }
+            if(flag == 0)
+            {
+                $("#selectCurrency").val(result.data.fund_curr);
+            }
+            else
+            {
+                $("#selectCurrency1").val(result.data.fund_curr);
+            }
             fund_type = result.data.fund_type;
-            yieldr = result.data.yieldr;
+            yieldr = result.data.yield;
             yield_usd = result.data.yield_usd;
         }
     })

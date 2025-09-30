@@ -34,11 +34,19 @@ function guardarAseguradora()
 {
     var name = $("#name").val();
     var fund_type = $("#selectType").val();
+    var fund_curr = $("#selectCurr").val();
+    var yield = $("#yield").val();
+    var active_fund = $("#selectActive").val();
+    var fk_regime = $("#selectRegime").val();
     var route = "insurances";
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
         'name':name,
-        'fund_type':fund_type
+        'fund_type':fund_type,
+        'fund_curr':fund_curr,
+        'yield':yield,
+        'active_fund':active_fund,
+        'fk_regime':fk_regime,
     };
     jQuery.ajax({
         url:route,
@@ -72,6 +80,10 @@ function editarAseguradora(id)
         {
             $("#name1").val(result.data.name);
             $("#selectType1").val(result.data.fund_type);
+            $("#selectCurr1").val(result.data.fund_curr);
+            $("#yield1").val(result.data.yield);
+            $("#selectActive1").val(result.data.active_fund);
+            $("#selectRegime1").val(result.data.fk_regime);
             $("#myModaledit").modal('show');
         },
         error:function(result,error,errorTrown)
@@ -89,12 +101,20 @@ function actualizarAseguradora()
 {
     var name = $("#name1").val();
     var fund_type = $("#selectType1").val();
+    var fund_curr = $("#selectCurr1").val();
+    var yield = $("#yield1").val();
+    var active_fund = $("#selectActive1").val();
+    var fk_regime = $("#selectRegime1").val();
     var route = "insurances/"+idupdate;
     var data = {
         'id':idupdate,
         "_token": $("meta[name='csrf-token']").attr("content"),
         'name':name,
-        'fund_type':fund_type
+        'fund_type':fund_type,
+        'fund_curr':fund_curr,
+        'yield':yield,
+        'active_fund':active_fund,
+        'fk_regime':fk_regime,
     };
     jQuery.ajax({
         url:route,
