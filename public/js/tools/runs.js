@@ -138,7 +138,7 @@ function fundchange(aux)
             }
             else
             {
-                $("#yield" + aux).val(result.data.yield);
+                $("#yield" + aux).val(result.data.yield_net);
                 switch (aux)
                 {
                     case 'CP':

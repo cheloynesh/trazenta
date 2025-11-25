@@ -164,7 +164,8 @@ class MonthFundsController extends Controller
     public function update(Request $request, $id)
     {
         // $nuc = Nuc::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_agent'=>$request->fk_agent,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance,'active_stat'=>$request->active_stat]);
-        $nuc = Nuc::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_agent'=>$request->fk_agent,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_insurance'=>$request->fk_insurance,'active_stat'=>$request->active_stat]);
+        $insurance = Insurance::where('id',$request->fk_insurance)->first();
+        $nuc = Nuc::where('id',$request->id)->update(['currency' => $insurance->fund_curr,'nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_agent'=>$request->fk_agent,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_insurance'=>$request->fk_insurance,'active_stat'=>$request->active_stat]);
 
         $profile = User::findProfile();
         $perm_btn =Permission::permBtns($profile,31);

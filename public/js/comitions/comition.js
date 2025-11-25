@@ -902,23 +902,25 @@ function sendMail()
     alertify.confirm("Enviar correos","¿Desea enviar los correos?",
         function(){
             $("#waitModal").modal('show');
-            $("#recpModal").modal('hide');
-            jQuery.ajax({
-                url:route,
-                data: data,
-                type:'post',
-                dataType:'json',
-                success:function(result){
-                    alertify.success(result.message);
-                    $("#waitModal").modal('hide');
-                },
-                error:function(result,error,errorTrown)
-                {
-                    alertify.error(errorTrown);
-                    $("#waitModal").modal('hide');
-                    $("#recpModal").modal('show');
-                }
-            })
+            $('#waitModal').one('shown.bs.modal', function() {
+                $("#recpModal").modal('hide');
+                jQuery.ajax({
+                    url:route,
+                    data: data,
+                    type:'post',
+                    dataType:'json',
+                    success:function(result){
+                        $("#waitModal").modal('hide');
+                        alertify.success(result.message);
+                    },
+                    error:function(result,error,errorTrown)
+                    {
+                        alertify.error(errorTrown);
+                        $("#waitModal").modal('hide');
+                        $("#recpModal").modal('show');
+                    }
+                })
+            });
         },
         function(){});
 }

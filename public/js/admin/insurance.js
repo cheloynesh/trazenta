@@ -30,14 +30,29 @@ $(document).ready( function () {
     });
 } );
 
+function refreshTable(charges)
+{
+    var table = $('#tbProfInsurance').DataTable();
+    var type = {0 : "APORTACIONES",1: "CAPORTA",2: "OBCREDA",3: "OBCREDA DE OCCIDENTE",4: "OBDENA",null: "-"};
+    console.log(charges);
+    table.clear();
+    charges.forEach( function(valor, indice, array) {
+        btnEdit = '<button href="#|" class="btn btn-warning" onclick="editarAseguradora('+valor.id+')" ><i class="fas fa-edit"></i></button>';
+        btnTrash = '<button href="#|" class="btn btn-danger" onclick="eliminarAseguradora('+valor.id+')"><i class="fa fa-trash"></i></button>';
+        table.row.add([valor.name,valor.fund_type,valor.fund_curr,valor.yield,valor.yield_net,type[valor.type],valor.active_fund == 1 ? "Si" : "No",btnEdit+" "+btnTrash]);
+    });
+    table.draw(false);
+}
+
 function guardarAseguradora()
 {
     var name = $("#name").val();
     var fund_type = $("#selectType").val();
     var fund_curr = $("#selectCurr").val();
     var yield = $("#yield").val();
+    var yield_net = $("#yield_net").val();
     var active_fund = $("#selectActive").val();
-    var fk_regime = $("#selectRegime").val();
+    var type = $("#selectFType").val();
     var route = "insurances";
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -45,8 +60,9 @@ function guardarAseguradora()
         'fund_type':fund_type,
         'fund_curr':fund_curr,
         'yield':yield,
+        'yield_net':yield_net,
         'active_fund':active_fund,
-        'fk_regime':fk_regime,
+        'type':type,
     };
     jQuery.ajax({
         url:route,
@@ -57,7 +73,7 @@ function guardarAseguradora()
         {
             alertify.success(result.message);
             $("#myModal").modal('hide');
-            window.location.reload(true);
+            refreshTable(result.funds);
         },
         error:function(result,error,errorTrown)
         {
@@ -82,8 +98,9 @@ function editarAseguradora(id)
             $("#selectType1").val(result.data.fund_type);
             $("#selectCurr1").val(result.data.fund_curr);
             $("#yield1").val(result.data.yield);
+            $("#yield_net1").val(result.data.yield_net);
             $("#selectActive1").val(result.data.active_fund);
-            $("#selectRegime1").val(result.data.fk_regime);
+            $("#selectFType1").val(result.data.type);
             $("#myModaledit").modal('show');
         },
         error:function(result,error,errorTrown)
@@ -103,8 +120,9 @@ function actualizarAseguradora()
     var fund_type = $("#selectType1").val();
     var fund_curr = $("#selectCurr1").val();
     var yield = $("#yield1").val();
+    var yield_net = $("#yield_net1").val();
     var active_fund = $("#selectActive1").val();
-    var fk_regime = $("#selectRegime1").val();
+    var type = $("#selectFType1").val();
     var route = "insurances/"+idupdate;
     var data = {
         'id':idupdate,
@@ -113,8 +131,9 @@ function actualizarAseguradora()
         'fund_type':fund_type,
         'fund_curr':fund_curr,
         'yield':yield,
+        'yield_net':yield_net,
         'active_fund':active_fund,
-        'fk_regime':fk_regime,
+        'type':type,
     };
     jQuery.ajax({
         url:route,
@@ -125,7 +144,7 @@ function actualizarAseguradora()
         {
             alertify.success(result.message);
             $("#myModaledit").modal('hide');
-            window.location.reload(true);
+            refreshTable(result.funds);
         },
         error:function(result,error,errorTrown)
         {
@@ -150,7 +169,7 @@ function eliminarAseguradora(id)
                 dataType:'json',
                 success:function(result)
                 {
-                    window.location.reload(true);
+                    refreshTable(result.funds);
                 },
                 error:function(result,error,errorTrown)
                 {

@@ -261,7 +261,10 @@ function editarApertura(id)
             $("#selectInsurance1").empty();
             assignPlan.append('<option selected hidden value="0">Seleccione una opción</option>');
             result.insurances.forEach( function(valor, indice, array) {
-                assignPlan.append("<option value='" + valor.id + "'>" + valor.name + "</option>");
+                if(valor.active_fund == 1)
+                    assignPlan.append("<option value='" + valor.id + "'>" + valor.name + "</option>");
+                else
+                    assignPlan.append("<option hidden value='" + valor.id + "'>" + valor.name + "</option>");
             });
 
             $("#selectInsurance1").val(result.data.fk_insurance);

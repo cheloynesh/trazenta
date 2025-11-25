@@ -27,7 +27,7 @@ class OpeningController extends Controller
         $profile = User::findProfile();
         $agents = User::select('id', DB::raw('CONCAT(name," ",firstname) AS name'))->orderBy('name')->where("fk_profile","12")->pluck('name','id');
         $currencies = Currency::pluck('name','id');
-        $insurances = Insurance::orderBy('name')->get();
+        $insurances = Insurance::orderBy('name')->where('active_fund',1)->get();
         $paymentForms = Paymentform::pluck('name','id');
         $applications = Application::pluck('name','id');
         $charges = Charge::pluck('name','id');

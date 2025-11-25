@@ -354,22 +354,33 @@ class ComitionController extends Controller
 
         if($request->type == 1)
         {
-            $users = DB::select('call previewRecp(?)',[$date->format('Y-m-d')]);
-            foreach($users as $usr)
+            // dd($request->ids);
+            if($request->ids == null)
             {
-                Mail::to($usr->email)->bcc('comisiones@trazenta.in')->send(new AgentMail($usr->uid,$date->format('Y-m-d')));
-                // dd("enviado");
-                // Mail::to($usr->email)->bcc('comisiones@trazenta.in')->send(new AgentMail($usr->uid,$date->format('Y-m-d')));
-                // dd($usr);
+                return response()->json(['status'=>true, "message"=>"Ningun usuario seleccionado"]);
+            }
+            else
+            {
+                foreach($request->ids as $id)
+                {
+                    $usr = User::where("id",$id)->first();
+                    Mail::to($usr->email)->bcc('comisiones@trazenta.in')->send(new AgentMail($id,$date->format('Y-m-d')));
+                }
             }
         }
         else
         {
-            $users = DB::select('call previewPay(?)',[$date->format('Y-m-d')]);
-            foreach($users as $usr)
+            if($request->ids == null)
             {
-                // dd($usr->email);
-                Mail::to($usr->email)->bcc('comisiones@trazenta.in')->send(new AgentMailPay($usr->uid,$date->format('Y-m-d')));
+                return response()->json(['status'=>true, "message"=>"Ningun usuario seleccionado"]);
+            }
+            else
+            {
+                foreach($request->ids as $id)
+                {
+                    $usr = User::where("id",$id)->first();
+                    Mail::to($usr->email)->bcc('comisiones@trazenta.in')->send(new AgentMailPay($usr->uid,$date->format('Y-m-d')));
+                }
             }
         }
         return response()->json(['status'=>true, "message"=>"Correos enviados"]);

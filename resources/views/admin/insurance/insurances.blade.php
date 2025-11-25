@@ -7,7 +7,7 @@
     <div style="max-width: 1200px; margin: auto;">
         {{-- modal nueva aseguradora --}}
         <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
 
                     <div class="modal-header">
@@ -50,9 +50,9 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="">Tasa:</label>
+                                            <label for="">Tasa bruta:</label>
                                             <div class="input-group mb-3">
                                                 <input type="text" id="yield" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency" class="form-control" placeholder="Tasa">
                                                 <div class="input-group-append">
@@ -61,7 +61,18 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="">Tasa neta:</label>
+                                            <div class="input-group mb-3">
+                                                <input type="text" id="yield_net" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency" class="form-control" placeholder="Tasa">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text" id="basic-addon2">%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="">Activo:</label>
                                             <select name="selectActive" id="selectActive" class="form-select">
@@ -75,12 +86,14 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="">Régimen:</label>
-                                            <select name="selectRegime" id="selectRegime" class="form-select">
+                                            <label for="">Razón social:</label>
+                                            <select name="selectType" id="selectType" class="form-select">
                                                 <option hidden selected value="">Selecciona una opción</option>
-                                                @foreach ($regimes as $id => $regime)
-                                                    <option value='{{ $id }}'>{{ $regime }}</option>
-                                                @endforeach
+                                                <option value=0>APORTACIONES</option>
+                                                <option value=1>CAPORTA</option>
+                                                <option value=2>OBCREDA</option>
+                                                <option value=3>OBCREDA DE OCCIDENTE</option>
+                                                <option value=4>OBDENA</option>
                                             </select>
                                         </div>
                                     </div>
@@ -110,7 +123,9 @@
                     <th class="text-center">Nombre</th>
                     <th class="text-center">Tipo de fondo</th>
                     <th class="text-center">Moneda</th>
-                    <th class="text-center">Tasa</th>
+                    <th class="text-center">Tasa bruta</th>
+                    <th class="text-center">Tasa neta</th>
+                    <th class="text-center">Razón social</th>
                     <th class="text-center">Activo</th>
                     @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                         <th class="text-center">Opciones</th>
@@ -124,6 +139,8 @@
                             <td>{{$insurance->fund_type}}</td>
                             <td>{{$insurance->fund_curr}}</td>
                             <td>{{$insurance->yield}}</td>
+                            <td>{{$insurance->yield_net}}</td>
+                            <td>{{$type[$insurance->type]}}</td>
                             <td>
                                 @if ($insurance->active_fund==1) Si @else No @endif
                             </td>
