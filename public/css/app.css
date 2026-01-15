@@ -10953,3 +10953,34 @@ td { font-size: .9em; }
 #tbProfB td:nth-child(6) {
     border-left: 3px solid #000; /* línea negra divisoria */
 }
+
+.section-divider {
+    border: 0;
+    height: 2px;
+    background: linear-gradient(to right, #ccc, #888, #ccc);
+    margin-top: 30px;
+    margin-bottom: 40px;
+}
+
+.section-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+}
+
+.service-img {
+    width: 250px;
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.service-img:hover {
+    transform: scale(1.08);
+    filter: brightness(1.1);
+}
+
+.img-title {
+    margin-top: 15px;
+    font-size: 20px;
+    font-weight: 500;
+    color: #444;
+}
