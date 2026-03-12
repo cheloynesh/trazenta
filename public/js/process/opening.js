@@ -2,6 +2,13 @@ var ruta = window.location;
 var getUrl = window.location;
 var baseUrl = getUrl .protocol + "//" + getUrl.host + getUrl.pathname;
 $(document).ready(function () {
+    $('#example thead th').each( function () {
+        var title = $(this).text().trim(); 
+        if (!title || title === "null") {
+            title = "Columna"; 
+        }
+        $(this).empty().html( '<input type="text" class="form-control" placeholder="' + title + '" />' );
+    });
     var table = $('#example').DataTable({
         language : {
             "sProcessing":     "Procesando...",
@@ -27,6 +34,27 @@ $(document).ready(function () {
               "sSortDescending": ": Activar para ordenar la columna de manera descendente"
             }
         },
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var that = this;
+
+                $( 'input', this.header() ).on( 'keyup change input', function (e) {
+                    if (e.keyCode === 27) {
+                        $(this).val('');
+                    }
+
+                    if ( that.search() !== this.value ) {
+                        that
+                            .search( this.value )
+                            .draw();
+                    }
+                } );
+
+                $( 'input', this.header() ).on('click', function(e) {
+                    e.stopPropagation();
+                });
+            } );
+        }
         // "columnDefs": [{
         //     "targets": [6,7,8],
         //     "visible": false
@@ -150,6 +178,23 @@ function FillTable(data,profile,permission)
     table.draw(false);
 }
 
+function chkActive()
+{
+    if (document.getElementById('chkActive').checked) active = 1; else active = 0;
+
+    var route = baseUrl + '/GetActive/'+active;
+    // alert(route);
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            FillTable(result.openings,result.profile,result.permission);
+        }
+    })
+}
+
 function nuevaApertura()
 {
     idClient = 0;
@@ -165,6 +210,7 @@ function nuevaApertura()
 
 function guardarApertura()
 {
+    if (document.getElementById('chkActive').checked) active = 1; else active = 0;
     var fk_agent = $("#selectAgent").val();
     var name = $("#name").val();
     var firstname = $("#firstname").val();
@@ -217,7 +263,8 @@ function guardarApertura()
         'estatus':reinvest,
         'yield':yieldr,
         'yield_usd':yield_usd,
-        'charge_moves':charge_moves
+        'charge_moves':charge_moves,
+        'active':active
     };
     jQuery.ajax({
         url:route,
@@ -270,7 +317,7 @@ function editarApertura(id)
             $("#selectInsurance1").val(result.data.fk_insurance);
             $("#nuc1").val(result.data.nuc);
 
-            if(result.data.fund_type == "CP")
+            if(result.data.fund_type == "CP" || result.data.fund_type == "MP")
             {
                 $("#selectStatusMF").val(result.data.estatus);
                 cp.style.display = "";
@@ -315,6 +362,7 @@ function cancelEdit()
 }
 function actualizarApertura()
 {
+    if (document.getElementById('chkActive').checked) active = 1; else active = 0;
     var fk_agent = $("#selectAgent1").val();
     var name = $("#name1").val();
     var firstname = $("#firstname1").val();
@@ -333,7 +381,7 @@ function actualizarApertura()
     var nuc = $("#nuc1").val();
     var amount = $("#amount1").val().replace(/[^0-9.]/g, '');
     var initial_date = $("#initial_date1").val();
-    var reinvest = $("#selectStatusMF1").val();
+    var reinvest = $("#selectStatusMF").val();
 
     var route = "opening/"+idupdate;
     var data = {
@@ -362,7 +410,8 @@ function actualizarApertura()
         'estatus':reinvest,
         'yield':yieldr,
         'yield_usd':yield_usd,
-        'charge_moves':charge_moves
+        'charge_moves':charge_moves,
+        'active':active
     };
     jQuery.ajax({
         url:route,
@@ -380,10 +429,12 @@ function actualizarApertura()
 
 function eliminarApertura(id)
 {
+    if (document.getElementById('chkActive').checked) active = 1; else active = 0;
     var route = "opening/"+id;
     var data = {
             'id':id,
             "_token": $("meta[name='csrf-token']").attr("content"),
+            'active':active
     };
     alertify.confirm("Eliminar Apertura","¿Desea borrar la Apertura?",
         function(){
@@ -460,6 +511,7 @@ function changeLimit()
 
 function save()
 {
+    if (document.getElementById('chkActive').checked) active = 1; else active = 0;
     var route = baseUrl+"/updateStatus";
     var fk_status = $("#selectStatus").val();
     var pick_status = $("#authPick").val();
@@ -476,7 +528,8 @@ function save()
         'limit_status':limit_status,
         'agent_status':agent_status,
         'office_status':office_status,
-        'finestra_status':finestra_status
+        'finestra_status':finestra_status,
+        'active':active
     };
     jQuery.ajax({
         url:route,
@@ -636,7 +689,7 @@ function fundchange(flag)
         type:'get',
         dataType:'json',
         success:function(result){
-            if(result.data.fund_type == "CP")
+            if(result.data.fund_type == "CP" || result.data.fund_type == "MP")
             {
                 cp.style.display = "";
                 lp.style.display = "none";

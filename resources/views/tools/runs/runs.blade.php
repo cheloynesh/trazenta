@@ -99,6 +99,50 @@
                                     </div>
                                 </div>
                             </form>
+
+                            <div class="row justify-content-center" style="border-top: 1px solid #ccc; padding-top: 30px;">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">Saldo primer año:</label>
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">$</div>
+                                                </div>
+                                                <input type="text" name="firstCP" id="firstCP" value="" data-type="currency" class="form-control" placeholder="Saldo primer año" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="">Utilidad primer año:</label>
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">$</div>
+                                                </div>
+                                                <input type="text" name="firstutilityCP" id="firstutilityCP" value="" data-type="currency" class="form-control" placeholder="Utilidad primer año" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">Saldo segundo año:</label>
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">$</div>
+                                                </div>
+                                                <input type="text" name="secondCP" id="secondCP" value="" data-type="currency" class="form-control" placeholder="Saldo segundo año" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="">Utilidad segundo año:</label>
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">$</div>
+                                                </div>
+                                                <input type="text" name="secondutilityCP" id="secondutilityCP" value="" data-type="currency" class="form-control" placeholder="Utilidad segundo año" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <div class="row">
                             <div class="row" style="border-top: 1px solid #ccc; padding-top: 30px;">
                                 <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
                                     <table class="table table-striped table-hover text-center" style="width:100%" id="tbProfCP">

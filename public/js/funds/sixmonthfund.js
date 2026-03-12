@@ -2,6 +2,13 @@ var ruta = window.location;
 var getUrl = window.location;
 var baseUrl = getUrl .protocol + "//" + getUrl.host + getUrl.pathname;
 $(document).ready( function () {
+    $('#tbProf thead th').each( function () {
+        var title = $(this).text().trim(); 
+        if (!title || title === "null") {
+            title = "Columna"; 
+        }
+        $(this).empty().html( '<input type="text" class="form-control" placeholder="' + title + '" />' );
+    });
     $('#tbProf').DataTable({
         language : {
             "sProcessing":     "Procesando...",
@@ -26,6 +33,27 @@ $(document).ready( function () {
               "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
               "sSortDescending": ": Activar para ordenar la columna de manera descendente"
             }
+        },
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var that = this;
+
+                $( 'input', this.header() ).on( 'keyup change input', function (e) {
+                    if (e.keyCode === 27) {
+                        $(this).val('');
+                    }
+
+                    if ( that.search() !== this.value ) {
+                        that
+                            .search( this.value )
+                            .draw();
+                    }
+                } );
+
+                $( 'input', this.header() ).on('click', function(e) {
+                    e.stopPropagation();
+                });
+            } );
         }
     });
 } );

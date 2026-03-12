@@ -44,7 +44,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="">Tasa:</label>
+                                    <label for="">Tasa bruta:</label>
                                     <div class="input-group mb-3">
                                         <input type="text" id="yield1" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency" class="form-control" placeholder="Tasa">
                                         <div class="input-group-append">

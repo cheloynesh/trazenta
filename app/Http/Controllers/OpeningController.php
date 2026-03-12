@@ -44,11 +44,11 @@ class OpeningController extends Controller
 
         if($profile == 12)
         {
-            $openings = DB::select('call aperturasAgente(?)',[$user]);
+            $openings = DB::select('call aperturasAgente(?,?)',[$user,1]);
         }
         else
         {
-            $openings = DB::select('call aperturas()');
+            $openings = DB::select('call aperturas(?)',[0]);
         }
         // dd($clients);
         if($perm==0)
@@ -61,18 +61,27 @@ class OpeningController extends Controller
         }
     }
 
-    public function ReturnData($profile)
+    public function ReturnData($profile,$active)
     {
         $user = User::user_id();
         if($profile == 12)
         {
-            $openings = DB::select('call aperturasAgente(?)',[$user]);
+            $openings = DB::select('call aperturasAgente(?,?)',[$user,$active]);
         }
         else
         {
-            $openings = DB::select('call aperturas()');
+            $openings = DB::select('call aperturas(?)',[$active]);
         }
         return $openings;
+    }
+
+    public function GetActive($active)
+    {
+        $profile = User::findProfile();
+        $perm_btn =Permission::permBtns($profile,31);
+        $openings = $this->ReturnData($profile,$active);
+        // dd($active);
+        return response()->json(['status'=>true, "openings" => $openings, "profile" => $profile, "permission" => $perm_btn]);
     }
 
     public function GetInfo($id)
@@ -82,9 +91,9 @@ class OpeningController extends Controller
         $insurance = Insurance::where('id',$opening->fk_insurance)->first();
         $chargeMoves = null;
 
-        if($insurance->fund_type == "CP")
+        if($insurance->fund_type == "CP" || $insurance->fund_type == "MP")
         {
-            $insurances = Insurance::where('fund_type','CP')->get();
+            $insurances = Insurance::whereIn('fund_type',['CP','MP'])->get();
             $opening = DB::table('Opening')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS cname'),
                 'Opening.fk_agent','fk_application','fk_payment_form','Opening.fk_insurance','nuc','currency','estatus','Client.id as clid','Opening.id as opid','fund_type',
                 'fk_charge','yield','yield_usd','fund_curr')
@@ -125,7 +134,7 @@ class OpeningController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->yield);
+        // dd($request->all());
         $fk_client = $request->fk_client;
         if($fk_client == 0)
         {
@@ -144,7 +153,7 @@ class OpeningController extends Controller
             $fk_client = $client->id;
         }
 
-        if($request->fund_type == "CP")
+        if($request->fund_type == "CP" || $request->fund_type == "MP")
         {
             $nuc = new Nuc;
             $nuc->nuc = $request->nuc;
@@ -252,7 +261,7 @@ class OpeningController extends Controller
 
         $profile = User::findProfile();
         $perm_btn =Permission::permBtns($profile,31);
-        $openings = $this->ReturnData($profile);
+        $openings = $this->ReturnData($profile,$request->active);
 
         return response()->json(["status"=>true, "message"=>"Servicio Creado", "openings" => $openings, "profile" => $profile, "permission" => $perm_btn]);
     }
@@ -288,10 +297,10 @@ class OpeningController extends Controller
         //         $clnt = Client::where('id',$fk_client)->update(['fk_agent'=>$request->fk_agent]);
         //     }
         // }
-        if($request->fund_type == "CP")
+        if($request->fund_type == "CP" || $request->fund_type == "MP")
         {
             $nuc = Nuc::where('id',$opening->fk_nuc)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,
-            'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance,'currency'=>$request->currency,'fk_agent'=>$request->fk_agent]);
+            'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance,'currency'=>$request->currency,'fk_agent'=>$request->fk_agent,'estatus'=>$request->estatus]);
         }
         else
         {
@@ -387,16 +396,16 @@ class OpeningController extends Controller
 
         $profile = User::findProfile();
         $perm_btn =Permission::permBtns($profile,31);
-        $openings = $this->ReturnData($profile);
+        $openings = $this->ReturnData($profile,$request->active);
 
         return response()->json(['status'=>true, 'message'=>"Apertura Actualizada", "openings" => $openings, "profile" => $profile, "permission" => $perm_btn]);
     }
 
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
         $opening = DB::table('Opening')->join('Insurance','Opening.fk_insurance','=','Insurance.id')->where('Opening.id',$id)->first();
 
-        if($opening->fund_type == "CP")
+        if($opening->fund_type == "CP" || $opening->fund_type == "MP")
         {
             $fund = Nuc::find($opening->fk_nuc);
             $fund->delete();
@@ -412,7 +421,7 @@ class OpeningController extends Controller
 
         $profile = User::findProfile();
         $perm_btn =Permission::permBtns($profile,31);
-        $openings = $this->ReturnData($profile);
+        $openings = $this->ReturnData($profile,$request->active);
 
         return response()->json(['status'=>true, "message"=>"Apertura eliminada", "openings" => $openings, "profile" => $profile, "permission" => $perm_btn]);
     }
@@ -438,7 +447,7 @@ class OpeningController extends Controller
 
         $profile = User::findProfile();
         $perm_btn =Permission::permBtns($profile,31);
-        $openings = $this->ReturnData($profile);
+        $openings = $this->ReturnData($profile,$request->active);
 
         return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "openings" => $openings, "profile" => $profile, "permission" => $perm_btn]);
     }

@@ -159,6 +159,7 @@ Route::get('funds/sixmonthlycomission/sixmonthcomission/GetComitions/{paid}','Si
 // --------------------------------------------------------Aperturas----------------------------------------------------------
 Route::resource('process/opening/opening', 'OpeningController');
 Route::get('process/opening/opening/GetInfo/{id}','OpeningController@GetInfo')->name('opening.GetInfo');
+Route::get('process/opening/opening/GetActive/{id}','OpeningController@GetActive')->name('opening.GetActive');
 Route::get('process/opening/opening/GetinfoStatus/{id}','OpeningController@GetinfoStatus')->name('opening.GetinfoStatus');
 Route::get('process/opening/opening/GetinfoFund/{id}','OpeningController@GetinfoFund')->name('opening.GetinfoFund');
 Route::post('process/opening/opening/updateStatus', 'OpeningController@updateStatus')->name('opening.updateStatus');

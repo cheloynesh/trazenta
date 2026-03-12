@@ -37,7 +37,7 @@ class MonthFundsController extends Controller
         $paymentForms = Paymentform::pluck('name','id');
         $applications = Application::pluck('name','id');
         $charges = Charge::pluck('name','id');
-        $insurances = Insurance::orderBy('name')->where('fund_type','CP')->get();
+        $insurances = Insurance::orderBy('name')->whereIn('fund_type',['CP','MP'])->get();
         $cmbStatus = Status::select('id','name')
         ->where("fk_section","19")
         ->pluck('name','id');

@@ -59,7 +59,7 @@ class ComitionController extends Controller
     public function GetInfo($id,$invoice,$contpp,$contpa,$lpnopay)
     {
         $regime = DB::table('users')->select('fk_regime','dlls','fst_month','five_month')->where('id',$id)->first();
-        // dd($id);
+        //dd($id);
         $rec = 0;
         $pp = 0;
         $pa = 0;
@@ -348,6 +348,7 @@ class ComitionController extends Controller
 
     public function sendMailing(Request $request)
     {
+        //dd($request->ids);
         date_default_timezone_set('America/Mexico_City');
         $date = new DateTime();
         $date->setDate($date->format('Y'), $date->format('m'), 1);
@@ -370,6 +371,7 @@ class ComitionController extends Controller
         }
         else
         {
+            // dd($request->ids);
             if($request->ids == null)
             {
                 return response()->json(['status'=>true, "message"=>"Ningun usuario seleccionado"]);

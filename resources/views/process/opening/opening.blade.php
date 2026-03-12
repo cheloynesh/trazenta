@@ -551,12 +551,18 @@
                 </div>
             @endif
         </div>
+        <br><br>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class = "form-group">
+                    <input class="form-check-input" type="checkbox" onclick="chkActive()" id="chkActive"> Mostrar Recibidos
+                </div>
+            </div>
+        </div>
     </div>
     {{-- <div>
         Columnas: <a class="toggle-vis" data-column="6">Fecha límite</a> - <a class="toggle-vis" data-column="7">Entregado a agente</a> - <a class="toggle-vis" data-column="8">Entregado a finestra</a>
     </div> --}}
-
-    <br><br>
 
     <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
         <table class="table table-striped table-hover text-center" style="width:100%" id="example">

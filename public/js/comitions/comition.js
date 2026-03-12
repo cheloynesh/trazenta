@@ -912,12 +912,14 @@ function sendMail()
                     success:function(result){
                         $("#waitModal").modal('hide');
                         alertify.success(result.message);
+                        table.column(0).checkboxes.deselectAll();
                     },
                     error:function(result,error,errorTrown)
                     {
                         alertify.error(errorTrown);
                         $("#waitModal").modal('hide');
                         $("#recpModal").modal('show');
+                        table.column(0).checkboxes.deselectAll();
                     }
                 })
             });
