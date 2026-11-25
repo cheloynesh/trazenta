@@ -2,6 +2,13 @@ var ruta = window.location;
 var getUrl = window.location;
 var baseUrl = getUrl .protocol + "//" + getUrl.host + getUrl.pathname;
 $(document).ready( function () {
+    $('#tbProf thead th').each( function () {
+        var title = $(this).text().trim(); 
+        if (!title || title === "null") {
+            title = "Columna"; 
+        }
+        $(this).empty().html( '<input type="text" class="form-control" placeholder="' + title + '" />' );
+    });
     $('#tbProf').DataTable({
         language : {
             "sProcessing":     "Procesando...",
@@ -26,7 +33,32 @@ $(document).ready( function () {
               "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
               "sSortDescending": ": Activar para ordenar la columna de manera descendente"
             }
-        }
+        },
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var that = this;
+
+                $( 'input', this.header() ).on( 'keyup change input', function (e) {
+                    if (e.keyCode === 27) {
+                        $(this).val('');
+                    }
+
+                    if ( that.search() !== this.value ) {
+                        that
+                            .search( this.value )
+                            .draw();
+                    }
+                } );
+
+                $( 'input', this.header() ).on('click', function(e) {
+                    e.stopPropagation();
+                });
+            } );
+        },
+        dom: 'Blfrtip',
+        buttons: [
+            'excel'
+        ]
     });
 } );
 $(document).ready( function () {
@@ -111,18 +143,18 @@ function FillTable(data,profile,permission)
     table.clear();
 
     data.forEach( function(valor, indice, array) {
-        btnStat = '<button class="btn btn-info" style="background-color: #'+valor.color+'; border-color: #'+valor.color+'" onclick="opcionesEstatus('+valor.id+','+valor.statId+')">'+valor.estatus+'</button>';
         btnMov = '<a href="#|" class="btn btn-primary" onclick="nuevoMovimiento('+valor.id+')" >Movimientos</a>';
         btnEdit = '<button href="#|" class="btn btn-warning" onclick="editarNuc('+valor.id+')" ><i class="fas fa-edit"></i></button>';
         btnTrash = '<button href="#|" class="btn btn-danger" onclick="deleteFund('+valor.id+')"><i class="fa fa-trash"></i></button>';
+        fst_scnd = valor.fst_scnd == 1 ? "Primera quincena" : "Segunda quincena";
         if(valor.active_stat == 0) activeStat = '<font color="red">INACTIVO</font>'; else activeStat = '<font color="green">ACTIVO</font>';
         if (profile != 12)
         {
-            table.row.add([valor.agname,valor.nuc,valor.fund_type,valor.currency,valor.name,activeStat,btnStat,btnMov+" "+btnEdit+" "+btnTrash]).node().id = valor.id;
+            table.row.add([valor.agname,valor.nuc,valor.fund_type,valor.currency,valor.name,fst_scnd,valor.payname,activeStat,btnMov+" "+btnEdit+" "+btnTrash]).node().id = valor.id;
         }
         else
         {
-            table.row.add([valor.agname,valor.nuc,valor.fund_type,valor.currency,valor.name,activeStat,btnStat,btnMov]).node().id = valor.id;
+            table.row.add([valor.agname,valor.nuc,valor.fund_type,valor.currency,valor.name,fst_scnd,valor.payname,activeStat,btnMov]).node().id = valor.id;
         }
     });
     table.draw(false);
@@ -394,6 +426,8 @@ function editarNuc(id)
             $("#selectAgent").val(result.data.fk_agent);
             $("#selectAppli").val(result.data.fk_application);
             $("#selectPaymentform").val(result.data.fk_payment_form);
+            $("#selectFst_scnd").val(result.data.fst_scnd);
+            // $("#selectStatus").val(result.data.estatus);
             // $("#selectCharge").val(result.data.fk_charge);
             $("#selectInsurance").val(result.data.fk_insurance);
             $("#selectActiveStat").val(result.data.active_stat);
@@ -417,6 +451,8 @@ function actualizarNuc()
     // var fk_charge = $("#selectCharge").val();
     var fk_insurance = $("#selectInsurance").val();
     var active_stat = $("#selectActiveStat").val();
+    var fst_scnd = $("#selectFst_scnd").val();
+    // var estatus = $("#selectStatus").val();
     var route = "monthfunds/"+editNuc;
     var data = {
         'id':editNuc,
@@ -429,6 +465,8 @@ function actualizarNuc()
         'fk_agent':fk_agent,
         'fk_insurance':fk_insurance,
         'active_stat':active_stat,
+        'fst_scnd':fst_scnd,
+        // 'estatus':estatus,
         'active':active
     };
     jQuery.ajax({

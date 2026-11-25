@@ -2,6 +2,13 @@ var ruta = window.location;
 var getUrl = window.location;
 var baseUrl = getUrl .protocol + "//" + getUrl.host + getUrl.pathname;
 $(document).ready(function () {
+    $('#example thead th').each( function () {
+        var title = $(this).text().trim(); 
+        if (!title || title === "null") {
+            title = "Columna"; 
+        }
+        $(this).empty().html( '<input type="text" class="form-control" placeholder="' + title + '" />' );
+    });
     var table = $('#example').DataTable({
         language : {
             "sProcessing":     "Procesando...",
@@ -27,6 +34,27 @@ $(document).ready(function () {
               "sSortDescending": ": Activar para ordenar la columna de manera descendente"
             }
         },
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var that = this;
+
+                $( 'input', this.header() ).on( 'keyup change input', function (e) {
+                    if (e.keyCode === 27) {
+                        $(this).val('');
+                    }
+
+                    if ( that.search() !== this.value ) {
+                        that
+                            .search( this.value )
+                            .draw();
+                    }
+                } );
+
+                $( 'input', this.header() ).on('click', function(e) {
+                    e.stopPropagation();
+                });
+            } );
+        }
     });
 });
 
@@ -448,6 +476,7 @@ function opcionesEstatusInt(id)
             fillStatusDates(result.data.limit_status,"Limit");
             fillStatusDates(result.data.office_status,"Office");
             fillStatusDates(result.data.finestra_status,"Finestra");
+            $("#commentary").val(result.data.commentary);
             $("#myModalStatusInt").modal('show');
         }
     })
@@ -493,6 +522,7 @@ function save()
     var limit_status = $("#authLimit").val();
     var office_status = $("#authOffice").val();
     var finestra_status = $("#authFinestra").val();
+    var commentary = $("#commentary").val();
 
     var data = {
         'id':idStatus,
@@ -501,7 +531,8 @@ function save()
         'pick_status':pick_status,
         'limit_status':limit_status,
         'office_status':office_status,
-        'finestra_status':finestra_status
+        'finestra_status':finestra_status,
+        'commentary':commentary,
     };
     jQuery.ajax({
         url:route,

@@ -121,44 +121,48 @@ var fund_typeB = "";
 function fundchange(aux)
 {
     var route;
-    route = baseUrl + '/GetinfoFund/' + $("#selectInsurance" + aux).val() + '/' + $("#selectCurr" + aux).val();
-
-    jQuery.ajax({
-        url:route,
-        type:'get',
-        dataType:'json',
-        success:function(result){
-            // $("#selectCurr" + aux).val(result.data.fund_curr);
-            var table = $('#tbProf' + aux).DataTable();
-            if(result.data == null)
-            {
-                alert("No se encontró un fondo con la moneda y tipo seleccionados.");
-                table.clear();
-                table.draw(false);
-            }
-            else
-            {
-                $("#yield" + aux).val(result.data.yield_net);
-                switch (aux)
+    if($("#selectInsurance" + aux).val() != "" && $("#selectCurr" + aux).val() != "" && $("#selectPayPrime" + aux).val())
+    {
+        route = baseUrl + '/GetinfoFund/' + $("#selectInsurance" + aux).val() + '/' + $("#selectCurr" + aux).val() + '/' + $("#selectPayPrime" + aux).val();
+    
+        jQuery.ajax({
+            url:route,
+            type:'get',
+            dataType:'json',
+            success:function(result){
+                // $("#selectCurr" + aux).val(result.data.fund_curr);
+                var table = $('#tbProf' + aux).DataTable();
+                if(result.data == null)
                 {
-                    case 'CP':
-                        fund_type = result.data.fund_type;
-                        calculoCP();
-                        break;
-                    case 'LP':
-                        calculoLP();
-                        break;
-                    case 'CPB':
-                        fund_typeB = result.data.fund_type;
-                        calculoB();
-                        break;
-                    case 'LPB':
-                        calculoB();
-                        break;
+                    alert("No se encontró un fondo con la moneda y tipo seleccionados.");
+                    table.clear();
+                    table.draw(false);
+                    $("#yield" + aux).val("");
+                }
+                else
+                {
+                    $("#yield" + aux).val(result.data.yield_net);
+                    switch (aux)
+                    {
+                        case 'CP':
+                            fund_type = result.data.fund_type;
+                            calculoCP();
+                            break;
+                        case 'LP':
+                            calculoLP();
+                            break;
+                        case 'CPB':
+                            fund_typeB = result.data.fund_type;
+                            calculoB();
+                            break;
+                        case 'LPB':
+                            calculoB();
+                            break;
+                    }
                 }
             }
-        }
-    })
+        })
+    }
 }
 
 function  calculoCP()
@@ -166,7 +170,12 @@ function  calculoCP()
     var table = $('#tbProfCP').DataTable();
 
     var curr = $("#selectCurrCP").val();
-    var yrs = parseInt($("#selectyearsCP").val()) * 12;
+    var yrs = parseFloat($("#selectyearsCP").val()) * 12;
+    if(parseFloat($("#selectyearsCP").val()) < 1 && fund_type == "MP") 
+    {
+        $("#selectyearsCP").val("1");
+        yrs = 12;
+    }
     var yield = parseFloat($("#yieldCP").val())/100;
     var opening = parseFloat($("#openingCP").val().replace(/[^0-9.]/g, ''));
     var inc = $("#incrementCP").val() == '' ? 0 : parseFloat($("#incrementCP").val().replace(/[^0-9.]/g, ''));
@@ -186,7 +195,7 @@ function  calculoCP()
     if (cpform.checkValidity() == false){}
     else
     {
-        if((opening >= 250000 && curr == "MXN" && fund_type == "CP") || (opening >= 750000 && curr == "MXN" && fund_type == "MP") || (opening >= 5000 && curr == "USD"))
+        if((opening >= 250000 && curr == "MXN" && fund_type == "CP") || (opening >= 750000 && curr == "MXN" && fund_type == "MP") || (opening >= 5000 && curr == "USD" && fund_type == "CP") || (opening >= 15000 && curr == "USD" && fund_type == "MP"))
         {
 
             table.clear();
@@ -215,7 +224,7 @@ function  calculoCP()
         }
         else
         {
-            alert("La apertura no debe ser menor a $250,000.00 MXN en CP o $750,000.00 MXN en MP o 5,000 USD");
+            alert("La apertura no debe ser menor a $250,000.00 MXN en CP o $750,000.00 MXN en MP o 5,000 USD en CP y 15,000 USD en MP");
             table.clear();
             table.draw(false);
         }
@@ -312,7 +321,7 @@ function  calculoB()
     if (cpform.checkValidity() == false){}
     else
     {
-        if((opening >= 250000 && curr == "MXN" && fund_typeB == "CP") || (opening >= 750000 && curr == "MXN" && fund_typeB == "MP") || (opening >= 5000 && curr == "USD"))
+        if((opening >= 250000 && curr == "MXN" && fund_typeB == "CP") || (opening >= 750000 && curr == "MXN" && fund_typeB == "MP") || (opening >= 5000 && curr == "USD" && fund_typeB == "CP") || (opening >= 15000 && curr == "USD" && fund_typeB == "MP"))
         {
             if((openingL >= 500000 && currL == "MXN") || (openingL >= 25000 && currL == "USD"))
             {
@@ -367,7 +376,7 @@ function  calculoB()
         }
         else
         {
-            alert("La apertura no debe ser menor a $250,000.00 MXN en CP o $750,000.00 MXN en MP o 5,000 USD");
+            alert("La apertura no debe ser menor a $250,000.00 MXN en CP o $750,000.00 MXN en MP o 5,000 USD en CP y 15,000 USD en MP");
             table.clear();
             table.draw(false);
         }

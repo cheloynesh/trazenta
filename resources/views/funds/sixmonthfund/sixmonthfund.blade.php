@@ -76,7 +76,7 @@
         {{-- termina modal --}}
         {{-- modal| --}}
         <div id="sixMonthNucModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
 
                     <div class="modal-header">
@@ -88,15 +88,13 @@
                         <div class="container-fluid bd-example-row">
                             <div class="col-md-12">
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="">Obligación</label>
                                             <input type="text" id="nucSixMonth" name="nucSixMonth" class="form-control">
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="">Cliente:</label>
                                             <select name="selectClient" id="selectClient" class="form-select">
@@ -107,9 +105,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="">Agente:</label>
                                             <select name="selectAgent" id="selectAgent" class="form-select">
@@ -122,15 +118,24 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="">Compañía:</label>
+                                            <select name="selectInsurance" id="selectInsurance" class="form-select" onchange="fundchange()">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                @foreach ($insurances as $insurance)
+                                                    <option value='{{ $insurance->id }}'>{{ $insurance->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="">Monto</label>
                                             <input type="text" id="amountSixMonth" name="amountSixMonth" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency">
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="">Moneda:</label>
                                             <select name="selectCurrencySixMonth" id="selectCurrencySixMonth" class="form-select" disabled>
@@ -142,28 +147,13 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="">Compañía:</label>
-                                            <select name="selectInsurance" id="selectInsurance" class="form-select" onchange="fundchange()">
-                                                <option hidden selected value="">Selecciona una opción</option>
-                                                @foreach ($insurances as $insurance)
-                                                    <option value='{{ $insurance->id }}'>{{ $insurance->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="">Fecha de aplicación</label>
                                             <input type="date" id="initial_date" name="initial_date" class="form-control" placeholder="Fecha de aplicación">
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="">Tipo Solicitud:</label>
                                             <select name="selectAppliSixMonth" id="selectAppliSixMonth" class="form-select">
@@ -176,10 +166,10 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="">Forma de Pago del Premio:</label>
-                                            <select name="selectPaymentformSixMonth" id="selectPaymentformSixMonth" class="form-select">
+                                            <select name="selectPaymentformSixMonth" id="selectPaymentformSixMonth" class="form-select" onchange="paychange()">
                                                 <option hidden selected value="">Selecciona una opción</option>
                                                 @foreach ($paymentForms as $id => $payment_form)
                                                     <option value='{{ $id }}'>{{ $payment_form }}</option>
@@ -187,9 +177,19 @@
                                             </select>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-4" id="divNucs" style = "display: none;">
+                                        <div class="form-group">
+                                            <label for="">Nuc de destino:</label>
+                                            <select name="selectNucs" id="selectNucs" class="form-control select2-buscable" style="width: 100%" onclick="paychange()">
+                                                <!-- OJO: Para Select2 la primera opción debe ir vacía, el texto se define en JS -->
+                                                <option value=""></option>
+                                                @foreach($nucscp as $key => $value)
+                                                    <option value="{{ $key }}">{{ $value }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <div class="d-grid gap-2 col-12 mx-auto">
                                                 <button type="button" class="btn btn-primary" onclick="OpenCharge()">Abrir conductos de apertura</button>
@@ -198,7 +198,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="">Acción de término:</label>
                                             <select name="selectRenew" id="selectRenew" class="form-select">
@@ -209,15 +209,29 @@
                                             </select>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-3" id="divOldNuc" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="">Obligación anterior:</label>
+                                            <input type="text" id="old_nuc" name="old_nuc" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="">Estatus:</label>
                                             <select name="selectActive" id="selectActive" class="form-select">
                                                 <option hidden selected value="">Selecciona una opción</option>
                                                 <option value=0>INACTIVO</option>
                                                 <option value=1>ACTIVO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="">Mes de pago:</label>
+                                            <select name="selectPairNon" id="selectPairNon" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                <option value=1>Non</option>
+                                                <option value=2>Par</option>
                                             </select>
                                         </div>
                                     </div>
@@ -377,13 +391,13 @@
             <div class="col-lg-12">
                 <div class="row">
                     <div class="col-lg-6">
-                        <div class = "form-group">
+                        <div class="form-group">
                             <input type="file" name="excl" id="excl" accept=".xlsx, .xls, .csv" class="form-control"/>
                         </div>
                     </div>
                     <div class="col-lg-6">
-                        <div class = "form-group">
-                            <button class="btn btn-primary" onclick="importexc()">Importar Excel</button>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick="importexc(event)">Importar Excel</button>
                         </div>
                     </div>
                 </div>
@@ -412,6 +426,8 @@
                     <th class="text-center">Estatus</th>
                     <th class="text-center">Fecha de Inicio</th>
                     <th class="text-center">Fecha de Fin</th>
+                    <th class="text-center">Mes de pago</th>
+                    <th class="text-center">Forma de pago</th>
                     {{-- <th class="text-center">Estatus</th> --}}
                     <th class="text-center">Opciones</th>
                 </thead>
@@ -431,6 +447,8 @@
                             @endif
                             <td>{{$nuc->deposit_date}}</td>
                             <td>{{$nuc->end_date}}</td>
+                            <td>{{$nuc->pair_non == 1 ? 'Non' : 'Par'}}</td>
+                            <td>{{$nuc->payname}}</td>
                             {{-- <td>
                                 <button class="btn btn-info" style="background-color: #{{$nuc->color}}; border-color: #{{$nuc->color}}" onclick="opcionesEstatus({{$nuc->id}},{{$nuc->statId}})">{{$nuc->estatus}}</button>
                             </td> --}}
@@ -452,4 +470,41 @@
 @endsection
 @push('head')
     <script src="{{URL::asset('js/funds/sixmonthfund.js')}}"></script>
+    <style>
+        /* Homologar Select2 con los inputs de Bootstrap */
+        .select2-container .select2-selection--single {
+            height: 38px !important;
+            border: 1px solid #ced4da !important;
+            border-radius: 6px !important;
+            display: flex !important;
+            align-items: center !important;
+            background-color: #ffffff !important;
+        }
+
+        /* Alineación vertical del texto / placeholder */
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 38px !important;
+            padding-left: 12px !important;
+            color: #212529 !important;
+            font-size: 0.95rem !important;
+        }
+
+        /* Color del placeholder */
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: #6c757d !important;
+        }
+
+        /* Centrado vertical de la flecha */
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 38px !important;
+            right: 10px !important;
+        }
+
+        /* Resaltado al enfocar (focus) */
+        .select2-container--default.select2-container--focus .select2-selection--single {
+            border-color: #86b7fe !important;
+            outline: 0 !important;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+        }
+    </style>
 @endpush

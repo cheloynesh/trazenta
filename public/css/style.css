@@ -77,12 +77,12 @@ a:focus {
 }
 
 #sidebar .sidebar-header {
-    background: #6d7fcc;
+    background: #CCCCCC;
 }
 
 #sidebar ul.components {
     padding: 20px 0;
-    border-bottom: 1px solid #47748b;
+    border-bottom: 1px solid #CCCCCC;
 }
 
 #sidebar ul p {
@@ -126,7 +126,7 @@ a[data-toggle="collapse"] {
 ul ul a {
     font-size: 0.9em !important;
     padding-left: 30px !important;
-    background: #cccccc;
+    background: #eeeeee;
 }
 
 ul.CTAs {

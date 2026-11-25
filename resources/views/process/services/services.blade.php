@@ -185,6 +185,14 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row" id="divDateFinestra">
+                                <div class="col-md-12" >
+                                    <div class="form-group">
+                                        <label for="">Nota: </label>
+                                        <textarea name="commentary" class="form-control" id="commentary" rows="5"></textarea>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

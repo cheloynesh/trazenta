@@ -21,6 +21,7 @@ use App\Imports\MovesImport;
 use Carbon\Carbon;
 use DB;
 use DateTime;
+use Illuminate\Support\Facades\Log;
 
 class MonthFundsController extends Controller
 {
@@ -46,7 +47,6 @@ class MonthFundsController extends Controller
         if($profile == 12)
         {
             $nucs = DB::select('call fondocpAgente(?,?)',[1,$user]);
-            // dd($user);
         }
         else
         {
@@ -165,7 +165,7 @@ class MonthFundsController extends Controller
     {
         // $nuc = Nuc::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_agent'=>$request->fk_agent,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance,'active_stat'=>$request->active_stat]);
         $insurance = Insurance::where('id',$request->fk_insurance)->first();
-        $nuc = Nuc::where('id',$request->id)->update(['currency' => $insurance->fund_curr,'nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_agent'=>$request->fk_agent,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_insurance'=>$request->fk_insurance,'active_stat'=>$request->active_stat]);
+        $nuc = Nuc::where('id',$request->id)->update(['currency' => $insurance->fund_curr,'nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_agent'=>$request->fk_agent,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,'fk_insurance'=>$request->fk_insurance,'active_stat'=>$request->active_stat,'fst_scnd'=>$request->fst_scnd]);
 
         $profile = User::findProfile();
         $perm_btn =Permission::permBtns($profile,31);
@@ -229,7 +229,7 @@ class MonthFundsController extends Controller
                 {
                     // dd($moves[2]);
                     $prev_balance = floatval($movimientos->new_balance);
-                    if($moves[2] == "Abono" || $moves[2] == "Reinversion")
+                    if($moves[2] == "Abono" || $moves[2] == "Reinversion" || $moves[2] == "Reinversion intersistema")
                     {
                         $new_balance = $moves[4] + $prev_balance;
                     }
@@ -285,6 +285,7 @@ class MonthFundsController extends Controller
                 // dd($nuc);
                 if($nuc == null)
                 {
+                    Log::info('Nuc no encontrado', ['nuc' => $moves[1]]);
                     array_push($arrayNotFound, $moves[1]);
                 }
                 else

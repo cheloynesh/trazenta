@@ -22,17 +22,17 @@
                         <div class="col-lg-12" id = "fisica">
                             <form class="needs-validation" id="validationCP" novalidate>
                                 <div class="row justify-content-center">
-                                    <div class="col-lg-3">
+                                    <div class="col-lg-2">
                                         <div class="form-group">
-                                            <label for="">Tipo:</label>
+                                            <label for="">Plazo:</label>
                                             <select name="selectInsuranceCP" id="selectInsuranceCP" class="form-select" onchange="fundchange('CP')" required>
                                                 <option hidden selected value="">Selecciona una opción</option>
-                                                <option value="CP">Corto plazo</option>
-                                                <option value="MP">Mediano plazo</option>
+                                                <option value="CP">6 meses</option>
+                                                <option value="MP">12 meses</option>
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3">
+                                    <div class="col-lg-2">
                                         <div class="form-group">
                                             <label for="">Moneda:</label>
                                             <select name="selectCurrCP" id="selectCurrCP" class="form-select" onchange="fundchange('CP')" required>
@@ -43,6 +43,16 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="">Forma de pago del premio:</label>
+                                            <select name="selectPayPrimeCP" id="selectPayPrimeCP" class="form-select" onchange="fundchange('CP')" required>
+                                                <option selected hidden value="">Selecciona una opción</option>
+                                                <option value="1">Reinversión, transferencia o cheque</option>
+                                                <option value="2">Reinversión (Sin opción a cambios)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2">
                                         <div class="form-group">
                                             <label for="">Tasa:</label>
                                             <div class="input-group mb-3">
@@ -90,8 +100,8 @@
                                         <div class="form-group">
                                             <label for="">Años:</label>
                                             <select name="selectyearsCP" id="selectyearsCP" class="form-select" onchange="calculoCP()">
-                                                <option selected value="1">1</option>
-                                                @for ($var = 2; $var <= 100; $var++)
+                                                <option selected value=".5">.5</option>
+                                                @for ($var = 1; $var <= 100; $var+= 0.5)
                                                     <option value={{$var}}>{{$var}}</option>
                                                 @endfor
                                             </select>
@@ -187,9 +197,9 @@
                                 <div class="row justify-content-center">
                                     <div class="col-lg-3">
                                         <div class="form-group">
-                                            <label for="">Tipo:</label>
+                                            <label for="">Plazo:</label>
                                             <select name="selectInsuranceLP" id="selectInsuranceLP" class="form-select" disabled>
-                                                <option hidden selected value="LP">Largo plazo</option>
+                                                <option hidden selected value="LP">24 meses</option>
                                             </select>
                                         </div>
                                     </div>
@@ -200,6 +210,15 @@
                                                 <option selected hidden value="">Selecciona una opción</option>
                                                 <option value="MXN">MXN</option>
                                                 <option value="USD">USD</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3" hidden>
+                                        <div class="form-group">
+                                            <label for="">Forma de pago del premio:</label>
+                                            <select name="selectPayPrimeLP" id="selectPayPrimeLP" class="form-select" onchange="fundchange('LP')" >
+                                                <option selected value="1">Reinversión, transferencia o cheque</option>
+                                                <option value="2">Reinversión (Sin opción a cambios)</option>
                                             </select>
                                         </div>
                                     </div>
@@ -331,17 +350,17 @@
                                 <div class="row" style="padding-bottom: 20px;">
                                     <div class="col-lg-6">
                                         <div class="row justify-content-center">
-                                            <div class="col-lg-3">
+                                            <div class="col-lg-2">
                                                 <div class="form-group">
-                                                    <label for="">Tipo:</label>
+                                                    <label for="">Plazo:</label>
                                                     <select name="selectInsuranceCPB" id="selectInsuranceCPB" class="form-select" onchange="fundchange('CPB')" required>
                                                         <option hidden selected value="">Selecciona una opción</option>
-                                                        <option value="CP">Corto plazo</option>
-                                                        <option value="MP">Mediano plazo</option>
+                                                        <option value="CP">6 meses</option>
+                                                        <option value="MP">12 meses</option>
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-3">
+                                            <div class="col-lg-2">
                                                 <div class="form-group">
                                                     <label for="">Moneda:</label>
                                                     <select name="selectCurrCPB" id="selectCurrCPB" class="form-select" onchange="fundchange('CPB')" required>
@@ -352,6 +371,16 @@
                                                 </div>
                                             </div>
                                             <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label for="">Forma de pago del premio:</label>
+                                                    <select name="selectPayPrimeCPB" id="selectPayPrimeCPB" class="form-select" onchange="fundchange('CPB')" required>
+                                                        <option selected hidden value="">Selecciona una opción</option>
+                                                        <option value="1">Reinversión, transferencia o cheque</option>
+                                                        <option value="2">Reinversión (Sin opción a cambios)</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2">
                                                 <div class="form-group">
                                                     <label for="">Tasa:</label>
                                                     <div class="input-group mb-3">
@@ -401,9 +430,9 @@
                                         <div class="row justify-content-center">
                                             <div class="col-lg-3">
                                                 <div class="form-group">
-                                                    <label for="">Tipo:</label>
+                                                    <label for="">Plazo:</label>
                                                     <select name="selectInsuranceLPB" id="selectInsuranceLPB" class="form-select" disabled>
-                                                        <option hidden selected value="LP">Largo plazo</option>
+                                                        <option hidden selected value="LP">24 meses</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -414,6 +443,15 @@
                                                         <option selected hidden value=""></option>
                                                         <option value="MXN">MXN</option>
                                                         <option value="USD">USD</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3" hidden>
+                                                <div class="form-group">
+                                                    <label for="">Forma de pago del premio:</label>
+                                                    <select name="selectPayPrimeLPB" id="selectPayPrimeLPB" class="form-select" onchange="fundchange('LPB')" >
+                                                        <option selected value="1">Reinversión, transferencia o cheque</option>
+                                                        <option value="2">Reinversión (Sin opción a cambios)</option>
                                                     </select>
                                                 </div>
                                             </div>

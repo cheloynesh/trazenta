@@ -96,3 +96,23 @@ body {
     width: 50%;
 }
 /*# sourceMappingURL=login.css.map */
+
+.btn-login {
+  color: #fff;
+  background-color: #CCCCCC;
+  border-color: #CCCCCC;
+}
+
+.btn-login:hover {
+  color: #fff;
+  background-color: #CCCCCC;
+  border-color: #CCCCCC;
+}
+
+.btn-login:focus,
+.btn-login.focus {
+  color: #fff;
+  background-color: #CCCCCC;
+  border-color: #CCCCCC;
+  box-shadow: 0 0 0 0.2rem rgba(82, 161, 225, 0.5);
+}

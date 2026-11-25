@@ -74,12 +74,30 @@ class MonthComissionController extends Controller
         $userName = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
             ->where('users.id',$id)->whereNull('users.deleted_at')->first();
         $nucs = DB::table('Nuc')->select("Nuc.id as id")
-            ->where("month_flag","=","8")
+            ->where(function ($query) {
+                $query->where(function ($q) {
+                    $q->whereNull('fst_pay')
+                    ->where('month_flag', '>=', 2);
+                })
+                ->orWhere(function ($q) {
+                    $q->whereNotNull('fst_pay')
+                    ->where('month_flag', '>=', 8);
+                });
+            })
             ->where('fk_agent',$id)
             ->get();
         $clients = DB::table('Client')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS clName'),'Nuc.id as nucid')
             ->join('Nuc',"fk_client","=","Client.id")
-            ->where("month_flag","=","8")
+            ->where(function ($query) {
+                $query->where(function ($q) {
+                    $q->whereNull('fst_pay')
+                    ->where('month_flag', '>=', 2);
+                })
+                ->orWhere(function ($q) {
+                    $q->whereNotNull('fst_pay')
+                    ->where('month_flag', '>=', 8);
+                });
+            })
             ->where('Nuc.fk_agent',$id)->get();
         $clientNames = "";
 
@@ -564,7 +582,18 @@ class MonthComissionController extends Controller
             $status->invoice_flag = $request->date;
             $history->invoice_date = $request->date;
             $history->invoice_doc = 'REC_'.$request->id."_".$request->month."_".$request->year.'.pdf';
-            $nucs = DB::table('Nuc')->select("Nuc.id as id")->where("month_flag","=","8")->where('fk_agent',$request->id)->get();
+            $nucs = DB::table('Nuc')->select("Nuc.id as id")
+                ->where(function ($query) {
+                    $query->where(function ($q) {
+                        $q->whereNull('fst_pay')
+                        ->where('month_flag', '>=', 2);
+                    })
+                    ->orWhere(function ($q) {
+                        $q->whereNotNull('fst_pay')
+                        ->where('month_flag', '>=', 8);
+                    });
+                })
+                ->where('fk_agent',$request->id)->get();
             if(intval($request->monthaux) == 1)
             {
                 $monthless = 12;

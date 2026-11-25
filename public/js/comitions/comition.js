@@ -362,13 +362,13 @@ function abrirComision(id,invoice,contpp,contpa,lpnopay)
             document.getElementById("cardAd").style.display = "none";
             document.getElementById("cardLP").style.display = "none";
             if(invoice != "NA") document.getElementById("cardRec").style.display = "block";
-            if(contpp != 0)
-            {
-                document.getElementById("cardNC").style.display = "block";
-                $("#fst_month").val(result.regime.fst_month);
-                $("#five_month").val(result.regime.five_month);
-            }
-            if(contpa != 0) document.getElementById("cardAd").style.display = "block";
+            // if(contpp != 0)
+            // {
+            //     document.getElementById("cardNC").style.display = "block";
+            //     $("#fst_month").val(result.regime.fst_month);
+            //     $("#five_month").val(result.regime.five_month);
+            // }
+            // if(contpa != 0) document.getElementById("cardAd").style.display = "block";
             if(lpnopay != 0) document.getElementById("cardLP").style.display = "block";
             $("#selectRegime").val(result.regime.fk_regime);
             // alert(result.regime)

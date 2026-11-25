@@ -46,6 +46,7 @@ Route::get('admin/payment_forms/payment_form/GetInfo/{id}','PaymentFormsControll
 // aseguradoras
 Route::resource('admin/insurance/insurances', 'InsuranceController');
 Route::get('admin/insurance/insurances/GetInfo/{id}','InsuranceController@GetInfo')->name('insurance.GetInfo');
+Route::get('admin/insurance/insurances/GetFunds/{active}','InsuranceController@GetFunds')->name('insurance.GetFunds');
 
 // moneda
 Route::resource('admin/currency/currencies', 'CurrencyController');
@@ -140,7 +141,7 @@ Route::post('funds/fstmonthcomission/fstmonthcomission/setNullDate','FstMonthCom
 //---------------------------------------------------Fondo de 6 meses ----------------------------------------------------------
 Route::resource('funds/sixmonthfund/sixmonthfunds', 'SixMonthFundController');
 Route::get('funds/sixmonthfund/sixmonthfunds/GetInfo/{id}','SixMonthFundController@GetInfo')->name('sixmonthfunds.GetInfo');
-Route::get('funds/sixmonthfund/sixmonthfunds/import/{id}','SixMonthFundController@import')->name('sixmonthfunds.import');
+Route::post('funds/sixmonthfund/sixmonthfunds/import','SixMonthFundController@import')->name('sixmonthfunds.import');
 Route::get('funds/sixmonthfund/sixmonthfunds/GetNuc/{id}','SixMonthFundController@GetNuc')->name('sixmonthfunds.GetNuc');
 Route::get('funds/sixmonthfund/sixmonthfunds/GetLP/{id}', 'SixMonthFundController@GetLP')->name('sixmonthfunds.GetLP');
 Route::get('funds/sixmonthfund/sixmonthfunds/GetinfoFund/{id}','SixMonthFundController@GetinfoFund')->name('sixmonthfunds.GetinfoFund');
@@ -157,12 +158,39 @@ Route::get('funds/sixmonthlycomission/sixmonthcomission/GetInfoAgents/{id}','Six
 Route::get('funds/sixmonthlycomission/sixmonthcomission/GetComitions/{paid}','SixMonthComissionController@GetComitions');
 
 // --------------------------------------------------------Aperturas----------------------------------------------------------
-Route::resource('process/opening/opening', 'OpeningController');
-Route::get('process/opening/opening/GetInfo/{id}','OpeningController@GetInfo')->name('opening.GetInfo');
-Route::get('process/opening/opening/GetActive/{id}','OpeningController@GetActive')->name('opening.GetActive');
-Route::get('process/opening/opening/GetinfoStatus/{id}','OpeningController@GetinfoStatus')->name('opening.GetinfoStatus');
-Route::get('process/opening/opening/GetinfoFund/{id}','OpeningController@GetinfoFund')->name('opening.GetinfoFund');
+//formulario de apertura
+Route::get('process/opening/opening/create', 'OpeningController@create')->name('opening.create');
+Route::post('process/opening/opening/storeRequest', 'OpeningController@storeRequest')->name('opening.storeRequest');
+Route::get('process/opening/opening/getRequestsList', 'OpeningController@getRequestsList')->name('opening.getRequestsList');
+Route::get('process/opening/opening/getRequestDetail/{id}', 'OpeningController@getRequestDetail')->name('opening.getRequestDetail');
+Route::post('process/opening/opening/rejectRequest/{id}', 'OpeningController@rejectRequest')->name('opening.rejectRequest');
+Route::get('process/opening/opening/getClientContracts/{clientId}', 'OpeningController@getClientContracts')->name('opening.getClientContracts');
+
+Route::get('process/opening/opening/GetOpeningsList', 'OpeningController@GetOpeningsList')->name('opening.GetOpeningsList');
+Route::get('process/opening/opening/GetInfo/{id}', 'OpeningController@GetInfo')->name('opening.GetInfo');
+Route::get('process/opening/opening/GetActive/{id}', 'OpeningController@GetActive')->name('opening.GetActive');
+Route::get('process/opening/opening/GetinfoStatus/{id}', 'OpeningController@GetinfoStatus')->name('opening.GetinfoStatus');
+Route::get('process/opening/opening/GetinfoFund/{id}', 'OpeningController@GetinfoFund')->name('opening.GetinfoFund');
 Route::post('process/opening/opening/updateStatus', 'OpeningController@updateStatus')->name('opening.updateStatus');
+
+// Endpoints compartidos en la pantalla de Aperturas
+Route::get('process/opening/opening/getRenovationsList', 'OpeningController@getRenovationsList')->name('opening.getRenovationsList');
+Route::get('process/opening/opening/getRenovationDetail/{id}', 'OpeningController@getRenovationDetail')->name('opening.getRenovationDetail');
+Route::post('process/opening/opening/rejectRenovation/{id}', 'OpeningController@rejectRenovation')->name('opening.rejectRenovation');
+
+// 2. AL FINAL el Route::resource
+Route::resource('process/opening/opening', 'OpeningController');
+
+// --------------------------------------------------------Renovaciones----------------------------------------------------------
+Route::get('process/renovation/renovation', 'RenovationController@index')->name('renovation.index');
+Route::get('process/renovation/renovation/create', 'RenovationController@create')->name('renovation.create');
+Route::get('process/renovation/renovation/getClientContracts/{clientId}', 'RenovationController@getClientContracts')->name('renovation.getClientContracts');
+Route::post('process/renovation/renovation/storeRequest', 'RenovationController@storeRequest')->name('renovation.storeRequest');
+Route::get('process/renovation/renovation/getRequestsList', 'RenovationController@getRequestsList')->name('renovation.getRequestsList');
+Route::get('process/renovation/renovation/getRequestDetail/{id}', 'RenovationController@getRequestDetail')->name('renovation.getRequestDetail');
+Route::post('process/renovation/renovation/processRequest/{id}', 'RenovationController@processRequest')->name('renovation.processRequest');
+Route::post('process/renovation/renovation/rejectRequest/{id}', 'RenovationController@rejectRequest')->name('renovation.rejectRequest');
+
 
 // --------------------------------------------------------Servicios----------------------------------------------------------
 Route::resource('process/services/services', 'ServicesController');
@@ -223,10 +251,43 @@ Route::get('/mailtest','MailController@MailSender')->name('mailing.MailSender');
 
 // --------------------------------------------------------Runs------------------------------------------------------------
 Route::resource('tools/runs/runs', 'RunsController');
-Route::get('tools/runs/runs/GetinfoFund/{type}/{curr}','RunsController@GetinfoFund')->name('runs.GetinfoFund');
+Route::get('tools/runs/runs/GetinfoFund/{type}/{curr}/{payprime}','RunsController@GetinfoFund')->name('runs.GetinfoFund');
 
 // --------------------------------------------------------Comition Calc------------------------------------------------------------
 Route::resource('tools/comitioncalc/comitioncalc', 'ComitioncalcController');
 Route::get('tools/comitioncalc/comitioncalc/GetinfoFund/{id}','ComitioncalcController@GetinfoFund')->name('comcalc.GetinfoFund');
 Route::get('tools/comitioncalc/comitioncalc/GetCPCalc/{id}','ComitioncalcController@GetCPCalc')->name('comcalc.GetCPCalc');
 Route::get('tools/comitioncalc/comitioncalc/GetLPCalc/{id}','ComitioncalcController@GetLPCalc')->name('comcalc.GetLPCalc');
+
+// --------------------------------tickets--------------------------------------------------
+Route::resource('tickets/create', 'CreateTicketController');
+Route::post('/tickets/create/storeSolicitud', 'CreateTicketController@storeSolicitud')->name('create.storeSolicitud');
+Route::get('tickets/create/GetNucByClient/{id}', 'CreateTicketController@GetNucByClient')->name('create.GetNucByClient');
+Route::get('tickets/create/getBranches/{id}','CreateTicketController@getBranches')->name('create.getBranches');
+
+Route::resource('tickets/view', 'ViewTicketController');
+Route::get('tickets/view/GetTicketsList/{id}', 'ViewTicketController@GetTicketsList')->name('view.GetTicketsList');
+Route::get('tickets/view/getTicketDetail/{id}', 'ViewTicketController@getTicketDetail')->name('view.getTicketDetail');
+Route::get('tickets/view/getTicketEditData/{id}', 'ViewTicketController@getTicketEditData')->name('view.getTicketEditData');
+Route::post('tickets/view/UpdateTicketFullData/{id}', 'ViewTicketController@UpdateTicketFullData')->name('view.UpdateTicketFullData');
+Route::get('tickets/view/GetNucByClient/{id}', 'ViewTicketController@GetNucByClient')->name('view.GetNucByClient');
+Route::get('tickets/view/GetTicketStatusFields/{id}', 'ViewTicketController@GetTicketStatusFields')->name('view.GetTicketStatusFields');
+Route::post('tickets/view/UpdateTicketStatus/{id}', 'ViewTicketController@UpdateTicketStatus')->name('view.UpdateTicketStatus');
+Route::post('tickets/view/UploadMissingFiles/{id}', 'ViewTicketController@UploadMissingFiles')->name('view.UploadMissingFiles');
+Route::post('tickets/view/destroyTicket/{id}', 'ViewTicketController@destroyTicket')->name('view.destroyTicket');
+Route::get('tickets/view/getBranches/{id}','ViewTicketController@getBranches')->name('view.getBranches');
+Route::get('tickets/view/getTicketMessages/{id}', 'ViewTicketController@getTicketMessages')->name('view.getTicketMessages');
+Route::post('tickets/view/sendTicketMessage', 'ViewTicketController@sendTicketMessage')->name('view.sendTicketMessage');
+Route::post('tickets/view/markChatAsRead/{id}', 'ViewTicketController@markChatAsRead')->name('view.markChatAsRead');
+Route::get('tickets/view/getEmailLogs/{id}', 'ViewTicketController@getEmailLogs')->name('view.getEmailLogs');
+Route::post('tickets/view/link-registered-entity', 'ViewTicketController@linkRegisteredEntity')->name('view.linkEntity');
+Route::get('tickets/view/getPolicy/{policy}', 'ViewTicketController@getPolicy')->name('view.getPolicy');
+Route::get('tickets/view/getPolicyData/{id}', 'ViewTicketController@getPolicyData')->name('view.getPolicyData');
+
+// ---------------------------- Centro de notificaciones --------------------------------
+Route::get('/notifications/get', 'NotificationController@getNotifications')->name('notifications.get');
+Route::post('/notifications/mark-read/{id}', 'NotificationController@markAsRead')->name('notifications.markRead');
+Route::post('/notifications/mark-all-read', 'NotificationController@markAllAsRead')->name('notifications.markAllRead');
+// Historial de Notificaciones
+Route::get('/notifications/history', 'NotificationController@historyView')->name('notifications.history');
+Route::get('/notifications/history/data', 'NotificationController@getHistoryData')->name('notifications.historyData');

@@ -171,6 +171,7 @@ class ServicesController extends Controller
         $status->limit_status = $request->limit_status;
         $status->office_status = $request->office_status;
         $status->finestra_status = $request->finestra_status;
+        $status->commentary = $request->commentary;
         $status->save();
 
         $profile = User::findProfile();

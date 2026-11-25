@@ -1,0 +1,759 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\User;
+use App\Client;
+use App\Permission;
+use App\Nuc;
+use App\Status;
+use App\Currency;
+use App\Insurance;
+use App\Paymentform;
+use App\Application;
+use App\Charge;
+use App\Opening;
+use App\SixMonth_fund;
+use App\Coupon;
+use App\Charge_Moves;
+use App\Documents;
+use Carbon\Carbon;
+use DB;
+use DateTime;
+
+class OpeningController extends Controller
+{
+    public function index(){
+        $profile = User::findProfile();
+        $agents = User::select('id', DB::raw('CONCAT(name," ",firstname) AS name'))->orderBy('name')->where("fk_profile","12")->pluck('name','id');
+        $currencies = Currency::pluck('name','id');
+        $insurances = Insurance::orderBy('name')->where('active_fund',1)->get();
+        $paymentForms = Paymentform::pluck('name','id');
+        $applications = Application::pluck('name','id');
+        $charges = Charge::pluck('name','id');
+        $clients = Client::get();
+        $perm = Permission::permView($profile,31);
+        $perm_btn =Permission::permBtns($profile,31);
+        $nucs = Nuc::where('active_stat',1)->pluck('nuc', 'id');
+        // dd($nucs);
+        $cmbStatus = Status::select('id','name')
+        ->where("fk_section","31")
+        ->pluck('name','id');
+        $cmbStatusMF = Status::select('id','name')
+        ->where("fk_section","19")
+        ->pluck('name','id');
+        $user = User::user_id();
+
+        if($profile == 12)
+        {
+            $openings = DB::select('call aperturasAgente(?,?)',[$user,1]);
+        }
+        else
+        {
+            $openings = DB::select('call aperturas(?)',[0]);
+        }
+        // dd($clients);
+        if($perm==0)
+        {
+            return redirect()->route('home');
+        }
+        else
+        {
+            return view('process.opening.opening', compact('profile','agents','perm_btn','cmbStatus','cmbStatusMF','currencies','insurances','paymentForms','applications','openings','clients','charges','nucs'));
+        }
+    }
+
+    public function ReturnData($profile,$active)
+    {
+        $user = User::user_id();
+        if($profile == 12)
+        {
+            $openings = DB::select('call aperturasAgente(?,?)',[$user,$active]);
+        }
+        else
+        {
+            $openings = DB::select('call aperturas(?)',[$active]);
+        }
+        return $openings;
+    }
+
+    public function GetActive($active)
+    {
+        $profile = User::findProfile();
+        $perm_btn =Permission::permBtns($profile,31);
+        $openings = $this->ReturnData($profile,$active);
+        // dd($active);
+        return response()->json(['status'=>true, "openings" => $openings, "profile" => $profile, "permission" => $perm_btn]);
+    }
+
+    public function GetInfo($id)
+    {
+        // dd($id);
+        $opening = Opening::where('id',$id)->first();
+        $insurance = Insurance::where('id',$opening->fk_insurance)->first();
+        $chargeMoves = null;
+
+        if($insurance->fund_type == "CP" || $insurance->fund_type == "MP")
+        {
+            $insurances = Insurance::whereIn('fund_type',['CP','MP'])->get();
+            $opening = DB::table('Opening')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS cname'),
+                'Opening.fk_agent','fk_application','fk_payment_form','Opening.fk_insurance','nuc','Opening.currency','estatus','Client.id as clid','Opening.id as opid','fund_type',
+                'fk_charge','yield','yield_usd','fund_curr','fst_scnd')
+                ->join('Client','Opening.fk_client','=','Client.id')
+                ->join('Insurance','Opening.fk_insurance','=','Insurance.id')
+                ->join('Nuc','Opening.fk_nuc','=','Nuc.id')
+                ->where('Opening.id',$id)->first();
+        }
+        else
+        {
+            $insurances = Insurance::where('fund_type','LP')->get();
+            $opening = DB::table('Opening')->select(DB::raw('CONCAT(IFNULL(Client.name, "")," ",IFNULL(Client.firstname, "")," ",IFNULL(Client.lastname, "")) AS cname'),
+                'Opening.fk_agent','fk_application','fk_payment_form','Opening.fk_insurance','nuc','fk_nuc','Opening.currency','deposit_date','amount','Client.id as clid','Opening.id as opid',
+                'fund_type','fk_charge','yield','yield_usd','fund_curr','pair_non','fk_cp')
+                ->join('Client','Opening.fk_client','=','Client.id')
+                ->join('Insurance','Opening.fk_insurance','=','Insurance.id')
+                ->join('SixMonth_fund','Opening.fk_nuc','=','SixMonth_fund.id')
+                ->where('Opening.id',$id)->first();
+            $chargeMoves = DB::table('Charge_Moves')->select("*")
+                ->join('Charge','Charge_Moves.fk_charge','Charge.id')
+                ->where('fk_fund',$opening->fk_nuc)
+                ->whereNull("Charge_Moves.deleted_at")->get();
+            // dd($chargeMoves);
+        }
+
+        $profile = User::findProfile();
+
+        // dd($opening,$insurances);
+        return response()->json(['status'=>true, "data"=>$opening, "insurances"=>$insurances, "chargeMoves"=>$chargeMoves, "profile" => $profile]);
+    }
+
+    public function GetinfoFund($id)
+    {
+        $opening = Insurance::where('id',$id)->first();
+        // dd($opening);
+        return response()->json(['status'=>true, "data"=>$opening]);
+    }
+
+    public function store(Request $request)
+    {
+        // dd($request->all());
+        $fk_client = $request->fk_client;
+        if($fk_client == 0)
+        {
+            $client = new Client;
+            $client->name = $request->name;
+            $client->firstname = $request->firstname;
+            $client->lastname = $request->lastname;
+            $client->birth_date = $request->birth_date;
+            $client->rfc = $request->rfc;
+            $client->curp = $request->curp;
+            $client->cellphone = $request->cellphone;
+            $client->email = $request->email;
+            $client->domicile = $request->domicile;
+            // $client->fk_agent = $request->fk_agent;
+            $client->save();
+            $fk_client = $client->id;
+        }
+
+        if($request->fund_type == "CP" || $request->fund_type == "MP")
+        {
+            $nuc = new Nuc;
+            $nuc->nuc = $request->nuc;
+            $nuc->currency = $request->selectCurrency;
+            $nuc->fk_client = $fk_client;
+            $nuc->estatus = $request->estatus;
+            $nuc->fk_application = $request->fk_application;
+            $nuc->fk_payment_form = $request->fk_payment_form;
+            $nuc->fk_charge = $request->fk_charge;
+            $nuc->fk_insurance = $request->fk_insurance;
+            $nuc->fst_scnd = $request->fst_scnd;
+            $nuc->fk_agent = $request->fk_agent;
+            $nuc->save();
+            $fk_nuc = $nuc->id;
+        }
+        else
+        {
+            $deposit_date = new DateTime($request->deposit_date);
+            $initial_date = new DateTime($deposit_date->format('Y')."-".$deposit_date->format('m')."-01");
+            $initial = clone $initial_date;
+            $initialflag = 0;
+            $initialdiff = 0;
+
+            if(intval($deposit_date->format('d')) <= 10)
+            {
+                $initial_date->modify('+2 month');
+                $initialflag = 0;
+                $initialdiff = $deposit_date->diff($initial)->days;
+            }
+            else
+            {
+                $initial_date->modify('+3 month');
+                $initialflag = 1;
+                $initial->modify('+1 month');
+                $initialdiff = $deposit_date->diff($initial)->days;
+            }
+
+            $end_date = clone $deposit_date;
+            $end_date->modify('+2 year');
+
+            $nuc = new SixMonth_fund;
+            $nuc->nuc = $request->nuc;
+            $nuc->currency = $request->selectCurrency;
+            $nuc->amount = $request->amount;
+            $nuc->fk_client = $fk_client;
+            $nuc->deposit_date = $deposit_date;
+            $nuc->initial_date = $initial_date;
+            $nuc->end_date = $end_date;
+            $nuc->fk_application = $request->fk_application;
+            $nuc->fk_payment_form = $request->fk_payment_form;
+            $nuc->fk_charge = $request->fk_charge;
+            $nuc->fk_insurance = $request->fk_insurance;
+            $nuc->fk_agent = $request->fk_agent;
+            $nuc->pair_non = $request->pair_non;
+            $nuc->fk_cp = $request->fk_cp;
+            $nuc->save();
+            $fk_nuc = $nuc->id;
+
+            $date1 = clone $initial_date;
+            $date2= clone $deposit_date;
+            $number = 1;
+            for($cont = 0; $cont < 22; $cont += 2)
+            {
+                $coupon = new Coupon;
+                $coupon->number = $number;
+                if($cont != 0) $date1->modify('+2 month');
+                $diff = $date1->diff($date2)->days;
+                $coupon->amount = intval($diff) * (($nuc->amount * ($request->yield/100))/360);
+                $coupon->pay_date = $date1;
+                $coupon->fk_nuc = $nuc->id;
+                $coupon->save();
+                $number++;
+                $date2= clone $date1;
+            }
+            $coupon = new Coupon;
+            $coupon->number = $number;
+            $date1->modify('+2 month');
+            $diff = $date1->diff($date2)->days;
+            $coupon->amount = intval($diff) * (($nuc->amount * ($request->yield/100))/360);
+            if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($nuc->amount * ($request->yield/100))/360);
+            else $coupon->amount -= intval($initialdiff) * (($nuc->amount * ($request->yield/100))/360);
+            // dd($coupon->amount);
+            $coupon->pay_date = $date1;
+            $coupon->fk_nuc = $nuc->id;
+            $coupon->save();
+
+            if($request->charge_moves != null)
+            {
+                foreach($request->charge_moves as $charge)
+                {
+                    $chargeMove = new Charge_moves;
+                    $chargeMove->amount = $charge["amount"];
+                    $chargeMove->apply_date = $charge['apply_date'];
+                    $chargeMove->fk_fund = $nuc->id;
+                    $chargeMove->fk_charge = $charge['fk_charge'];
+                    $chargeMove->save();
+                }
+
+            }
+        }
+
+        $opening = new Opening;
+        $opening->fk_agent = $request->fk_agent;
+        $opening->fk_client = $fk_client;
+        $opening->fk_nuc = $fk_nuc;
+        $opening->fk_insurance = $request->fk_insurance;
+        $opening->save();
+
+        $profile = User::findProfile();
+        $perm_btn =Permission::permBtns($profile,31);
+        $openings = $this->ReturnData($profile,$request->active);
+
+        return response()->json(["status"=>true, "message"=>"Servicio Creado", "openings" => $openings, "profile" => $profile, "permission" => $perm_btn]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        // dd($request->all());
+
+        $opening = Opening::where('id',$request->id)->first();
+        $fk_client = $request->fk_client;
+        if($fk_client == 0)
+        {
+            $client = new Client;
+            $client->name = $request->name;
+            $client->firstname = $request->firstname;
+            $client->lastname = $request->lastname;
+            $client->birth_date = $request->birth_date;
+            $client->rfc = $request->rfc;
+            $client->curp = $request->curp;
+            $client->cellphone = $request->cellphone;
+            $client->email = $request->email;
+            $client->domicile = $request->domicile;
+            // $client->fk_agent = $request->fk_agent;
+            $client->save();
+            $fk_client = $client->id;
+        }
+        // else
+        // {
+        //     $client = Client::where('id',$fk_client)->first();
+        //     // dd($opening,$client);
+        //     if($client->fk_agent != $opening->fk_agent)
+        //     {
+        //         $clnt = Client::where('id',$fk_client)->update(['fk_agent'=>$request->fk_agent]);
+        //     }
+        // }
+        if($request->fund_type == "CP" || $request->fund_type == "MP")
+        {
+            $nuc = Nuc::where('id',$opening->fk_nuc)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client,'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,
+            'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance,'currency'=>$request->currency,'fk_agent'=>$request->fk_agent,'estatus'=>$request->estatus,'fst_scnd'=>$request->fst_scnd]);
+        }
+        else
+        {
+            $deposit_date = new DateTime($request->deposit_date);
+            $initial_date = new DateTime($deposit_date->format('Y')."-".$deposit_date->format('m')."-01");
+            $initial = clone $initial_date;
+            $initialflag = 0;
+            $initialdiff = 0;
+
+            if(intval($deposit_date->format('d')) <= 10)
+            {
+                $initial_date->modify('+2 month');
+                $initialflag = 0;
+                $initialdiff = $deposit_date->diff($initial)->days;
+            }
+            else
+            {
+                $initial_date->modify('+3 month');
+                $initialflag = 1;
+                $initial->modify('+1 month');
+                $initialdiff = $deposit_date->diff($initial)->days;
+            }
+
+            $end_date = clone $deposit_date;
+            $end_date->modify('+2 year');
+
+            $nuc = DB::table('SixMonth_fund')->select('*')
+            ->join('Insurance','Insurance.id','=','fk_insurance')
+            ->where('SixMonth_fund.id',$opening->fk_nuc)->first();
+
+            $nucEdit = SixMonth_fund::where('id',$opening->fk_nuc)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client, 'amount'=>$request->amount,'currency'=>$request->currency,
+                'deposit_date'=>$deposit_date,'initial_date'=>$initial_date,'end_date'=>$end_date, 'fk_application'=>$request->fk_application,'fk_payment_form'=>$request->fk_payment_form,
+                'fk_charge'=>$request->fk_charge,'fk_insurance'=>$request->fk_insurance,'fk_agent'=>$request->fk_agent, 'pair_non'=>$request->pair_non, 'fk_cp'=>$request->fk_cp]);
+
+            if(floatval($request->amount) != floatval($nuc->amount) || $request->currency != $nuc->currency || $request->deposit_date != $nuc->deposit_date)
+            {
+                $coupons = Coupon::where("fk_nuc",$opening->fk_nuc)->get();
+                foreach($coupons as $coup)
+                {
+                    $coup->delete();
+                }
+
+                $date1 = clone $initial_date;
+                $date2= clone $deposit_date;
+                $number = 1;
+                for($cont = 0; $cont < 22; $cont += 2)
+                {
+                    $coupon = new Coupon;
+                    $coupon->number = $number;
+                    if($cont != 0) $date1->modify('+2 month');
+                    $diff = $date1->diff($date2)->days;
+                    $coupon->amount = intval($diff) * (($request->amount * ($nuc->yield/100))/360);
+                    $coupon->pay_date = $date1;
+                    $coupon->fk_nuc = $opening->fk_nuc;
+                    $coupon->save();
+                    $number++;
+                    $date2= clone $date1;
+                }
+                $coupon = new Coupon;
+                $coupon->number = $number;
+                $date1->modify('+2 month');
+                $diff = $date1->diff($date2)->days;
+                $coupon->amount = intval($diff) * (($request->amount * ($nuc->yield/100))/360);
+                if($initialflag == 0) $coupon->amount += intval($initialdiff) * (($request->amount * ($nuc->yield/100))/360);
+                else $coupon->amount -= intval($initialdiff) * (($request->amount * ($nuc->yield/100))/360);
+                // dd($coupon->amount);
+                $coupon->pay_date = $date1;
+                $coupon->fk_nuc = $opening->fk_nuc;
+                $coupon->save();
+            }
+
+            $charges = Charge_Moves::where("fk_fund",$opening->fk_nuc)->get();
+            foreach($charges as $charge)
+            {
+                $charge->delete();
+            }
+
+            if($request->charge_moves != null)
+            {
+                foreach($request->charge_moves as $charge)
+                {
+                    $chargeMove = new Charge_moves;
+                    $chargeMove->amount = $charge["amount"];
+                    $chargeMove->apply_date = $charge['apply_date'];
+                    $chargeMove->fk_fund = $opening->fk_nuc;
+                    $chargeMove->fk_charge = $charge['fk_charge'];
+                    $chargeMove->save();
+                }
+            }
+        }
+
+        $opening = Opening::where('id',$request->id)->update(['fk_agent'=>$request->fk_agent,'fk_client'=>$request->fk_client,'fk_insurance'=>$request->fk_insurance]);
+
+        $profile = User::findProfile();
+        $perm_btn =Permission::permBtns($profile,31);
+        $openings = $this->ReturnData($profile,$request->active);
+
+        return response()->json(['status'=>true, 'message'=>"Apertura Actualizada", "openings" => $openings, "profile" => $profile, "permission" => $perm_btn]);
+    }
+
+    public function destroy($id, Request $request)
+    {
+        $opening = DB::table('Opening')->join('Insurance','Opening.fk_insurance','=','Insurance.id')->where('Opening.id',$id)->first();
+
+        if($opening->fund_type == "CP" || $opening->fund_type == "MP")
+        {
+            $fund = Nuc::find($opening->fk_nuc);
+            $fund->delete();
+        }
+        else
+        {
+            $SixMonth_fund = SixMonth_fund::find($opening->fk_nuc);
+            $SixMonth_fund->delete();
+        }
+
+        $opening = Opening::find($id);
+        $opening->delete();
+
+        $profile = User::findProfile();
+        $perm_btn =Permission::permBtns($profile,31);
+        $openings = $this->ReturnData($profile,$request->active);
+
+        return response()->json(['status'=>true, "message"=>"Apertura eliminada", "openings" => $openings, "profile" => $profile, "permission" => $perm_btn]);
+    }
+
+    public function GetinfoStatus($id)
+    {
+        $opening = Opening::where('id',$id)->first();
+        // dd($initial->commentary);
+        return response()->json(['status'=>true, "data"=>$opening]);
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $status = Opening::where('id',$request->id)->first();
+        // dd($status);
+        $status->fk_status = $request->fk_status;
+        $status->pick_status = $request->pick_status;
+        $status->limit_status = $request->limit_status;
+        $status->agent_status = $request->agent_status;
+        $status->office_status = $request->office_status;
+        $status->finestra_status = $request->finestra_status;
+        $status->save();
+
+        $profile = User::findProfile();
+        $perm_btn =Permission::permBtns($profile,31);
+        $openings = $this->ReturnData($profile,$request->active);
+
+        return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "openings" => $openings, "profile" => $profile, "permission" => $perm_btn]);
+    }
+
+    //---------------------------------------------- formulario de apertura ----------------------------------------------
+    // =========================================================
+    // 🟢 1. MOSTRAR LA VISTA DE CREACIÓN (WIZARD)
+    // =========================================================
+    public function create()
+    {
+        $user = User::user_id();
+        $profile = User::findProfile();
+        $perm = Permission::permView($profile, 31);
+        $perm_btn = Permission::permBtns($profile, 31);
+
+        if ($perm == 0) {
+            return redirect()->route('home');
+        }
+
+        // 1. Clientes (si es agente, solo los suyos o los vinculados a sus contratos)
+        $clients = Client::when($profile == 12, function ($q) use ($user) {
+                $q->where('fk_agent', $user)
+                  ->orWhereIn('id', function ($sub) use ($user) {
+                      $sub->select('fk_client')->from('Nuc')->where('fk_agent', $user);
+                  })
+                  ->orWhereIn('id', function ($sub) use ($user) {
+                      $sub->select('fk_client')->from('SixMonth_fund')->where('fk_agent', $user);
+                  });
+            })
+            ->orderBy('name')
+            ->get();
+
+        // 2. Catálogos activos
+        $paymentForms = Paymentform::whereNull('deleted_at')->pluck('name', 'id');
+        $charges = Charge::whereNull('deleted_at')->pluck('name', 'id');
+
+        // 3. NUCs de DESTINO (Solo CP y MP -> tabla Nuc)
+        $nucsDestino = DB::table('Nuc')
+            ->join('Insurance', 'Nuc.fk_insurance', '=', 'Insurance.id')
+            ->leftJoin('Client', 'Nuc.fk_client', '=', 'Client.id')
+            ->select(
+                'Nuc.id',
+                DB::raw("CONCAT(Nuc.nuc, ' (', Insurance.fund_type, ') - ', IFNULL(Client.name, ''), ' ', IFNULL(Client.firstname, '')) as label")
+            )
+            ->whereIn('Insurance.fund_type', ['CP', 'MP'])
+            ->where('Nuc.active_stat', 1)
+            ->whereNull('Nuc.deleted_at')
+            ->when($profile == 12, function ($q) use ($user) {
+                $q->where('Nuc.fk_agent', $user);
+            })
+            ->orderBy('Nuc.nuc')
+            ->get();
+
+        // 4. NUCs de ORIGEN para Movimiento Interno (CP, MP y LP)
+        $nucsCpMp = DB::table('Nuc')
+            ->join('Insurance', 'Nuc.fk_insurance', '=', 'Insurance.id')
+            ->leftJoin('Client', 'Nuc.fk_client', '=', 'Client.id')
+            ->select(
+                'Nuc.id',
+                'Insurance.fund_type',
+                DB::raw("CONCAT(Nuc.nuc, ' (', Insurance.fund_type, ') - ', IFNULL(Client.name, ''), ' ', IFNULL(Client.firstname, '')) as label")
+            )
+            ->whereIn('Insurance.fund_type', ['CP', 'MP'])
+            ->where('Nuc.active_stat', 1)
+            ->whereNull('Nuc.deleted_at')
+            ->when($profile == 12, function ($q) use ($user) {
+                $q->where('Nuc.fk_agent', $user);
+            });
+
+        $nucsLp = DB::table('SixMonth_fund')
+            ->join('Insurance', 'SixMonth_fund.fk_insurance', '=', 'Insurance.id')
+            ->leftJoin('Client', 'SixMonth_fund.fk_client', '=', 'Client.id')
+            ->select(
+                'SixMonth_fund.id',
+                'Insurance.fund_type',
+                DB::raw("CONCAT(SixMonth_fund.nuc, ' (LP) - ', IFNULL(Client.name, ''), ' ', IFNULL(Client.firstname, '')) as label")
+            )
+            ->where('Insurance.fund_type', 'LP')
+            ->where('SixMonth_fund.active_stat', 1)
+            ->whereNull('SixMonth_fund.deleted_at')
+            ->when($profile == 12, function ($q) use ($user) {
+                $q->where('SixMonth_fund.fk_agent', $user);
+            });
+
+        $nucsOrigen = $nucsCpMp->unionAll($nucsLp)->orderBy('label')->get();
+
+        return view('process.opening.openingCreate', compact(
+            'profile', 'perm_btn', 'clients', 'paymentForms', 'charges', 'nucsOrigen', 'nucsDestino'
+        ));
+    }
+
+    // =========================================================
+    // 🟢 2. GUARDAR LA APERTURA Y SUBIR ARCHIVOS (WIZARD)
+    // =========================================================
+    public function storeApertura(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $user_id = User::user_id();
+            $fk_client = intval($request->input('fk_client', 0));
+
+            // 1. Si es Cliente No Registrado (fk_client == 0), darlo de alta en Client
+            if ($fk_client === 0) {
+                $client = new Client;
+                $client->name       = $request->input('new_name');
+                $client->firstname  = $request->input('client_type') == 0 ? $request->input('new_firstname') : null;
+                $client->lastname   = $request->input('client_type') == 0 ? $request->input('new_lastname') : null;
+                $client->birth_date = $request->input('new_birth_date') ?: null;
+                $client->rfc        = strtoupper(trim($request->input('new_rfc')));
+                $client->curp       = $request->input('client_type') == 0 ? strtoupper(trim($request->input('new_curp'))) : null;
+                $client->cellphone  = $request->input('cellphone');
+                $client->email      = $request->input('email');
+                $client->domicile   = $request->input('new_domicile');
+                $client->fk_agent   = $user_id;
+                $client->save();
+
+                $fk_client = $client->id;
+            } else {
+                // Actualizar correo/celular en Client si estaban vacíos
+                $existingClient = Client::find($fk_client);
+                if ($existingClient) {
+                    $updated = false;
+                    if (empty($existingClient->email) && $request->filled('email')) {
+                        $existingClient->email = $request->input('email');
+                        $updated = true;
+                    }
+                    if (empty($existingClient->cellphone) && $request->filled('cellphone')) {
+                        $existingClient->cellphone = $request->input('cellphone');
+                        $updated = true;
+                    }
+                    if ($updated) {
+                        $existingClient->save();
+                    }
+                }
+            }
+
+            // 2. Determinar el Plazo (fund_type)
+            $plazo = intval($request->input('plazo')); // 6, 12, 24
+            $fund_type = 'CP';
+            if ($plazo === 12) $fund_type = 'MP';
+            if ($plazo === 24) $fund_type = 'LP';
+
+            // 3. Buscar el Fondo (Insurance) según Plazo, Moneda y Forma de Pago del Premio
+            $payTypeQuery = ($fund_type === 'LP') ? 1 : $request->input('fk_payment_form');
+
+            $insurance = Insurance::where('fund_type', $fund_type)
+                ->where('fund_curr', $request->input('currency'))
+                ->where('pay_type', $payTypeQuery)
+                ->where('active_fund', 1)
+                ->first();
+
+            if (!$insurance) {
+                $insurance = Insurance::where('fund_type', $fund_type)
+                    ->where('fund_curr', $request->input('currency'))
+                    ->where('active_fund', 1)
+                    ->first();
+            }
+
+            $fk_insurance = $insurance ? $insurance->id : 0;
+            $monto_limpio = (float) preg_replace('/[^0-9.]/', '', $request->input('amount', 0));
+            $fk_nuc_generado = 0;
+
+            $isMovInterno = ($request->input('opening_type') == 2);
+            $fkNucOrigin  = $isMovInterno ? $request->input('fk_nuc_origin') : null;
+            $isReinvLp    = ($fund_type === 'LP' && $request->input('fk_payment_form') == 4);
+            $fkNucDest    = $isReinvLp ? $request->input('fk_nuc_dest') : null;
+
+            // 4. Crear el registro de contrato vacío (NUC = PENDIENTE)
+            if ($fund_type === 'CP' || $fund_type === 'MP') {
+                $nuc = new Nuc;
+                $nuc->nuc             = 'PENDIENTE';
+                $nuc->currency        = $request->input('currency');
+                $nuc->fk_client       = $fk_client;
+                $nuc->estatus         = 1;
+                $nuc->fk_payment_form = $request->input('fk_payment_form');
+                $nuc->fk_charge       = $request->input('fk_charge');
+                $nuc->fk_insurance    = $fk_insurance;
+                $nuc->fk_agent        = $user_id;
+                $nuc->fst_amount      = $monto_limpio;
+                $nuc->save();
+                $fk_nuc_generado = $nuc->id;
+            } else {
+                $nuc = new SixMonth_fund;
+                $nuc->nuc             = 'PENDIENTE';
+                $nuc->currency        = $request->input('currency');
+                $nuc->amount          = $monto_limpio;
+                $nuc->fk_client       = $fk_client;
+                $nuc->fk_payment_form = $request->input('fk_payment_form');
+                $nuc->fk_charge       = $request->input('fk_charge');
+                $nuc->fk_insurance    = $fk_insurance;
+                $nuc->fk_agent        = $user_id;
+                $nuc->fk_cp           = $fkNucDest; // NUC CP/MP de destino para reinversión
+                $nuc->save();
+                $fk_nuc_generado = $nuc->id;
+            }
+
+            // 5. Guardar la Apertura en Opening
+            $opening = new Opening;
+            $opening->fk_agent          = $user_id;
+            $opening->fk_client         = $fk_client;
+            $opening->fk_nuc            = $fk_nuc_generado;
+            $opening->fk_insurance      = $fk_insurance;
+
+            $opening->client_type       = $request->input('client_type', 0);
+            $opening->nationality       = $request->input('nationality');
+            $opening->residence_country = $request->input('residence_country');
+            $opening->marital_status    = $request->input('client_type') == 0 ? $request->input('marital_status') : null;
+            $opening->activity          = $request->input('activity');
+            $opening->company_name      = $request->input('company_name');
+            $opening->home_phone        = $request->input('home_phone');
+            $opening->legal_dictum      = $request->input('client_type') == 1 ? $request->input('legal_dictum', 1) : 0;
+
+            $opening->fund_type         = $fund_type;
+            $opening->currency          = $request->input('currency');
+            $opening->opening_type      = $request->input('opening_type', 1);
+            $opening->fk_nuc_origin     = $fkNucOrigin;
+            $opening->fk_nuc_dest       = $fkNucDest;
+            $opening->amount            = $monto_limpio;
+
+            $opening->bank_account      = $request->input('bank_account');
+            $opening->bank_clabe        = $request->input('bank_clabe');
+            $opening->bank_name         = $request->input('bank_name');
+            $opening->bank_aba          = $request->input('bank_aba');
+            $opening->bank_swift        = $request->input('bank_swift');
+
+            $qtyBen = intval($request->input('beneficiaries_qty', 1));
+            $opening->beneficiaries_qty = $qtyBen;
+
+            if ($qtyBen === 1 || $qtyBen === 2) {
+                $opening->beneficiary_1_name = $request->input('beneficiary_1_name');
+                $opening->beneficiary_1_dob  = $request->input('beneficiary_1_dob') ?: null;
+                $opening->beneficiary_1_pct  = $request->input('beneficiary_1_pct') ?: null;
+            }
+            if ($qtyBen === 2) {
+                $opening->beneficiary_2_name = $request->input('beneficiary_2_name');
+                $opening->beneficiary_2_dob  = $request->input('beneficiary_2_dob') ?: null;
+                $opening->beneficiary_2_pct  = $request->input('beneficiary_2_pct') ?: null;
+            }
+            if ($qtyBen === 3) {
+                $opening->beneficiaries_extra = $request->input('beneficiaries_extra');
+            }
+
+            $opening->save();
+
+            // 6. Procesar Documentación (Sección 31)
+            $singleFiles = [
+                'file_ine', 'file_domicilio', 'file_domicilio_moral', 'file_csf',
+                'file_comprobante_pago', 'file_estado_cuenta', 'file_acta',
+                'file_poderes', 'file_folio_mercantil', 'file_rfc_moral'
+            ];
+
+            foreach ($singleFiles as $inputName) {
+                if ($request->hasFile($inputName)) {
+                    $file = $request->file($inputName);
+                    if ($file->isValid()) {
+                        $prefix = str_replace('file_', '', $inputName);
+                        $filename = $prefix . "_31_" . $opening->id . "_" . time() . "_" . uniqid() . "_" . $file->getClientOriginalName();
+
+                        $doc = new Documents;
+                        $doc->fk_key     = $opening->id;
+                        $doc->fk_section = 31;
+                        $doc->name       = $filename;
+                        $doc->save();
+
+                        $file->move(public_path('files/ticketfiles'), $filename);
+                    }
+                }
+            }
+
+            // Archivos múltiples: INE Representante Legal y Apoderados
+            if ($request->hasFile('file_ine_rep')) {
+                foreach ($request->file('file_ine_rep') as $file) {
+                    if ($file->isValid()) {
+                        $filename = "ine_rep_31_" . $opening->id . "_" . time() . "_" . uniqid() . "_" . $file->getClientOriginalName();
+
+                        $doc = new Documents;
+                        $doc->fk_key     = $opening->id;
+                        $doc->fk_section = 31;
+                        $doc->name       = $filename;
+                        $doc->save();
+
+                        $file->move(public_path('files/ticketfiles'), $filename);
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Apertura registrada correctamente con el folio #' . $opening->id
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Error al guardar la apertura: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+}

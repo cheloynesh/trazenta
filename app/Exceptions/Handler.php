@@ -52,7 +52,7 @@ class Handler extends ExceptionHandler
     {
         if($exception->getMessage() == "Trying to get property 'id' of non-object")
         {
-            return redirect('/login');
+            return redirect('/');
         }
         return parent::render($request, $exception);
     }

@@ -208,19 +208,18 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{-- <div class="row">
+                                <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="">Conducto de Pago:</label>
-                                            <select name="selectCharge" id="selectCharge" class="form-select">
+                                            <label for="">Quincena:</label>
+                                            <select name="selectFst_scnd" id="selectFst_scnd" class="form-select">
                                                 <option hidden selected value="">Selecciona una opción</option>
-                                                @foreach ($charges as $id => $charge)
-                                                    <option value='{{ $id }}'>{{ $charge }}</option>
-                                                @endforeach
+                                                <option value=1>Primera</option>
+                                                <option value=2>Segunda</option>
                                             </select>
                                         </div>
                                     </div>
-                                </div> --}}
+                                </div>
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
@@ -408,8 +407,9 @@
                     <th class="text-center">Tipo</th>
                     <th class="text-center">Moneda</th>
                     <th class="text-center">Cliente</th>
+                    <th class="text-center">Quincena</th>
+                    <th class="text-center">Forma de pago</th>
                     <th class="text-center">Estatus</th>
-                    <th class="text-center">Tipo</th>
                     <th class="text-center">Opciones</th>
                 </thead>
 
@@ -421,14 +421,13 @@
                             <td>{{$nuc->fund_type}}</td>
                             <td>{{$nuc->currency}}</td>
                             <td>{{$nuc->name}}</td>
+                            <td>{{$nuc->fst_scnd == 1 ? "Primera quincena" : "Segunda quincena"}}</td>
+                            <td>{{$nuc->payname}}</td>
                             @if($nuc->active_stat == 0)
-                                <td style="color: red">INACTIVO</td>
+                            <td style="color: red">INACTIVO</td>
                             @else
-                                <td style="color: green">ACTIVO</td>
+                            <td style="color: green">ACTIVO</td>
                             @endif
-                            <td>
-                                <button class="btn btn-info" style="background-color: #{{$nuc->color}}; border-color: #{{$nuc->color}}" onclick="opcionesEstatus({{$nuc->id}},{{$nuc->statId}})">{{$nuc->estatus}}</button>
-                            </td>
                             <td>
                                 <a href="#|" class="btn btn-primary" onclick="nuevoMovimiento({{$nuc->id}})" >Movimientos</a>
                                 <button href="#|" class="btn btn-warning" onclick="editarNuc({{$nuc->id}})" ><i class="fas fa-edit"></i></button>

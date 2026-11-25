@@ -30,6 +30,25 @@ $(document).ready( function () {
     });
 } );
 
+active = 1;
+
+function chkActive()
+{
+    if (document.getElementById('chkActive').checked) active = 0; else active = 1;
+
+    var route = baseUrl + '/GetFunds/'+active;
+    // alert(route);
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            refreshTable(result.funds);
+        }
+    })
+}
+
 function refreshTable(charges)
 {
     var table = $('#tbProfInsurance').DataTable();
@@ -39,7 +58,7 @@ function refreshTable(charges)
     charges.forEach( function(valor, indice, array) {
         btnEdit = '<button href="#|" class="btn btn-warning" onclick="editarAseguradora('+valor.id+')" ><i class="fas fa-edit"></i></button>';
         btnTrash = '<button href="#|" class="btn btn-danger" onclick="eliminarAseguradora('+valor.id+')"><i class="fa fa-trash"></i></button>';
-        table.row.add([valor.name,valor.fund_type,valor.fund_curr,valor.yield,valor.yield_net,type[valor.type],valor.active_fund == 1 ? "Si" : "No",btnEdit+" "+btnTrash]);
+        table.row.add([valor.name,valor.fund_type,valor.fund_curr,valor.yield,valor.yield_net,type[valor.type],valor.pay_type == 1 ? "Flexible" : "Fijo",valor.active_fund == 1 ? "Si" : "No",btnEdit+" "+btnTrash]);
     });
     table.draw(false);
 }
@@ -53,6 +72,7 @@ function guardarAseguradora()
     var yield_net = $("#yield_net").val();
     var active_fund = $("#selectActive").val();
     var type = $("#selectFType").val();
+    var pay_type = $("#pay_type").val();
     var route = "insurances";
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -63,6 +83,8 @@ function guardarAseguradora()
         'yield_net':yield_net,
         'active_fund':active_fund,
         'type':type,
+        'pay_type':pay_type,
+        'active':active,
     };
     jQuery.ajax({
         url:route,
@@ -101,6 +123,7 @@ function editarAseguradora(id)
             $("#yield_net1").val(result.data.yield_net);
             $("#selectActive1").val(result.data.active_fund);
             $("#selectFType1").val(result.data.type);
+            $("#pay_type1").val(result.data.pay_type);
             $("#myModaledit").modal('show');
         },
         error:function(result,error,errorTrown)
@@ -123,6 +146,7 @@ function actualizarAseguradora()
     var yield_net = $("#yield_net1").val();
     var active_fund = $("#selectActive1").val();
     var type = $("#selectFType1").val();
+    var pay_type = $("#pay_type1").val();
     var route = "insurances/"+idupdate;
     var data = {
         'id':idupdate,
@@ -134,6 +158,8 @@ function actualizarAseguradora()
         'yield_net':yield_net,
         'active_fund':active_fund,
         'type':type,
+        'active':active,
+        'pay_type':pay_type,
     };
     jQuery.ajax({
         url:route,

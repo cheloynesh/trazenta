@@ -84,7 +84,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="">Razón social:</label>
                                             <select name="selectType" id="selectType" class="form-select">
@@ -94,6 +94,16 @@
                                                 <option value=2>OBCREDA</option>
                                                 <option value=3>OBCREDA DE OCCIDENTE</option>
                                                 <option value=4>OBDENA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="">Tipo de tasa:</label>
+                                            <select name="pay_type" id="pay_type" class="form-select">
+                                                <option hidden selected value="">Selecciona una opción</option>
+                                                <option value=1>Reinversión, transferencia o cheque</option>
+                                                <option value=2>Reinversión (sin opción a cambios)</option>
                                             </select>
                                         </div>
                                     </div>
@@ -117,6 +127,15 @@
             @endif
         </div>
         <br><br>
+        <div class="col-lg-12">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class = "form-group">
+                        <input class="form-check-input" type="checkbox" onclick="chkActive()" id="chkActive"> Mostrar Inactivos
+                    </div>
+                </div>
+            </div>
+        </div>
           <div class="table-responsive" style="margin-bottom: 10px; max-width: 100%; margin: auto;">
             <table class="table table-striped table-hover text-center" id="tbProfInsurance">
                 <thead>
@@ -126,6 +145,7 @@
                     <th class="text-center">Tasa bruta</th>
                     <th class="text-center">Tasa neta</th>
                     <th class="text-center">Razón social</th>
+                    <th class="text-center">F. de pago</th>
                     <th class="text-center">Activo</th>
                     @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                         <th class="text-center">Opciones</th>
@@ -141,6 +161,9 @@
                             <td>{{$insurance->yield}}</td>
                             <td>{{$insurance->yield_net}}</td>
                             <td>{{$type[$insurance->type]}}</td>
+                            <td>
+                                @if ($insurance->pay_type==1) Flexible @else Fijo @endif
+                            </td>
                             <td>
                                 @if ($insurance->active_fund==1) Si @else No @endif
                             </td>

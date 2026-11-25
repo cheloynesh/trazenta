@@ -13,7 +13,7 @@ use DB;
 class InsuranceController extends Controller
 {
     public function index(){
-        $insurances = Insurance::get();
+        $insurances = Insurance::where('active_fund', 1)->get();
         $profile = User::findProfile();
         $perm = Permission::permView($profile,25);
         $perm_btn =Permission::permBtns($profile,25);
@@ -36,6 +36,12 @@ class InsuranceController extends Controller
         return response()->json(['status'=>true, "data"=>$insurance]);
     }
 
+    public function GetFunds($active)
+    {
+        $insurances = Insurance::where('active_fund', 'like', intval($active) === 1 ? 1 : '%')->get();
+        return response()->json(['status'=>true, "funds"=>$insurances]);
+    }
+
     public function store(Request $request)
     {
         $insurance = new Insurance;
@@ -46,16 +52,17 @@ class InsuranceController extends Controller
         $insurance->yield_net = $request->yield_net;
         $insurance->active_fund = $request->active_fund;
         $insurance->type = $request->type;
+        $insurance->pay_type = $request->pay_type;
         $insurance->save();
-        $insurance = Insurance::get();
+        $insurance = Insurance::where('active_fund', 'like', intval($request->active) === 1 ? 1 : '%')->get();
         return response()->json(["status"=>true, "message"=>"Fondo creado", "funds"=>$insurance]);
     }
 
     public function update(Request $request, $id)
     {
         $insurance = Insurance::where('id',$request->id)->update(['name'=>$request->name,'fund_type'=>$request->fund_type,
-        'fund_curr'=>$request->fund_curr,'yield'=>$request->yield,'yield_net'=>$request->yield_net,'active_fund'=>$request->active_fund,'type'=>$request->type]);
-        $insurance = Insurance::get();
+        'fund_curr'=>$request->fund_curr,'yield'=>$request->yield,'yield_net'=>$request->yield_net,'active_fund'=>$request->active_fund,'type'=>$request->type,'pay_type'=>$request->pay_type]);
+        $insurance = Insurance::where('active_fund', 'like', intval($request->active) === 1 ? 1 : '%')->get();
         return response()->json(['status'=>true, 'message'=>"Fondo actualizado", "funds"=>$insurance]);
     }
 
@@ -63,7 +70,7 @@ class InsuranceController extends Controller
     {
         $insurance = Insurance::find($id);
         $insurance->delete();
-        $insurance = Insurance::get();
+        $insurance = Insurance::where('active_fund', 'like', intval($request->active) === 1 ? 1 : '%')->get();
         return response()->json(['status'=>true, "message"=>"Fondo eliminado", "funds"=>$insurance]);
     }
 }

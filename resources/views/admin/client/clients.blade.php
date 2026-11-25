@@ -395,6 +395,8 @@
                         <th class="text-center">Nombre</th>
                         <th class="text-center">Apellidos</th>
                         <th class="text-center">RFC</th>
+                        <th class="text-center">CURP</th>
+                        <th class="text-center">Domicilio</th>
                         @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                             <th class="text-center">Opciones</th>
                         @endif
@@ -406,6 +408,8 @@
                                 <td>{{$client->name}}</td>
                                 <td>{{$client->firstname}} {{$client->lastname}}</td>
                                 <td>{{$client->rfc}}</td>
+                                <td>{{$client->curp}}</td>
+                                <td>{{$client->domicile}}</td>
                                 @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                                     <td>
                                         @if ($perm_btn['modify']==1)

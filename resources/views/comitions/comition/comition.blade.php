@@ -617,8 +617,8 @@
                     <th class="text-center">Agente</th>
                     <th class="text-center">CP Enviado</th>
                     <th class="text-center">CP Pagado</th>
-                    <th class="text-center">Contratos Nuevos</th>
-                    <th class="text-center">Pago de Adelantos</th>
+                    {{-- <th class="text-center">Contratos Nuevos</th>
+                    <th class="text-center">Pago de Adelantos</th> --}}
                     <th class="text-center">Pago de LP</th>
                     @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                         <th class="text-center">Opciones</th>
@@ -647,8 +647,8 @@
                                     <button href="#|" class="btn btn-success btn-sm" onclick="setNullDate({{$user->uid}},2,1)">{{$user->pay_flag}}</button>
                                 @endif
                             </td>
-                            <td>{{$user->contpp}}</td>
-                            <td>{{$user->contpa}}</td>
+                            {{-- <td>{{$user->contpp}}</td>
+                            <td>{{$user->contpa}}</td> --}}
                             <td>{{$user->lpnopay}}</td>
                             @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                                 <td>

@@ -45,9 +45,9 @@ class RunsController extends Controller
         }
     }
 
-    public function GetinfoFund($type,$curr)
+    public function GetinfoFund($type,$curr,$payprime)
     {
-        $opening = Insurance::where('fund_curr',$curr)->where('fund_type',$type)->where('active_fund',1)->first();
+        $opening = Insurance::where('fund_curr',$curr)->where('fund_type',$type)->where('active_fund',1)->where('pay_type',$payprime)->first();
         // dd($opening);
         return response()->json(['status'=>true, "data"=>$opening]);
     }

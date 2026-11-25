@@ -76,7 +76,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Razón social:</label>
                                     <select name="selectFType1" id="selectFType1" class="form-select">
@@ -86,6 +86,16 @@
                                         <option value=2>OBCREDA</option>
                                         <option value=3>OBCREDA DE OCCIDENTE</option>
                                         <option value=4>OBDENA</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="">Tipo de tasa:</label>
+                                    <select name="pay_type1" id="pay_type1" class="form-select">
+                                        <option hidden selected value="">Selecciona una opción</option>
+                                        <option value=1>Reinversión, transferencia o cheque</option>
+                                        <option value=2>Reinversión (sin opción a cambios)</option>
                                     </select>
                                 </div>
                             </div>

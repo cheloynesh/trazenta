@@ -120,7 +120,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Forma de Pago del Premio:</label>
-                                    <select name="selectPaymentform1" id="selectPaymentform1" class="form-select">
+                                    <select name="selectPaymentform1" id="selectPaymentform1" class="form-select" onchange="fundchange(1)">
                                         <option hidden selected value="">Selecciona una opción</option>
                                         @foreach ($paymentForms as $id => $payment_form)
                                             <option value='{{ $id }}'>{{ $payment_form }}</option>
@@ -160,30 +160,66 @@
                             </div>
                         </div>
 
-                        <div class="row align-items-end" id="divLP1" style = "display: none;">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="">Monto:</label>
-                                    <input type="text" id="amount1" name="amount1" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency">
+                        <div id="divLP1" style = "display: none;">
+                            <div class="row align-items-end">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Monto:</label>
+                                        <input type="text" id="amount1" name="amount1" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Fecha de aplicación</label>
+                                        <input type="date" id="initial_date1" name="initial_date1" class="form-control" placeholder="Fecha de aplicación">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="d-grid gap-2 col-12 mx-auto">
+                                            <button type="button" class="btn btn-primary" onclick="OpenCharge()">Abrir conductos de apertura</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="">Fecha de aplicación</label>
-                                    <input type="date" id="initial_date1" name="initial_date1" class="form-control" placeholder="Fecha de aplicación">
+                            <div class="row align-items-end">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="">Mes de pago:</label>
+                                        <select name="selectPairNon1" id="selectPairNon1" class="form-select">
+                                            <option hidden selected value="">Selecciona una opción</option>
+                                            <option value=1>Non</option>
+                                            <option value=2>Par</option>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <div class="d-grid gap-2 col-12 mx-auto">
-                                        <button type="button" class="btn btn-primary" onclick="OpenCharge()">Abrir conductos de apertura</button>
+                                <div class="col-md-6" id="divNucs1" style = "display: none;">
+                                    <div class="form-group">
+                                        <label for="">Nuc de destino:</label>
+                                        <select name="selectNucs1" id="selectNucs1" class="form-control select2-buscable" style="width: 100%">
+                                            <!-- OJO: Para Select2 la primera opción debe ir vacía, el texto se define en JS -->
+                                            <option value=""></option>
+                                            @foreach($nucs as $key => $value)
+                                                <option value="{{ $key }}">{{ $value }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row" id="divCP1" style = "display: none;">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="">Quincena:</label>
+                                    <select name="selectFstscnd1" id="selectFstscnd1" class="form-select">
+                                        <option hidden selected value="">Selecciona una opción</option>
+                                        <option value=1>Primera</option>
+                                        <option value=2>Segunda</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Tipo:</label>
                                     <select name="selectStatusMF" id="selectStatusMF" class="form-select">
